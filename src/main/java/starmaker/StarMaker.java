@@ -21,6 +21,9 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.relauncher.FMLRelaunchLog;
 import starmaker.events.SMEventHandler;
 import starmaker.proxy.CommonProxy;
+import starmaker.resources.StarMakerAssets;
+import starmaker.utils.ExampleConfig;
+import starmaker.utils.Log;
 import starmaker.utils.ParseConfig;
 
 @Mod(
@@ -43,12 +46,17 @@ public class StarMaker {
     public static final String ASSET_PREFIX = MODID;
     public static final String TEXTURE_PREFIX = ASSET_PREFIX + ":";
     
+    public static String systemsDir;
+    public static String planetDir;
+    
     public static DimensionType dimType;
     
     public static int dims = 0;
 
     @Instance(StarMaker.MODID)
     public static StarMaker instance;
+    
+    public static final Log LOG = new Log();
     
     @SidedProxy(clientSide=MODID+".proxy.ClientProxy", serverSide=MODID+".proxy.CommonProxy")
     public static CommonProxy proxy;
@@ -57,9 +65,16 @@ public class StarMaker {
     
     public static boolean debug = true;
     
+    static StarMakerAssets starMakerResources;
+    
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) 
     {     	
+    	systemsDir = event.getModConfigurationDirectory() + "/StarMaker";
+    	planetDir = event.getModConfigurationDirectory() + "/StarMaker/planets";
+    	
+    	new ExampleConfig();
+
     	proxy.preload();
 		
 		proxy.register_event(new SMEventHandler());
@@ -79,6 +94,16 @@ public class StarMaker {
     {
     	proxy.postload();
     }
+    
+	public static void defineResourcePack(List resourceList)
+	{
+		if (starMakerResources == null)
+		{
+			starMakerResources = new StarMakerAssets();
+		}
+
+		resourceList.add(starMakerResources);
+	}
    
     public static void info(Object message)
    	{ 

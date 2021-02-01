@@ -1,0 +1,2 @@
+This is what outputs with the Download methods enabled.
+Put here to make generating files on first run not a hassle

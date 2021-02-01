@@ -24,7 +24,7 @@ public class ExampleConfig
 		// @formatter:off
 		initializeExampleFiles();
 
-		SystemImpl exampleSystemImpl = new SystemImpl("example_solarsystem", "milky_way", "example_star", 1.5, 1.5, 0.8, 3, 7);
+		SystemImpl exampleSystemImpl = new SystemImpl("example_system", "milky_way", "example_star", 1.5, 1.5, 0.8, 3, 7);
 
 		WorldDataImpl exampleDataImpl = new WorldDataImpl(6, true, false, 0, "minecraft:concrete:11", 1000.0);
 
@@ -39,7 +39,7 @@ public class ExampleConfig
 		systemsObjects = new SolarSystemObjects().addSystemToList(exampleSystemImpl);
 
 		examplePlanetImpl = new PlanetImpl()
-				.withParentSystem("example_solarsystem")
+				.withParentSystem("example_system")
 				.withPhase(3.14)
 				.withSize(1.2)
 				.withDistanceFromCenter(2.5)
@@ -84,25 +84,19 @@ public class ExampleConfig
 
 	private void initializeExampleFiles()
 	{
-		if (!MakerUtils.exampleSystemsJson.exists())
-		{
+		if(!(MakerUtils.exampleSystemsJson.exists() && MakerUtils.exmaplePlanetJson.exists())) {
 			try
 			{
 				MakerUtils.exampleSystemsJson.getParentFile().mkdirs();
 				MakerUtils.exampleSystemsJson.createNewFile();
 				this.generateSystemsJson = true;
-			} catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		if (!MakerUtils.exmaplePlanetJson.exists())
-		{
-			try
-			{
+				
 				MakerUtils.exmaplePlanetJson.getParentFile().mkdirs();
 				MakerUtils.exmaplePlanetJson.createNewFile();
 				this.generatePlanetsJson = true;
+				
+				//MakerUtils.genExampleResources();
+				
 			} catch (IOException e)
 			{
 				e.printStackTrace();

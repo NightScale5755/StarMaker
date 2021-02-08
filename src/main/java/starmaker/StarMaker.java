@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Level;
-
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.core.Constants;
 import net.minecraft.util.math.Vec3d;
@@ -18,7 +16,6 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.FMLRelaunchLog;
 import starmaker.events.SMEventHandler;
 import starmaker.proxy.CommonProxy;
 import starmaker.resources.StarMakerAssets;
@@ -49,6 +46,8 @@ public class StarMaker {
     public static String systemsDir;
     public static String planetDir;
     
+    public static String assetRoot;
+    
     public static DimensionType dimType;
     
     public static int dims = 0;
@@ -69,9 +68,11 @@ public class StarMaker {
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) 
-    {     	
+    {   
+    	assetRoot = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain;
     	systemsDir = event.getModConfigurationDirectory() + "/StarMaker";
     	planetDir = event.getModConfigurationDirectory() + "/StarMaker/planets";
+    	
     	
     	new ExampleConfig();
 
@@ -107,13 +108,13 @@ public class StarMaker {
    
     public static void info(Object message)
    	{ 
-   		FMLRelaunchLog.log("[INFO] Star Maker", Level.INFO, message.toString());
+   		LOG.info(message.toString());
    	}  
     
     public static void debug(Object message)
    	{ 
    		if(debug) 
-   			FMLRelaunchLog.log("[DEBUG] Star Maker", Level.INFO, message.toString());
+   			LOG.debug("[DEBUG] ",  message.toString());
    	}  
     
     

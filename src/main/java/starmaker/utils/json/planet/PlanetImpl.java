@@ -68,7 +68,12 @@ public class PlanetImpl
 	@SerializedName("biomes")
 	@Expose
 	private List<BiomeImpl> biomes = null;
-
+	@SerializedName("sun_size")
+	@Expose
+	private float sun_size;	
+	@SerializedName("precipitation")
+	@Expose
+	private boolean precipitation;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -103,7 +108,7 @@ public class PlanetImpl
 			double gravity, Integer atmospherePressure, double temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
 			double starBrightness, List<Integer> sky, List<Integer> fog, WorldDataImpl worldData,
-			List<BiomeImpl> biomes)
+			List<BiomeImpl> biomes, float sun_size, boolean precipitation)
 	{
 		super();
 		this.parentSystem = parentSystem;
@@ -125,6 +130,8 @@ public class PlanetImpl
 		this.fog = fog;
 		this.worldData = worldData;
 		this.biomes = biomes;
+		this.sun_size = sun_size;
+		this.precipitation = precipitation;
 	}
 
 	public String getParentSystem()
@@ -431,4 +438,35 @@ public class PlanetImpl
 		return this;
 	}
 
+	public void setSunSize(float size)
+	{
+		this.sun_size = size;
+	}
+	
+	public float getSunSize()
+	{
+		return this.sun_size;
+	}
+	
+	public PlanetImpl withSunSize(float size)
+	{
+		this.sun_size = size;
+		return this;
+	}
+	
+	public void setPrecipitation(boolean precipitation)
+	{
+		this.precipitation = precipitation;
+	}
+	
+	public boolean getPrecipitation()
+	{
+		return this.precipitation;
+	}
+	
+	public PlanetImpl withPrecipitation(boolean precipitation)
+	{
+		this.precipitation = precipitation;
+		return this;
+	}
 }

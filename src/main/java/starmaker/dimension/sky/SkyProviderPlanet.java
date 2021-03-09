@@ -38,7 +38,7 @@ public class SkyProviderPlanet extends SkyProviderBase {
 
 	@Override
 	protected float sunSize() {
-		return 5 - data.getBody().getRelativeDistanceFromCenter().scaledDistance;
+		return this.data.getSunSize();
 	}
 
 	@Override
@@ -62,10 +62,10 @@ public class SkyProviderPlanet extends SkyProviderBase {
 		BodiesData bd = null;
 		
 		if(data.getBody() instanceof Planet)
-			bd = BodiesRegistry.getData().get(((Planet)data.getBody()).getParentSolarSystem().getMainStar());
+			bd = BodiesRegistry.getData(((Planet)data.getBody()).getParentSolarSystem().getMainStar());
 		
 		if(data.getBody() instanceof IChildBody)
-			bd = BodiesRegistry.getData().get(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
+			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
 		
 		return bd != null ? bd.getStarColor() : StarColor.YELLOW;
 	}

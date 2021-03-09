@@ -6,6 +6,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.google.gson.JsonParser;
@@ -37,10 +38,12 @@ import starmaker.CoreConfig;
 import starmaker.StarMaker;
 import starmaker.StarMaker.BiomeData;
 import starmaker.StarMaker.DimData;
+import starmaker.StarMaker.OreGenData;
 import starmaker.dimension.TeleportTypePlanet;
 import starmaker.dimension.WorldProviderPlanet;
 import starmaker.utils.json.SolarSystemObjects;
 import starmaker.utils.json.SystemImpl;
+import starmaker.utils.json.planet.BiomeDecoratorImpl;
 import starmaker.utils.json.planet.BiomeImpl;
 import starmaker.utils.json.planet.PlanetImpl;
 import starmaker.utils.json.planet.WorldDataImpl;
@@ -57,7 +60,7 @@ public class ParseConfig
 	public void parse(File file)
 	{
 		JsonParser parser = new JsonParser();
-		parseSystems(new File(StarMaker.systemsDir), parser);
+		parseSystems(new File(StarMaker.assetRoot), parser);
 		parsePlanets(new File(StarMaker.planetDir), parser);
 
 	}
@@ -65,7 +68,7 @@ public class ParseConfig
 	private static void parseSystems(File file, JsonParser parser)
 	{
 		File systems = new File(file, "systems.json");
-		int count = 0;
+		int count = 1;
 
 		try
 		{
@@ -87,8 +90,8 @@ public class ParseConfig
 					float posX = systemImpl.getPosX();
 					float posY = systemImpl.getPosY();
 					float star_size = systemImpl.getStarSize();
-					ClassBody star_class = ClassBody.values()[systemImpl.getStarClass() - 1];
-					StarColor star_color = StarColor.values()[systemImpl.getStarColor() - 1];
+					ClassBody star_class = ClassBody.values()[systemImpl.getStarClass()];
+					StarColor star_color = StarColor.values()[systemImpl.getStarColor()];
 
 					ResourceLocation icon = new ResourceLocation(StarMaker.ASSET_PREFIX,
 							"textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
@@ -112,7 +115,7 @@ public class ParseConfig
 
 	private static void parsePlanets(File file, JsonParser parser)
 	{
-		int count = 0;
+		int count = 1;
 
 		try
 		{
@@ -143,15 +146,11 @@ public class ParseConfig
 				SolarSystem system = GalaxyRegistry.getRegisteredSolarSystems().get(impl.getParentSystem());
 				String planet_name = planetFile.getName().replaceAll(".json", "");
 
-				Planet planet = BodiesRegistry.registerExPlanet(system, planet_name, CoreConfig.resourceDomain,
-						impl.getDistanceFromCenter());
+				Planet planet = BodiesRegistry.registerExPlanet(system, planet_name, CoreConfig.resourceDomain, impl.getDistanceFromCenter());
 				BodiesRegistry.setOrbitData(planet, impl.getPhase(), impl.getSize(), impl.getRelativeTime());
-				BodiesRegistry.setPlanetData(planet, impl.getAtmospherePressure(), impl.getDayLenght(),
-						impl.getGravity(), impl.getSolarRadiation());
-				BodiesRegistry.setProviderData(planet, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(),
-						ACBiome.ACSpace);
-				planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), false, false, impl.getTemperature(),
-						impl.getWind(), 0.0F));
+				BodiesRegistry.setPlanetData(planet, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
+				BodiesRegistry.setProviderData(planet, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
+				planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
 
 				StarMaker.LOG.debug("Registered New Planet: %s", planet.getName());
 
@@ -166,18 +165,19 @@ public class ParseConfig
 						break;
 					BiomeImpl biomeImpl = biomesToParse.get(i);
 
-					int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(),
-							biomeImpl.getWaterColor().intZ());
-					int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),
-							biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
-					int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(),
-							biomeImpl.getGrassColor().intZ());
+					int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
+					int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
+					int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
 
+					List<OreGenData> oregen = new ArrayList();
+					for(BiomeDecoratorImpl data : biomeImpl.getOreGenList())
+					{
+						oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
+					}
 					biomes.add(new BiomeData("biome_" + i, biomeImpl.getBiomeSize())
-							.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(),
-									biomeImpl.getIntquility())
+							.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
 							.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
-							.setColors(water, foliage, grass));
+							.setColors(water, foliage, grass).setOreGenData(oregen));
 
 				}
 
@@ -186,8 +186,9 @@ public class ParseConfig
 				DimData data = new DimData(planet, dataImpl.getStoneBlock(), dataImpl.getMapSize())
 						.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor)
 						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
-						.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb())
-						.setBiomes(biomes);
+						.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
+						.setBiomes(biomes).setSunSize(impl.getSunSize())
+						.setWaterY(dataImpl.getWaterY());
 
 				regDim(dimID--, data);
 
@@ -221,13 +222,31 @@ public class ParseConfig
 		// });
 	}
 
+	public static IBlockState getBlock2(String par1)
+	{
+		String[] meta = par1.split(":");
+		Block blocks = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(meta[0] + ":" + meta[1]));
+		if (meta.length > 2)
+		{
+			return blocks.getStateFromMeta(Integer.parseInt(meta[2]));
+		}
+		return blocks.getDefaultState();
+	}
+	
 	public static IBlockState getBlock(String par1)
 	{
 		// String string = e.getAsJsonObject().get(par1).getAsString();
-		String[] meta = par1.split(":");
+		/*String[] meta = par1.split(":");
 		Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(meta[0] + ":" + meta[1]));
 
 		Block blocks = Block.getBlockFromItem(item);
+		if (meta.length > 2)
+		{
+			return blocks.getStateFromMeta(Integer.parseInt(meta[2]));
+		}
+		return blocks.getDefaultState();*/
+		String[] meta = par1.split(":");
+		Block blocks = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(meta[0] + ":" + meta[1]));
 		if (meta.length > 2)
 		{
 			return blocks.getStateFromMeta(Integer.parseInt(meta[2]));

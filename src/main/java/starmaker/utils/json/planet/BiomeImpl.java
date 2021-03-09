@@ -41,7 +41,10 @@ public class BiomeImpl
 	@SerializedName("subsurface_block")
 	@Expose
 	private String subsurfaceBlock;
-
+	
+	@SerializedName("oregen")
+	@Expose
+	private List<BiomeDecoratorImpl> oregen = null;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -65,7 +68,7 @@ public class BiomeImpl
 	 */
 	public BiomeImpl(Double persistance, Integer octaves, Integer height, Integer intquility, Double biomeSize,
 			List<Integer> waterColor, List<Integer> foliageColor, List<Integer> grassColor, String surfaceBlock,
-			String subsurfaceBlock)
+			String subsurfaceBlock, List<BiomeDecoratorImpl> oregen)
 	{
 		super();
 		this.persistance = persistance;
@@ -78,6 +81,7 @@ public class BiomeImpl
 		this.grassColor = grassColor;
 		this.surfaceBlock = surfaceBlock;
 		this.subsurfaceBlock = subsurfaceBlock;
+		this.oregen = oregen;
 	}
 
 	public Float getPersistance()
@@ -237,6 +241,22 @@ public class BiomeImpl
 	public BiomeImpl withSubsurfaceBlock(String subsurfaceBlock)
 	{
 		this.subsurfaceBlock = subsurfaceBlock;
+		return this;
+	}
+	
+	public List<BiomeDecoratorImpl> getOreGenList()
+	{
+		return this.oregen;
+	}
+	
+	public void setOreGenList(List<BiomeDecoratorImpl> oregen)
+	{
+		this.oregen = oregen;
+	}
+	
+	public BiomeImpl withOreGenList(List<BiomeDecoratorImpl> oregen)
+	{
+		this.oregen = oregen;
 		return this;
 	}
 

@@ -1,25 +1,39 @@
 package starmaker.dimension;
 
 import java.util.List;
+import java.util.Random;
 
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_ChunkProviderSpace;
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_WorldProviderSpace;
+import asmodeuscore.core.astronomy.dimension.world.worldengine.biome.WE_BaseBiome;
 import asmodeuscore.core.utils.worldengine.WE_Biome;
 import asmodeuscore.core.utils.worldengine.WE_ChunkProvider;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_BiomeLayer;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_CaveGen;
+import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_OreGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_RavineGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_TerrainGenerator;
+import galaxyspace.core.client.fx.ParticleRainCustom;
+import galaxyspace.systems.SolarSystem.moons.titan.dimension.sky.WeatherProviderTitan;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
+import micdoodle8.mods.galacticraft.api.world.IWeatherProvider;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
 import micdoodle8.mods.galacticraft.core.util.WorldUtil;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.SoundEvents;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DimensionType;
+import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -29,11 +43,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import starmaker.StarMaker;
 import starmaker.StarMaker.BiomeData;
 import starmaker.StarMaker.DimData;
+import starmaker.StarMaker.OreGenData;
 import starmaker.dimension.sky.SkyProviderPlanet;
+import starmaker.dimension.sky.WeatherProviderPlanet;
 import starmaker.utils.ParseConfig;
-import starmaker.utils.we.WE_BaseBiome;
 
-public class WorldProviderPlanet extends WE_WorldProviderSpace{
+public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeatherProvider {
 	
 	private static int getId;
 	
@@ -141,6 +156,22 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace{
 	}
 	
 	@Override
+    @SideOnly(Side.CLIENT)
+    public IRenderHandler getWeatherRenderer()
+    {
+        return new WeatherProviderPlanet(getDimData());
+    }
+	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public Particle getParticle(WorldClient world, double x, double y, double z)
+    {
+		if(getDimData().getBody().atmosphere.thermalLevel() < 0.0) return null;
+		
+        return new ParticleRainCustom(world, x, y + 0.1D, z, 0.0D, 0.0D, 0.0D, EnumParticleTypes.SMOKE_NORMAL.getParticleID(), 1.0F, new Vector3(1F, 0.4F, 0.0F));
+    }
+	
+	@Override
 	@SideOnly(Side.CLIENT)	
     public IRenderHandler getSkyRenderer()
     {
@@ -160,7 +191,6 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace{
 
 	@Override
 	public void onPopulate(int cX, int cZ) {
-		
 	}
 
 	@Override
@@ -178,12 +208,12 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace{
 		((WE_ChunkProviderSpace)cp).CRATER_PROB = getDimData().getCrateProb();
 		
 		WE_Biome.setBiomeMap(cp, 1.4D, 4, getDimData().getMapSize(), 1.0D);		
-		
+			
 		WE_TerrainGenerator terrainGenerator = new WE_TerrainGenerator(); 
 		terrainGenerator.worldStoneBlock = ParseConfig.getBlock(getDimData().getStoneBlock()); 
-		terrainGenerator.worldSeaGen = false;
-		terrainGenerator.worldSeaGenBlock = Blocks.WATER.getDefaultState();
-		terrainGenerator.worldSeaGenMaxY = 64;
+		terrainGenerator.worldSeaGen = !getDimData().getWaterBlock().isEmpty();
+		terrainGenerator.worldSeaGenBlock = ParseConfig.getBlock(getDimData().getWaterBlock());
+		terrainGenerator.worldSeaGenMaxY = getDimData().getWaterY();
 		cp.createChunkGen_List.add(terrainGenerator);
 		
 		if(getDimData().getGenCaves()) {
@@ -203,6 +233,8 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace{
 			cp.createChunkGen_List.add(rg);
 		}
 		
+		
+		
 		double distance = 0D;
 		for(BiomeData biome : getDimData().getBiomes()) {
 			WE_BiomeLayer layer = new WE_BiomeLayer();		
@@ -210,9 +242,44 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace{
 			layer.add(ParseConfig.getBlock(biome.getSurfaceBlock()), ParseConfig.getBlock(biome.getSubsurfaceBlock()), -256, 0, -1, 0, false);
 			layer.add(Blocks.BEDROCK.getDefaultState(), 0, 0, 1, 2, true);
 		
-			WE_Biome.addBiomeToGeneration(cp, new WE_BaseBiome(distance, biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer).setSize(biome.getBiomeSizeX(), 1.5D).setBaseSpawn());
-			distance += 0.5D;
+			if(!biome.getOreGenData().isEmpty()) {
+				WE_OreGen standardOres = new WE_OreGen();
+			
+				for(OreGenData oregen : biome.getOreGenData())
+				{
+					standardOres.add(ParseConfig.getBlock(oregen.getOre()), ParseConfig.getBlock(oregen.getReplaced()), oregen.getBlockCount(), oregen.getMinY(), oregen.getMaxY(), oregen.getAmountPerChunk());
+				}				
+				cp.decorateChunkGen_List.add(standardOres);
+			}
+			WE_Biome.addBiomeToGeneration(cp, new WE_BaseBiome(distance, biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer) {
+				
+				@Override
+				public void decorateBiome(World world, Random rand, int x, int z)
+				{
+				}
+				
+			}.setSize(280.0D, 1.5D).setBaseSpawn());
+			distance += biome.getBiomeSize();			
 		}
+	}
+
+	@Override
+	public void weatherSounds(int j, Minecraft mc, World world, BlockPos blockpos, double xx, double yy, double zz,	Random random) {
+		if(getDimData().getBody().atmosphere.thermalLevel() < 0.0) return;
+		
+		if ((int) yy >= blockpos.getY() + 1 && world.getPrecipitationHeight(blockpos).getY() > blockpos.getY()) {
+			mc.world.playSound(xx, yy, zz, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.8F, 0.6F + random.nextFloat() * 0.2F, false);
+		} else {
+			mc.world.playSound(xx, yy, zz, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.8F, 0.8F + random.nextFloat() * 0.06F + random.nextFloat() * 0.06F, false);
+		}
+	}
+
+	@Override
+	public int getSoundInterval(float rainStrength) {
+		if(getDimData().getBody().atmosphere.thermalLevel() < 0.0) return 1;
+		
+		int result = 80 - (int)(rainStrength * 88F);
+        return result > 0 ? result : 1;
 	}
 
 }

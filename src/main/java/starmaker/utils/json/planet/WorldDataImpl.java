@@ -22,9 +22,15 @@ public class WorldDataImpl
 	@SerializedName("stone_block")
 	@Expose
 	private String stoneBlock;
-	@SerializedName("mapSiZE")
+	@SerializedName("mapSize")
 	@Expose
 	private double mapSize;
+	@SerializedName("water_block")
+	@Expose
+	private String waterBlock;
+	@SerializedName("waterY")
+	@Expose
+	private int waterY;
 
 	/**
 	 * No args constructor for use in serialization
@@ -43,7 +49,7 @@ public class WorldDataImpl
 	 * @param crateProb
 	 */
 	public WorldDataImpl(Integer tier, Boolean genCave, Boolean genRavine, Integer crateProb, String stoneBlock,
-			double mapSize)
+			double mapSize, String waterBlock, int watery)
 	{
 		super();
 		this.tier = tier;
@@ -52,6 +58,8 @@ public class WorldDataImpl
 		this.crateProb = crateProb;
 		this.stoneBlock = stoneBlock;
 		this.mapSize = mapSize;
+		this.waterBlock = waterBlock;
+		this.waterY = watery;
 	}
 
 	public Integer getTier()
@@ -148,6 +156,38 @@ public class WorldDataImpl
 	{
 		this.mapSize = mapSize;
 		return this;
+	}
+	
+	public void setWaterBlock(String waterBlock)
+	{
+		this.waterBlock = waterBlock;
+	}
+
+	public WorldDataImpl withWaterGen(String waterBlock)
+	{
+		this.waterBlock = waterBlock;
+		return this;
+	}
+
+	public String getWaterBlock()
+	{
+		return waterBlock;
+	}
+	
+	public void setWaterY(int y)
+	{
+		this.waterY = y;
+	}
+
+	public WorldDataImpl withWaterGen(int y)
+	{
+		this.waterY = y;
+		return this;
+	}
+
+	public int getWaterY()
+	{
+		return waterY;
 	}
 
 }

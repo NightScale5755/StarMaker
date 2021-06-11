@@ -6,7 +6,6 @@ import java.util.Random;
 import org.lwjgl.opengl.GL11;
 
 import micdoodle8.mods.galacticraft.core.util.GCCoreUtil;
-import micdoodle8.mods.galacticraft.planets.GalacticraftPlanets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -18,7 +17,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.client.IRenderHandler;
-import starmaker.StarMaker.DimData;
+import starmaker.utils.data.DimData;
 
 public class WeatherProviderPlanet extends IRenderHandler
 {

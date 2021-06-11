@@ -1,5 +1,5 @@
 
-package starmaker.utils.json.planet;
+package starmaker.utils.json.body;
 
 import java.util.List;
 
@@ -7,13 +7,15 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.util.math.Vec3i;
+import starmaker.utils.json.data.BiomeImpl;
+import starmaker.utils.json.data.WorldDataImpl;
 
-public class PlanetImpl
+public class MoonImpl
 {
 
-	@SerializedName("parent_system")
+	@SerializedName("parent_planet")
 	@Expose
-	private String parentSystem;
+	private String parentPlanet;
 	@SerializedName("phase")
 	@Expose
 	private double phase;
@@ -78,7 +80,7 @@ public class PlanetImpl
 	 * No args constructor for use in serialization
 	 * 
 	 */
-	public PlanetImpl()
+	public MoonImpl()
 	{
 	}
 
@@ -104,14 +106,14 @@ public class PlanetImpl
 	 * @param wind
 	 * @param fog
 	 */
-	public PlanetImpl(String parentSystem, double phase, double size, double distanceFromCenter, double relativeTime,
+	public MoonImpl(String parentPlanet, double phase, double size, double distanceFromCenter, double relativeTime,
 			double gravity, Integer atmospherePressure, double temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
 			double starBrightness, List<Integer> sky, List<Integer> fog, WorldDataImpl worldData,
 			List<BiomeImpl> biomes, float sun_size, boolean precipitation)
 	{
 		super();
-		this.parentSystem = parentSystem;
+		this.parentPlanet = parentPlanet;
 		this.phase = phase;
 		this.size = size;
 		this.distanceFromCenter = distanceFromCenter;
@@ -134,19 +136,19 @@ public class PlanetImpl
 		this.precipitation = precipitation;
 	}
 
-	public String getParentSystem()
+	public String getParentPlanet()
 	{
-		return parentSystem;
+		return parentPlanet;
 	}
 
-	public void setParentSystem(String parentSystem)
+	public void setParentPlanet(String parentPlanet)
 	{
-		this.parentSystem = parentSystem;
+		this.parentPlanet = parentPlanet;
 	}
 
-	public PlanetImpl withParentSystem(String parentSystem)
+	public MoonImpl withParentPlanet(String parentPlanet)
 	{
-		this.parentSystem = parentSystem;
+		this.parentPlanet = parentPlanet;
 		return this;
 	}
 
@@ -160,7 +162,7 @@ public class PlanetImpl
 		this.phase = phase;
 	}
 
-	public PlanetImpl withPhase(double phase)
+	public MoonImpl withPhase(double phase)
 	{
 		this.phase = phase;
 		return this;
@@ -176,7 +178,7 @@ public class PlanetImpl
 		this.size = size;
 	}
 
-	public PlanetImpl withSize(double size)
+	public MoonImpl withSize(double size)
 	{
 		this.size = size;
 		return this;
@@ -192,7 +194,7 @@ public class PlanetImpl
 		this.distanceFromCenter = distanceFromCenter;
 	}
 
-	public PlanetImpl withDistanceFromCenter(double distanceFromCenter)
+	public MoonImpl withDistanceFromCenter(double distanceFromCenter)
 	{
 		this.distanceFromCenter = distanceFromCenter;
 		return this;
@@ -208,7 +210,7 @@ public class PlanetImpl
 		this.relativeTime = relativeTime;
 	}
 
-	public PlanetImpl withRelativeTime(double relativeTime)
+	public MoonImpl withRelativeTime(double relativeTime)
 	{
 		this.relativeTime = relativeTime;
 		return this;
@@ -224,7 +226,7 @@ public class PlanetImpl
 		this.gravity = gravity;
 	}
 
-	public PlanetImpl withGravity(double gravity)
+	public MoonImpl withGravity(double gravity)
 	{
 		this.gravity = gravity;
 		return this;
@@ -240,7 +242,7 @@ public class PlanetImpl
 		this.atmospherePressure = atmospherePressure;
 	}
 
-	public PlanetImpl withAtmospherePressure(Integer atmospherePressure)
+	public MoonImpl withAtmospherePressure(Integer atmospherePressure)
 	{
 		this.atmospherePressure = atmospherePressure;
 		return this;
@@ -256,7 +258,7 @@ public class PlanetImpl
 		this.temperature = temperature;
 	}
 
-	public PlanetImpl withTemperature(double temperature)
+	public MoonImpl withTemperature(double temperature)
 	{
 		this.temperature = temperature;
 		return this;
@@ -272,7 +274,7 @@ public class PlanetImpl
 		this.wind = wind;
 	}
 
-	public PlanetImpl withWind(double wind)
+	public MoonImpl withWind(double wind)
 	{
 		this.wind = wind;
 		return this;
@@ -288,7 +290,7 @@ public class PlanetImpl
 		this.dayLenght = dayLenght;
 	}
 
-	public PlanetImpl withDayLenght(Integer dayLenght)
+	public MoonImpl withDayLenght(Integer dayLenght)
 	{
 		this.dayLenght = dayLenght;
 		return this;
@@ -304,7 +306,7 @@ public class PlanetImpl
 		this.breathable = breathable;
 	}
 
-	public PlanetImpl withBreathable(Boolean breathable)
+	public MoonImpl withBreathable(Boolean breathable)
 	{
 		this.breathable = breathable;
 		return this;
@@ -320,7 +322,7 @@ public class PlanetImpl
 		this.solarRadiation = solarRadiation;
 	}
 
-	public PlanetImpl withSolarRadiation(Boolean solarRadiation)
+	public MoonImpl withSolarRadiation(Boolean solarRadiation)
 	{
 		this.solarRadiation = solarRadiation;
 		return this;
@@ -336,7 +338,7 @@ public class PlanetImpl
 		this.corrosiveAtmo = corrosiveAtmo;
 	}
 
-	public PlanetImpl withCorrosiveAtmo(Boolean corrosiveAtmo)
+	public MoonImpl withCorrosiveAtmo(Boolean corrosiveAtmo)
 	{
 		this.corrosiveAtmo = corrosiveAtmo;
 		return this;
@@ -352,7 +354,7 @@ public class PlanetImpl
 		this.sunBrightness = sunBrightness;
 	}
 
-	public PlanetImpl withSunBrightness(double sunBrightness)
+	public MoonImpl withSunBrightness(double sunBrightness)
 	{
 		this.sunBrightness = sunBrightness;
 		return this;
@@ -368,7 +370,7 @@ public class PlanetImpl
 		this.starBrightness = starBrightness;
 	}
 
-	public PlanetImpl withStarBrightness(double starBrightness)
+	public MoonImpl withStarBrightness(double starBrightness)
 	{
 		this.starBrightness = starBrightness;
 		return this;
@@ -384,7 +386,7 @@ public class PlanetImpl
 		this.sky = sky;
 	}
 
-	public PlanetImpl withSky(List<Integer> sky)
+	public MoonImpl withSky(List<Integer> sky)
 	{
 		this.sky = sky;
 		return this;
@@ -400,7 +402,7 @@ public class PlanetImpl
 		this.fog = fog;
 	}
 
-	public PlanetImpl withFog(List<Integer> fog)
+	public MoonImpl withFog(List<Integer> fog)
 	{
 		this.fog = fog;
 		return this;
@@ -416,7 +418,7 @@ public class PlanetImpl
 		this.worldData = worldData;
 	}
 
-	public PlanetImpl withWorldData(WorldDataImpl worldData)
+	public MoonImpl withWorldData(WorldDataImpl worldData)
 	{
 		this.worldData = worldData;
 		return this;
@@ -432,7 +434,7 @@ public class PlanetImpl
 		this.biomes = biomes;
 	}
 
-	public PlanetImpl withBiomes(List<BiomeImpl> biomes)
+	public MoonImpl withBiomes(List<BiomeImpl> biomes)
 	{
 		this.biomes = biomes;
 		return this;
@@ -448,7 +450,7 @@ public class PlanetImpl
 		return this.sun_size;
 	}
 	
-	public PlanetImpl withSunSize(float size)
+	public MoonImpl withSunSize(float size)
 	{
 		this.sun_size = size;
 		return this;
@@ -464,7 +466,7 @@ public class PlanetImpl
 		return this.precipitation;
 	}
 	
-	public PlanetImpl withPrecipitation(boolean precipitation)
+	public MoonImpl withPrecipitation(boolean precipitation)
 	{
 		this.precipitation = precipitation;
 		return this;

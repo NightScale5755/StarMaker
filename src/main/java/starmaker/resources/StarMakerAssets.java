@@ -80,7 +80,6 @@ public class StarMakerAssets implements IResourcePack {
 		return folders;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public IMetadataSection getPackMetadata(MetadataSerializer p_135058_1_, String p_135058_2_) throws IOException {
 		return null;

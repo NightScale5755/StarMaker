@@ -9,12 +9,14 @@ import java.util.List;
 import starmaker.StarMaker;
 import starmaker.utils.json.SolarSystemObjects;
 import starmaker.utils.json.SystemImpl;
-import starmaker.utils.json.planet.BiomeDecoratorImpl;
-import starmaker.utils.json.planet.BiomeImpl;
-import starmaker.utils.json.planet.PlanetImpl;
-import starmaker.utils.json.planet.WorldDataImpl;
+import starmaker.utils.json.body.PlanetImpl;
+import starmaker.utils.json.data.BiomeImpl;
+import starmaker.utils.json.data.GrassGenImpl;
+import starmaker.utils.json.data.OreGenImpl;
+import starmaker.utils.json.data.TreeGenImpl;
+import starmaker.utils.json.data.WorldDataImpl;
 
-public class ExampleConfig
+public class ExampleFiles
 {
 
 	private PlanetImpl examplePlanetImpl;
@@ -22,12 +24,12 @@ public class ExampleConfig
 	private boolean generateSystemsJson = false;
 	private boolean generatePlanetsJson = false;
 
-	public ExampleConfig()
+	public ExampleFiles()
 	{
 		// @formatter:off
 		initializeExampleFiles();
 
-		SystemImpl exampleSystemImpl = new SystemImpl("example_system", "milky_way", "example_star", 1.5, 1.5, 0.8, 3, 7);
+		SystemImpl exampleSystemImpl = new SystemImpl("example_system", "milky_way", "example_star", 1.5, 1.5, 0.8, 2, 6);
 
 		WorldDataImpl exampleDataImpl = new WorldDataImpl(6, true, false, 0, "minecraft:concrete:11", 1000.0, "", 64);
 
@@ -35,11 +37,13 @@ public class ExampleConfig
 		List<Integer> foliage = Arrays.asList(0, 100, 0);
 		List<Integer> grass = Arrays.asList(0, 100, 100);
 
-		List<BiomeDecoratorImpl> oregen = Arrays.asList(new BiomeDecoratorImpl("minecraft:dirt", "minecraft:cobblestone", 5, 80, 90, 20));
+		List<OreGenImpl> oregen = Arrays.asList(new OreGenImpl("minecraft:dirt", "minecraft:cobblestone", 5, 80, 90, 20));
+		TreeGenImpl treegen = new TreeGenImpl("minecraft:log", "minecraft:leaves", "minecraft:sapling", 8, false, 3);
+		List<GrassGenImpl> grassgen = Arrays.asList(new GrassGenImpl("minecraft:tallgrass:1", "minecraft:grass", 5, false));
 		
-		BiomeImpl exampleBiomeImpl1 = new BiomeImpl(2.2, 5, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen);
+		BiomeImpl exampleBiomeImpl1 = new BiomeImpl(2.2, 4, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen, treegen, grassgen);
 
-		BiomeImpl exampleBiomeImpl2 = new BiomeImpl(1.8, 4, 64, 25, 2.0, water, foliage, grass, "minecraft:cobblestone", "minecraft:dirt", oregen);
+		BiomeImpl exampleBiomeImpl2 = new BiomeImpl(1.8, 4, 64, 25, 2.0, water, foliage, grass, "minecraft:cobblestone", "minecraft:dirt", oregen, null, null);
 
 		systemsObjects = new SolarSystemObjects().addSystemToList(exampleSystemImpl);
 

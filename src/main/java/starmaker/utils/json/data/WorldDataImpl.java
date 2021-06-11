@@ -1,5 +1,5 @@
 
-package starmaker.utils.json.planet;
+package starmaker.utils.json.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

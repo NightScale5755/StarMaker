@@ -1,4 +1,4 @@
-package starmaker.utils;
+package starmaker.utils.data;
 
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import net.minecraft.world.DimensionType;

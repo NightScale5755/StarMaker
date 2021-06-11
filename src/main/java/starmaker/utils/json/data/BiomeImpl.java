@@ -1,5 +1,5 @@
 
-package starmaker.utils.json.planet;
+package starmaker.utils.json.data;
 
 import java.util.List;
 
@@ -40,11 +40,16 @@ public class BiomeImpl
 	private String surfaceBlock;
 	@SerializedName("subsurface_block")
 	@Expose
-	private String subsurfaceBlock;
-	
+	private String subsurfaceBlock;	
 	@SerializedName("oregen")
 	@Expose
-	private List<BiomeDecoratorImpl> oregen = null;
+	private List<OreGenImpl> oregen = null;
+	@SerializedName("treegen")
+	@Expose
+	private TreeGenImpl treegen = null;
+	@SerializedName("grassgen")
+	@Expose
+	private List<GrassGenImpl> grassgen = null;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -68,7 +73,7 @@ public class BiomeImpl
 	 */
 	public BiomeImpl(Double persistance, Integer octaves, Integer height, Integer intquility, Double biomeSize,
 			List<Integer> waterColor, List<Integer> foliageColor, List<Integer> grassColor, String surfaceBlock,
-			String subsurfaceBlock, List<BiomeDecoratorImpl> oregen)
+			String subsurfaceBlock, List<OreGenImpl> oregen, TreeGenImpl treegen, List<GrassGenImpl> grassgen)
 	{
 		super();
 		this.persistance = persistance;
@@ -82,6 +87,8 @@ public class BiomeImpl
 		this.surfaceBlock = surfaceBlock;
 		this.subsurfaceBlock = subsurfaceBlock;
 		this.oregen = oregen;
+		this.treegen = treegen;
+		this.grassgen = grassgen;
 	}
 
 	public Float getPersistance()
@@ -244,20 +251,44 @@ public class BiomeImpl
 		return this;
 	}
 	
-	public List<BiomeDecoratorImpl> getOreGenList()
+	public List<OreGenImpl> getOreGenList()
 	{
 		return this.oregen;
 	}
 	
-	public void setOreGenList(List<BiomeDecoratorImpl> oregen)
+	public void setOreGenList(List<OreGenImpl> oregen)
 	{
 		this.oregen = oregen;
 	}
 	
-	public BiomeImpl withOreGenList(List<BiomeDecoratorImpl> oregen)
+	public BiomeImpl withOreGenList(List<OreGenImpl> oregen)
 	{
 		this.oregen = oregen;
 		return this;
 	}
 
+	public TreeGenImpl getTreeGen() {
+		return this.treegen;
+	}
+	
+	public void setTreeOreGen(TreeGenImpl treegen)
+	{
+		this.treegen = treegen;
+	}
+	
+	public List<GrassGenImpl> getGrassGenList()
+	{
+		return this.grassgen;
+	}
+	
+	public void setGrassGenList(List<GrassGenImpl> oregen)
+	{
+		this.grassgen = oregen;
+	}
+	
+	public BiomeImpl withGrassGenList(List<GrassGenImpl> oregen)
+	{
+		this.grassgen = oregen;
+		return this;
+	}
 }

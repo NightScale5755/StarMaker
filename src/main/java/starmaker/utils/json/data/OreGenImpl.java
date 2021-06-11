@@ -1,9 +1,9 @@
-package starmaker.utils.json.planet;
+package starmaker.utils.json.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class BiomeDecoratorImpl {
+public class OreGenImpl {
 
 	@SerializedName("ore_block")
 	@Expose
@@ -24,11 +24,11 @@ public class BiomeDecoratorImpl {
 	@Expose
 	private int amountPerChunk;
 	
-	public BiomeDecoratorImpl()
+	public OreGenImpl()
 	{
 	}
 	
-	public BiomeDecoratorImpl(String ore, String replaced, int blockcount, int minY, int maxY, int amountperchunk)
+	public OreGenImpl(String ore, String replaced, int blockcount, int minY, int maxY, int amountperchunk)
 	{
 		this.oreBlock = ore;
 		this.replacedBlock = replaced;
@@ -48,7 +48,7 @@ public class BiomeDecoratorImpl {
 		return this.oreBlock;
 	}
 	
-	public BiomeDecoratorImpl withOreBlock(String ore)
+	public OreGenImpl withOreBlock(String ore)
 	{
 		this.oreBlock = ore;
 		return this;
@@ -64,7 +64,7 @@ public class BiomeDecoratorImpl {
 		return this.replacedBlock;
 	}
 	
-	public BiomeDecoratorImpl withReplacedBlock(String replaced)
+	public OreGenImpl withReplacedBlock(String replaced)
 	{
 		this.replacedBlock = replaced;
 		return this;
@@ -80,7 +80,7 @@ public class BiomeDecoratorImpl {
 		return this.blockCount;
 	}
 	
-	public BiomeDecoratorImpl withOreBlock(int count)
+	public OreGenImpl withOreBlock(int count)
 	{
 		this.blockCount = count;
 		return this;

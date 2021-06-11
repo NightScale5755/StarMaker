@@ -6,15 +6,16 @@ import java.util.Random;
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_ChunkProviderSpace;
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_WorldProviderSpace;
 import asmodeuscore.core.astronomy.dimension.world.worldengine.biome.WE_BaseBiome;
+import asmodeuscore.core.client.entity.particle.ParticleRainCustom;
 import asmodeuscore.core.utils.worldengine.WE_Biome;
 import asmodeuscore.core.utils.worldengine.WE_ChunkProvider;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_BiomeLayer;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_CaveGen;
+import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_GrassGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_OreGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_RavineGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_TerrainGenerator;
-import galaxyspace.core.client.fx.ParticleRainCustom;
-import galaxyspace.systems.SolarSystem.moons.titan.dimension.sky.WeatherProviderTitan;
+import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_WorldTreeGen;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.IWeatherProvider;
@@ -41,12 +42,13 @@ import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import starmaker.StarMaker;
-import starmaker.StarMaker.BiomeData;
-import starmaker.StarMaker.DimData;
-import starmaker.StarMaker.OreGenData;
 import starmaker.dimension.sky.SkyProviderPlanet;
 import starmaker.dimension.sky.WeatherProviderPlanet;
-import starmaker.utils.ParseConfig;
+import starmaker.utils.data.BiomeData;
+import starmaker.utils.data.DimData;
+import starmaker.utils.data.GrassGenData;
+import starmaker.utils.data.OreGenData;
+import starmaker.utils.json.ParseFiles;
 
 public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeatherProvider {
 	
@@ -168,7 +170,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
     {
 		if(getDimData().getBody().atmosphere.thermalLevel() < 0.0) return null;
 		
-        return new ParticleRainCustom(world, x, y + 0.1D, z, 0.0D, 0.0D, 0.0D, EnumParticleTypes.SMOKE_NORMAL.getParticleID(), 1.0F, new Vector3(1F, 0.4F, 0.0F));
+        return new ParticleRainCustom(world, x, y + 0.1D, z, 0.0D, 0.0D, 0.0D, EnumParticleTypes.SMOKE_NORMAL.getParticleID(), 1.0F, new Vector3(0F, 0.4F, 1.0F));
     }
 	
 	@Override
@@ -210,10 +212,13 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 		WE_Biome.setBiomeMap(cp, 1.4D, 4, getDimData().getMapSize(), 1.0D);		
 			
 		WE_TerrainGenerator terrainGenerator = new WE_TerrainGenerator(); 
-		terrainGenerator.worldStoneBlock = ParseConfig.getBlock(getDimData().getStoneBlock()); 
+		terrainGenerator.worldStoneBlock = ParseFiles.getBlock(getDimData().getStoneBlock()); 
 		terrainGenerator.worldSeaGen = !getDimData().getWaterBlock().isEmpty();
-		terrainGenerator.worldSeaGenBlock = ParseConfig.getBlock(getDimData().getWaterBlock());
-		terrainGenerator.worldSeaGenMaxY = getDimData().getWaterY();
+		
+		if(terrainGenerator.worldSeaGen) {
+			terrainGenerator.worldSeaGenBlock = ParseFiles.getBlock(getDimData().getWaterBlock());
+			terrainGenerator.worldSeaGenMaxY = getDimData().getWaterY();
+		}
 		cp.createChunkGen_List.add(terrainGenerator);
 		
 		if(getDimData().getGenCaves()) {
@@ -235,31 +240,56 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 		
 		
 		
-		double distance = 0D;
 		for(BiomeData biome : getDimData().getBiomes()) {
+
 			WE_BiomeLayer layer = new WE_BiomeLayer();		
-			layer.add(ParseConfig.getBlock(biome.getSubsurfaceBlock()), terrainGenerator.worldStoneBlock, -256, 0, -4, -2, true);
-			layer.add(ParseConfig.getBlock(biome.getSurfaceBlock()), ParseConfig.getBlock(biome.getSubsurfaceBlock()), -256, 0, -1, 0, false);
+			layer.add(ParseFiles.getBlock(biome.getSubsurfaceBlock()), terrainGenerator.worldStoneBlock, -256, 0, -4, -2, true);
+			layer.add(ParseFiles.getBlock(biome.getSurfaceBlock()), ParseFiles.getBlock(biome.getSubsurfaceBlock()), -256, 0, -1, 0, false);
 			layer.add(Blocks.BEDROCK.getDefaultState(), 0, 0, 1, 2, true);
 		
-			if(!biome.getOreGenData().isEmpty()) {
-				WE_OreGen standardOres = new WE_OreGen();
-			
-				for(OreGenData oregen : biome.getOreGenData())
-				{
-					standardOres.add(ParseConfig.getBlock(oregen.getOre()), ParseConfig.getBlock(oregen.getReplaced()), oregen.getBlockCount(), oregen.getMinY(), oregen.getMaxY(), oregen.getAmountPerChunk());
-				}				
-				cp.decorateChunkGen_List.add(standardOres);
-			}
-			WE_Biome.addBiomeToGeneration(cp, new WE_BaseBiome(distance, biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer) {
+			WE_Biome b = new WE_BaseBiome(biome.getBiomeSize(), biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer) {
 				
 				@Override
 				public void decorateBiome(World world, Random rand, int x, int z)
 				{
 				}
 				
-			}.setSize(280.0D, 1.5D).setBaseSpawn());
-			distance += biome.getBiomeSize();			
+			}.setSize(280.0D, 1.5D).setBaseSpawn().setColors(biome.getGrassColor(), biome.getWaterColor(), biome.getFoliageColor());
+			
+			if(!biome.getOreGenData().isEmpty()) {
+				WE_OreGen standardOres = new WE_OreGen();
+			
+				for(OreGenData oregen : biome.getOreGenData())
+				{
+					standardOres.add(ParseFiles.getBlock(oregen.getOre()), ParseFiles.getBlock(oregen.getReplaced()), oregen.getBlockCount(), oregen.getMinY(), oregen.getMaxY(), oregen.getAmountPerChunk());
+				}				
+				b.decorateChunkGen_List.add(standardOres);
+			}
+			
+			
+			
+			if(biome.getTreeGenData() != null) {
+				WE_WorldTreeGen treeGen = new WE_WorldTreeGen();
+				treeGen.add(ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock(), 
+						ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLog())),
+						ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock(), 
+						ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLeaves())), 
+						ParseFiles.getBlock(biome.getTreeGenData().getSapling()).getBlock(), Blocks.VINE, Blocks.COCOA, biome.getTreeGenData().getQuantity(), 1, 8, biome.getTreeGenData().getMinHeight(), biome.getTreeGenData().getVines(),
+						(byte)2, (byte)0, (byte)0, (byte)1, (byte)2, (byte)1, 1, 12, 4, 0.618D, 0.381D, 1.0D, 1.0D);
+				b.decorateChunkGen_List.add(treeGen);
+			
+			}
+			
+			if(!biome.getGrassGenData().isEmpty()) {
+				
+				WE_GrassGen grassGen = new WE_GrassGen();
+				for(GrassGenData data : biome.getGrassGenData())
+					grassGen.add(ParseFiles.getBlock(data.getGrass()), data.getBlockCount(), data.onWater(), ParseFiles.getBlock(data.getGround()));
+				
+				b.decorateChunkGen_List.add(grassGen);
+			}
+			WE_Biome.addBiomeToGeneration(cp, b);
+						
 		}
 	}
 
@@ -280,6 +310,25 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 		
 		int result = 80 - (int)(rainStrength * 88F);
         return result > 0 ? result : 1;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void getLightmapColors(float partialTicks, float sunBrightness, float skyLight, float blockLight, float[] colors) 
+	{
+		/*EntityPlayer player = FMLClientHandler.instance().getClientPlayerEntity();
+		
+		if (player != null)
+		{
+			int phase = this.getMoonPhase(this.getWorldTime());
+			
+			if(sunBrightness > 0.2f && !this.world.isRaining()) {
+								
+				//colors[0] = colors[0] + skyLight + 0.8F;				
+				colors[1] = colors[1] - skyLight / 1.3F;	
+				colors[2] = colors[2] - skyLight / 1.0F;	
+			}				
+		}*/
 	}
 
 }

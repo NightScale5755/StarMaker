@@ -87,13 +87,19 @@ public class SkyProviderPlanet extends SkyProviderBase {
 		if(data.getBody() instanceof IChildBody)
 			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
 		
-		return bd != null ? bd.getStarColor() : StarColor.YELLOW;
+		return bd != null ? bd.getStarColor() : StarColor.WHITE;
 	}
 
 	@Override
 	protected Vector3 getAtmosphereColor() {
 		return null;
 	}
+	
+	@Override
+	public int expandSizeAura() {return sunSize() < 2.0F ? -2 : 0;}
+	
+	@Override
+	public boolean enableSmoothRender() {return sunSize() < 2.0F ? false : data.getBody().atmosphere.hasNoGases();}
 
 	private float getMaxDistance()
 	{
@@ -111,4 +117,6 @@ public class SkyProviderPlanet extends SkyProviderBase {
 		}
 		return max;
 	}
+	
+	
 }

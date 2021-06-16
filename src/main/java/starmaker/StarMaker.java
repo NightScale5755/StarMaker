@@ -118,7 +118,7 @@ public class StarMaker {
     public static void debug(Object message)
    	{ 
    		if(debug) 
-   			LOG.debug("[DEBUG] ",  message.toString());
+   			LOG.info("[DEBUG StarMaker] ",  message.toString());
    	}  
     
 }

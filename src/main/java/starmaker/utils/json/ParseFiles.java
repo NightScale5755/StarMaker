@@ -25,6 +25,7 @@ import micdoodle8.mods.galacticraft.api.galaxies.Planet;
 import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
+import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.entities.EntityEvolvedZombie;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -100,8 +101,7 @@ public class ParseFiles
 					ResourceLocation icon = new ResourceLocation(StarMaker.ASSET_PREFIX,
 							"textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
 					SolarSystem system = BodiesRegistry.registerSolarSystem(StarMaker.ASSET_PREFIX, name,
-							BodiesRegistry.getGalaxy(galaxy), new Vector3(posX, posY, 0.0F), star_name, star_size,
-							icon);
+					BodiesRegistry.getGalaxy(galaxy), new Vector3(posX, posY, 0.0F), star_name, star_size, icon);
 					GalaxyRegistry.registerSolarSystem(system);
 
 					BodiesData data = new BodiesData(TypeBody.STAR, star_class).setStarColor(star_color);
@@ -146,10 +146,13 @@ public class ParseFiles
 				Reader reader = new FileReader(planetFile);
 				PlanetImpl impl = MakerUtils.gson.fromJson(reader, PlanetImpl.class);
 
-				if (!GalaxyRegistry.getRegisteredSolarSystems().containsKey(impl.getParentSystem()))
+				if (!GalaxyRegistry.getRegisteredSolarSystems().containsKey(impl.getParentSystem()) && !impl.getParentSystem().equals("sol"))
 					continue;
-
-				SolarSystem system = GalaxyRegistry.getRegisteredSolarSystems().get(impl.getParentSystem());
+				SolarSystem system = null;
+				if(impl.getParentSystem().equals("sol")) {
+					system = GalacticraftCore.solarSystemSol;
+				}
+				else system = GalaxyRegistry.getRegisteredSolarSystems().get(impl.getParentSystem());
 				String planet_name = planetFile.getName().replaceAll(".json", "");
 
 				Planet planet = BodiesRegistry.registerExPlanet(system, planet_name, CoreConfig.resourceDomain, impl.getDistanceFromCenter());
@@ -158,7 +161,7 @@ public class ParseFiles
 				BodiesRegistry.setProviderData(planet, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
 				planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
 
-				StarMaker.LOG.debug("Registered New Planet: %s", planet.getName());
+				StarMaker.LOG.info("Registered New Planet: %s", planet.getName());
 
 				Vec3d skyColor = new Vec3d(impl.getSky());
 				Vec3d fogColor = new Vec3d(impl.getFog());
@@ -259,7 +262,7 @@ public class ParseFiles
 				BodiesRegistry.setProviderData(moon, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
 				moon.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
 
-				StarMaker.LOG.debug("Registered New Moon: %s", moon.getName());
+				StarMaker.LOG.info("Registered New Moon: %s", moon.getName());
 				
 				Vec3d skyColor = new Vec3d(impl.getSky());
 				Vec3d fogColor = new Vec3d(impl.getFog());

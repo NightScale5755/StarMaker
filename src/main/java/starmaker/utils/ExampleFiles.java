@@ -8,8 +8,8 @@ import java.util.List;
 
 import starmaker.StarMaker;
 import starmaker.utils.json.SolarSystemObjects;
-import starmaker.utils.json.SystemImpl;
 import starmaker.utils.json.body.PlanetImpl;
+import starmaker.utils.json.body.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
 import starmaker.utils.json.data.OreGenImpl;

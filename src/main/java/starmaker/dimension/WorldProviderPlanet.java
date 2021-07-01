@@ -245,7 +245,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 			WE_BiomeLayer layer = new WE_BiomeLayer();		
 			layer.add(ParseFiles.getBlock(biome.getSubsurfaceBlock()), terrainGenerator.worldStoneBlock, -256, 0, -4, -2, true);
 			layer.add(ParseFiles.getBlock(biome.getSurfaceBlock()), ParseFiles.getBlock(biome.getSubsurfaceBlock()), -256, 0, -1, 0, false);
-			layer.add(Blocks.BEDROCK.getDefaultState(), 0, 0, 1, 2, true);
+			//layer.add(Blocks.BEDROCK.getDefaultState(), 0, 0, 1, 2, true);
 		
 			WE_Biome b = new WE_BaseBiome(biome.getBiomeSize(), biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer) {
 				

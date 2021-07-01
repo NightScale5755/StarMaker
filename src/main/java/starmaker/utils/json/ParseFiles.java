@@ -45,6 +45,7 @@ import starmaker.utils.data.OreGenData;
 import starmaker.utils.data.TreeGenData;
 import starmaker.utils.json.body.MoonImpl;
 import starmaker.utils.json.body.PlanetImpl;
+import starmaker.utils.json.body.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
 import starmaker.utils.json.data.OreGenImpl;

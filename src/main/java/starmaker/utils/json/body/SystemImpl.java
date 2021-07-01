@@ -1,4 +1,4 @@
-package starmaker.utils.json;
+package starmaker.utils.json.body;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

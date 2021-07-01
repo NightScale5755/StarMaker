@@ -27,7 +27,7 @@ import starmaker.utils.json.ParseFiles;
 @Mod(
 		   modid = StarMaker.MODID,
 		   version = StarMaker.VERSION,
-		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore; required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.24,)",
+		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore; required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.26,)",
 		   acceptedMinecraftVersions = Constants.MCVERSION,
 		   name = StarMaker.NAME
 		)
@@ -35,7 +35,7 @@ public class StarMaker {
 	
 	public static final int major_version = 0;
 	public static final int minor_version = 0;
-	public static final int build_version = 2;
+	public static final int build_version = 3;
 	
 	public static final String NAME = "StarMaker";
 	public static final String MODID = "starmaker";

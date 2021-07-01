@@ -7,6 +7,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import starmaker.StarMaker;
+import starmaker.utils.json.body.SystemImpl;
 
 public class SolarSystemObjects
 {

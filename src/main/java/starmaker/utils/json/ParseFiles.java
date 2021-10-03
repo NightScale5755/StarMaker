@@ -10,7 +10,7 @@ import java.util.List;
 
 import com.google.gson.JsonParser;
 
-import asmodeuscore.api.dimension.IAdvancedSpace.ClassBody;
+import asmodeuscore.api.dimension.IAdvancedSpace.StarClass;
 import asmodeuscore.api.dimension.IAdvancedSpace.StarColor;
 import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
 import asmodeuscore.core.astronomy.BodiesData;
@@ -89,6 +89,8 @@ public class ParseFiles
 						break;
 					}
 					
+					if(systemImpl == null) continue;
+					
 					// Solar System Data
 					String name = systemImpl.getName();
 					String galaxy = systemImpl.getGalaxy();
@@ -96,16 +98,26 @@ public class ParseFiles
 					float posX = systemImpl.getPosX();
 					float posY = systemImpl.getPosY();
 					float star_size = systemImpl.getStarSize();
-					ClassBody star_class = ClassBody.values()[systemImpl.getStarClass()];
-					StarColor star_color = StarColor.values()[systemImpl.getStarColor()];
-
-					ResourceLocation icon = new ResourceLocation(StarMaker.ASSET_PREFIX,
-							"textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
+					StarMaker.LOG.debug("StarClass: " + systemImpl.getStarClass());
+					StarClass star_class = StarClass.values()[systemImpl.getStarClass()];
+					
+					StarColor star_color = null;
+					if(systemImpl.getStarColor() >= 0)
+						star_color = StarColor.values()[systemImpl.getStarColor()];
+					
+					ResourceLocation icon = new ResourceLocation(StarMaker.ASSET_PREFIX, "textures/gui/celestialbodies/yellow.png");
+					
+					if(star_color != null) 
+						icon = new ResourceLocation(StarMaker.ASSET_PREFIX, "textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
+					
+					if(star_class == StarClass.BLACKHOLE)
+						icon = new ResourceLocation(StarMaker.ASSET_PREFIX, "textures/gui/celestialbodies/blackhole.png");
+					
 					SolarSystem system = BodiesRegistry.registerSolarSystem(StarMaker.ASSET_PREFIX, name,
 					BodiesRegistry.getGalaxy(galaxy), new Vector3(posX, posY, 0.0F), star_name, star_size, icon);
 					GalaxyRegistry.registerSolarSystem(system);
 
-					BodiesData data = new BodiesData(TypeBody.STAR, star_class).setStarColor(star_color);
+					BodiesData data = new BodiesData(TypeBody.STAR).setStarClass(star_class).setStarColor(star_color);
 					BodiesRegistry.registerBodyData(system.getMainStar(), data);
 					StarMaker.LOG.debug("Registered New Solar System: %s", system.getName());
 					count++;
@@ -335,7 +347,7 @@ public class ParseFiles
 			GalaxyRegistry.registerPlanet((Planet) data.getBody());
 		// WorldUtil.registerPlanet(dimID, true, -1100);
 		GalacticraftRegistry.registerTeleportType(provider, new TeleportTypeBody());
-
+		
 		// });
 	}
 	

@@ -16,7 +16,6 @@ import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
 import asmodeuscore.core.astronomy.BodiesData;
 import asmodeuscore.core.astronomy.BodiesRegistry;
 import asmodeuscore.core.astronomy.dimension.world.gen.ACBiome;
-import asmodeuscore.core.prefab.TeleportTypeBody;
 import asmodeuscore.core.utils.Utils;
 import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
@@ -41,6 +40,7 @@ import starmaker.utils.MakerUtils;
 import starmaker.utils.data.BiomeData;
 import starmaker.utils.data.DimData;
 import starmaker.utils.data.GrassGenData;
+import starmaker.utils.data.LakesGenData;
 import starmaker.utils.data.OreGenData;
 import starmaker.utils.data.TreeGenData;
 import starmaker.utils.json.body.MoonImpl;
@@ -48,8 +48,10 @@ import starmaker.utils.json.body.PlanetImpl;
 import starmaker.utils.json.body.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
+import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.OreGenImpl;
 import starmaker.utils.json.data.WorldDataImpl;
+import starmaker.world.TeleportTypePlanet;
 
 public class ParseFiles
 {
@@ -57,9 +59,9 @@ public class ParseFiles
 	public static ParseFiles instance = new ParseFiles();
 	private static int dimID = CoreConfig.startIDs;
 
-	private static final int LIMIT_SYSTEM = 2;
-	private static final int LIMIT_PLANETS = 10;
-	private static final int LIMIT_MOONS = 10;
+	private static final int LIMIT_SYSTEMS = 10;
+	private static final int LIMIT_PLANETS = 20;
+	private static final int LIMIT_MOONS = 20;
 
 	public void parse(File file)
 	{
@@ -83,9 +85,9 @@ public class ParseFiles
 				SolarSystemObjects solarSystemObjects = MakerUtils.gson.fromJson(reader, SolarSystemObjects.class);
 				for (SystemImpl systemImpl : solarSystemObjects.getSystems())
 				{
-					if (count > LIMIT_SYSTEM)
+					if (count > LIMIT_SYSTEMS)
 					{
-						StarMaker.info("Limit system = " + LIMIT_SYSTEM);
+						StarMaker.info("Limit system = " + LIMIT_SYSTEMS);
 						break;
 					}
 					
@@ -168,8 +170,12 @@ public class ParseFiles
 				else system = GalaxyRegistry.getRegisteredSolarSystems().get(impl.getParentSystem());
 				String planet_name = planetFile.getName().replaceAll(".json", "");
 
-				Planet planet = BodiesRegistry.registerExPlanet(system, planet_name, CoreConfig.resourceDomain, impl.getDistanceFromCenter());
-				BodiesRegistry.setOrbitData(planet, impl.getPhase(), impl.getSize(), impl.getRelativeTime());
+				OrbitDataImpl orbitData = impl.getOrbitData();
+				
+				Planet planet = BodiesRegistry.registerExPlanet(system, planet_name, CoreConfig.resourceDomain, orbitData.getDistanceFromCenter());
+				
+				BodiesRegistry.setOrbitData(planet, orbitData.getPhase(), orbitData.getSize(), orbitData.getRelativeTime(), orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
+				
 				BodiesRegistry.setPlanetData(planet, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
 				BodiesRegistry.setProviderData(planet, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
 				planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
@@ -178,20 +184,20 @@ public class ParseFiles
 
 				Vec3d skyColor = new Vec3d(impl.getSky());
 				Vec3d fogColor = new Vec3d(impl.getFog());
+				Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
 
 				List<BiomeData> biomes = new ArrayList<BiomeData>();
-				List<BiomeImpl> biomesToParse = impl.getBiomes();
-				for (int i = 0; i < biomesToParse.size(); i++)
+				for (int i = 0; i < impl.getBiomes().size(); i++)
 				{
 					if (i > 5)
 						break;
-					BiomeImpl biomeImpl = biomesToParse.get(i);
+					BiomeImpl biomeImpl = impl.getBiomes().get(i);
 
 					int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
 					int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
 					int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
 
-					List<OreGenData> oregen = new ArrayList();
+					List<OreGenData> oregen = new ArrayList<OreGenData>();
 					for(OreGenImpl data : biomeImpl.getOreGenList())
 					{
 						oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
@@ -200,29 +206,34 @@ public class ParseFiles
 					if(biomeImpl.getTreeGen() != null) 
 						treegen = new TreeGenData(biomeImpl.getTreeGen().getLog(), biomeImpl.getTreeGen().getLeaves(), biomeImpl.getTreeGen().getSapling(), biomeImpl.getTreeGen().getMinHeight(), biomeImpl.getTreeGen().getVines(), biomeImpl.getTreeGen().getQuantity());
 					
-					List<GrassGenData> grassgen = new ArrayList();
+					List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
 					if(biomeImpl.getGrassGenList() != null)
 						for(GrassGenImpl data : biomeImpl.getGrassGenList())
 						{
 							if(data != null)
 								grassgen.add(new GrassGenData(data.getGrassBlock(), data.getGrassCount(), data.onWater(), data.getGroundBlock()));
 						}
+					
+					LakesGenData lakesgen = null;
+					if(biomeImpl.getLakesGen() != null)
+						lakesgen = new LakesGenData(biomeImpl.getLakesGen().getLiquidBlock(), biomeImpl.getLakesGen().getQuantity());
 
 					biomes.add(new BiomeData("biome_" + i, biomeImpl.getBiomeSize())
 							.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
 							.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
-							.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen));
+							.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen));
 
 				}
 
 				WorldDataImpl dataImpl = impl.getWorldData();
 
 				DimData data = new DimData(planet, dataImpl.getStoneBlock(), dataImpl.getMapSize())
-						.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor)
+						.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
 						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 						.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
 						.setBiomes(biomes).setSunSize(impl.getSunSize())
-						.setWaterY(dataImpl.getWaterY());
+						.setWaterY(dataImpl.getWaterY())
+						.setLanderType(dataImpl.getLanderType());
 
 				regDim(getAvailableID(), data);
 
@@ -279,7 +290,8 @@ public class ParseFiles
 				
 				Vec3d skyColor = new Vec3d(impl.getSky());
 				Vec3d fogColor = new Vec3d(impl.getFog());
-
+				Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
+				
 				List<BiomeData> biomes = new ArrayList<BiomeData>();
 				for (int i = 0; i < impl.getBiomes().size(); i++)
 				{
@@ -313,11 +325,12 @@ public class ParseFiles
 				WorldDataImpl dataImpl = impl.getWorldData();
 
 				DimData data = new DimData(moon, dataImpl.getStoneBlock(), dataImpl.getMapSize())
-						.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor)
+						.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
 						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 						.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
 						.setBiomes(biomes).setSunSize(impl.getSunSize())
-						.setWaterY(dataImpl.getWaterY());
+						.setWaterY(dataImpl.getWaterY())
+						.setLanderType(dataImpl.getLanderType());
 
 				regDim(getAvailableID(), data);
 
@@ -345,8 +358,8 @@ public class ParseFiles
 			GalaxyRegistry.registerMoon((Moon) data.getBody());
 		else
 			GalaxyRegistry.registerPlanet((Planet) data.getBody());
-		// WorldUtil.registerPlanet(dimID, true, -1100);
-		GalacticraftRegistry.registerTeleportType(provider, new TeleportTypeBody());
+		
+		GalacticraftRegistry.registerTeleportType(provider, new TeleportTypePlanet());
 		
 		// });
 	}

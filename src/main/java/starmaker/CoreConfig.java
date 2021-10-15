@@ -7,7 +7,7 @@ import net.minecraftforge.common.config.Config;
 public class CoreConfig
 {
 
-	@Config.Comment("Enable Debug log output. NOTE: Can cause large log file sizes")
+	@Config.Comment("Enable Debug log output. NOTE: Can cause large log file sizes")	
 	public static boolean debugLogging = true;
 
 	@Config.Comment("Defines the folder name StarMaker will search for assets")

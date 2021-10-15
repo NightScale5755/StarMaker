@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.util.math.Vec3i;
 import starmaker.utils.json.data.BiomeImpl;
+import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.WorldDataImpl;
 
 public class PlanetImpl
@@ -16,18 +17,11 @@ public class PlanetImpl
 	@SerializedName("parent_system")
 	@Expose
 	private String parentSystem;
-	@SerializedName("phase")
+	
+	@SerializedName("orbit_data")
 	@Expose
-	private double phase;
-	@SerializedName("size")
-	@Expose
-	private double size;
-	@SerializedName("distance_from_center")
-	@Expose
-	private double distanceFromCenter;
-	@SerializedName("relative_time")
-	@Expose
-	private double relativeTime;
+	private OrbitDataImpl orbitData;
+	
 	@SerializedName("gravity")
 	@Expose
 	private double gravity;
@@ -64,6 +58,9 @@ public class PlanetImpl
 	@SerializedName("fog")
 	@Expose
 	private List<Integer> fog = null;
+	@SerializedName("cloud")
+	@Expose
+	private List<Integer> cloud = null;
 	@SerializedName("world_data")
 	@Expose
 	private WorldDataImpl worldData;
@@ -76,6 +73,7 @@ public class PlanetImpl
 	@SerializedName("precipitation")
 	@Expose
 	private boolean precipitation;
+
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -106,18 +104,19 @@ public class PlanetImpl
 	 * @param wind
 	 * @param fog
 	 */
-	public PlanetImpl(String parentSystem, double phase, double size, double distanceFromCenter, double relativeTime,
+	public PlanetImpl(String parentSystem, OrbitDataImpl orbitData,
 			double gravity, Integer atmospherePressure, double temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
-			double starBrightness, List<Integer> sky, List<Integer> fog, WorldDataImpl worldData,
+			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, WorldDataImpl worldData,
 			List<BiomeImpl> biomes, float sun_size, boolean precipitation)
 	{
 		super();
 		this.parentSystem = parentSystem;
-		this.phase = phase;
-		this.size = size;
-		this.distanceFromCenter = distanceFromCenter;
-		this.relativeTime = relativeTime;
+		
+		this.orbitData = orbitData;
+		/*
+		
+		*/
 		this.gravity = gravity;
 		this.atmospherePressure = atmospherePressure;
 		this.temperature = temperature;
@@ -130,6 +129,7 @@ public class PlanetImpl
 		this.starBrightness = starBrightness;
 		this.sky = sky;
 		this.fog = fog;
+		this.cloud = cloud;
 		this.worldData = worldData;
 		this.biomes = biomes;
 		this.sun_size = sun_size;
@@ -152,70 +152,22 @@ public class PlanetImpl
 		return this;
 	}
 
-	public Float getPhase()
+	public OrbitDataImpl getOrbitData()
 	{
-		return (float) phase;
+		return orbitData;
 	}
 
-	public void setPhase(double phase)
+	public void setOrbitData(OrbitDataImpl orbitData)
 	{
-		this.phase = phase;
+		this.orbitData = orbitData;
 	}
 
-	public PlanetImpl withPhase(double phase)
+	public PlanetImpl withOrbitData(OrbitDataImpl orbitData)
 	{
-		this.phase = phase;
+		this.orbitData = orbitData;
 		return this;
 	}
-
-	public Float getSize()
-	{
-		return (float) size;
-	}
-
-	public void setSize(double size)
-	{
-		this.size = size;
-	}
-
-	public PlanetImpl withSize(double size)
-	{
-		this.size = size;
-		return this;
-	}
-
-	public Float getDistanceFromCenter()
-	{
-		return (float) distanceFromCenter;
-	}
-
-	public void setDistanceFromCenter(double distanceFromCenter)
-	{
-		this.distanceFromCenter = distanceFromCenter;
-	}
-
-	public PlanetImpl withDistanceFromCenter(double distanceFromCenter)
-	{
-		this.distanceFromCenter = distanceFromCenter;
-		return this;
-	}
-
-	public Float getRelativeTime()
-	{
-		return (float) relativeTime;
-	}
-
-	public void setRelativeTime(double relativeTime)
-	{
-		this.relativeTime = relativeTime;
-	}
-
-	public PlanetImpl withRelativeTime(double relativeTime)
-	{
-		this.relativeTime = relativeTime;
-		return this;
-	}
-
+	
 	public Float getGravity()
 	{
 		return (float) gravity;
@@ -405,6 +357,24 @@ public class PlanetImpl
 	public PlanetImpl withFog(List<Integer> fog)
 	{
 		this.fog = fog;
+		return this;
+	}
+	
+	public Vec3i getCloud()
+	{
+		if(cloud == null) return null;
+		
+		return new Vec3i(cloud.get(0), cloud.get(1), cloud.get(2));
+	}
+
+	public void setCloud(List<Integer> cloud)
+	{
+		this.cloud = cloud;
+	}
+
+	public PlanetImpl withCloud(List<Integer> cloud)
+	{
+		this.cloud = cloud;
 		return this;
 	}
 

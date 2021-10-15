@@ -64,6 +64,9 @@ public class MoonImpl
 	@SerializedName("fog")
 	@Expose
 	private List<Integer> fog = null;
+	@SerializedName("cloud")
+	@Expose
+	private List<Integer> cloud = null;
 	@SerializedName("world_data")
 	@Expose
 	private WorldDataImpl worldData;
@@ -109,7 +112,7 @@ public class MoonImpl
 	public MoonImpl(String parentPlanet, double phase, double size, double distanceFromCenter, double relativeTime,
 			double gravity, Integer atmospherePressure, double temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
-			double starBrightness, List<Integer> sky, List<Integer> fog, WorldDataImpl worldData,
+			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, WorldDataImpl worldData,
 			List<BiomeImpl> biomes, float sun_size, boolean precipitation)
 	{
 		super();
@@ -130,6 +133,7 @@ public class MoonImpl
 		this.starBrightness = starBrightness;
 		this.sky = sky;
 		this.fog = fog;
+		this.cloud = cloud;
 		this.worldData = worldData;
 		this.biomes = biomes;
 		this.sun_size = sun_size;
@@ -408,6 +412,24 @@ public class MoonImpl
 		return this;
 	}
 
+	public Vec3i getCloud()
+	{
+		if(cloud == null) return null;
+		
+		return new Vec3i(cloud.get(0), cloud.get(1), cloud.get(2));
+	}
+
+	public void setCloud(List<Integer> cloud)
+	{
+		this.cloud = cloud;
+	}
+
+	public MoonImpl withCloud(List<Integer> cloud)
+	{
+		this.cloud = cloud;
+		return this;
+	}
+	
 	public WorldDataImpl getWorldData()
 	{
 		return worldData;

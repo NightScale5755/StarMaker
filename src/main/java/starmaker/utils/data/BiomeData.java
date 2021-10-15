@@ -14,6 +14,7 @@ public class BiomeData
 	private List<OreGenData> getOreGenData = new ArrayList<OreGenData>();
 	private TreeGenData getTreeGenData;
 	private List<GrassGenData> getGrassGenData = new ArrayList<GrassGenData>();
+	private LakesGenData getLakesGenData;
 	
 	public BiomeData(String name, float biomesize)
 	{
@@ -62,6 +63,12 @@ public class BiomeData
 		this.getGrassGenData = biome;    		
 		return this;
 	}
+	
+	public BiomeData setLakesGenData(LakesGenData data)
+	{
+		this.getLakesGenData = data;
+		return this;
+	}
 
 	
 	public float getPersistance() { return this.persistance; }
@@ -79,4 +86,5 @@ public class BiomeData
 	public List<OreGenData> getOreGenData() { return this.getOreGenData; }
 	public TreeGenData getTreeGenData() {return this.getTreeGenData; }
 	public List<GrassGenData> getGrassGenData() { return this.getGrassGenData; }
+	public LakesGenData getLakesGenData() {return this.getLakesGenData; }
 }

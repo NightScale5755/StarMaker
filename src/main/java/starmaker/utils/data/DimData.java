@@ -9,7 +9,7 @@ import net.minecraft.util.math.Vec3d;
 public class DimData
 {
 	private final CelestialBody body;
-	private Vec3d skyColor, fogColor;
+	private Vec3d skyColor, fogColor, cloudColor;
 	private boolean genCaves, genRavines;
 	private int crateprob = 0;
 	private String stone_block, water_block;
@@ -17,6 +17,7 @@ public class DimData
 	private float sunBrightness, starBrightness, sun_size;
 	private double mapsize;
 	private int waterY = 64;
+	private int lander_type = -1;
 	
 	public DimData(CelestialBody body, String stone, double size)
 	{
@@ -66,9 +67,20 @@ public class DimData
 		return this;
 	}
 	
+	public DimData setCloudColor(Vec3d color) {
+		this.cloudColor = color;
+		return this;
+	}
+	
+	public DimData setLanderType(int type) {
+		this.lander_type = type;
+		return this;
+	}
+	
 	public CelestialBody getBody() 	{ return this.body;	}
 	public Vec3d getSkyColor() { return this.skyColor; }    	
 	public Vec3d getFogColor() { return this.fogColor; }    	
+	public Vec3d getCloudColor() { return this.cloudColor; }    	
 	public String getStoneBlock() { return this.stone_block; }
 	public boolean getGenCaves() { return this.genCaves; }
 	public boolean getGenRavines() { return this.genRavines; }
@@ -80,4 +92,5 @@ public class DimData
 	public float getStarBrightness() { return this.starBrightness; }
 	public double getMapSize() { return this.mapsize; }
 	public float getSunSize() { return this.sun_size; }
+	public int getLanderType() { return this.lander_type; }
 }

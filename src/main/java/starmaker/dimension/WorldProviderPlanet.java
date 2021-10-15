@@ -6,12 +6,14 @@ import java.util.Random;
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_ChunkProviderSpace;
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_WorldProviderSpace;
 import asmodeuscore.core.astronomy.dimension.world.worldengine.biome.WE_BaseBiome;
+import asmodeuscore.core.astronomy.sky.CustomCloudRender;
 import asmodeuscore.core.client.entity.particle.ParticleRainCustom;
 import asmodeuscore.core.utils.worldengine.WE_Biome;
 import asmodeuscore.core.utils.worldengine.WE_ChunkProvider;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_BiomeLayer;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_CaveGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_GrassGen;
+import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_LakeGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_OreGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_RavineGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_TerrainGenerator;
@@ -33,6 +35,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
@@ -42,6 +45,7 @@ import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import starmaker.StarMaker;
+import starmaker.api.ILanderTypeProvider;
 import starmaker.dimension.sky.SkyProviderPlanet;
 import starmaker.dimension.sky.WeatherProviderPlanet;
 import starmaker.utils.data.BiomeData;
@@ -50,9 +54,8 @@ import starmaker.utils.data.GrassGenData;
 import starmaker.utils.data.OreGenData;
 import starmaker.utils.json.ParseFiles;
 
-public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeatherProvider {
+public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeatherProvider, ILanderTypeProvider {
 	
-	private static int getId;
 	
 	private DimData getDimData()
 	{
@@ -129,6 +132,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
        f2 = MathHelper.clamp(f2, 0.0F, 1.0F);
 
        f2 = 1.0F - f2;
+       
        return f2 * getDimData().getSunBrightness();
     }
     
@@ -154,9 +158,37 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 	 
 	@Override
 	public IRenderHandler getCloudRenderer() {
-		return new CloudRenderer();
+		if(super.getCloudRenderer() == null && getDimData().getCloudColor() != null) {
+			float[] f = {1.0F};
+			CustomCloudRender cloud = new CustomCloudRender(f) {
+				
+				@Override
+				public ResourceLocation getCloudTexture() {
+					return default_clouds;
+				}
+				
+				@Override
+				public Vec3d getCloudColor(float renderPartialTicks) {
+					return getDimData().getCloudColor();
+				}
+	
+				@Override
+				public float getCloudMovementSpeed(WorldClient world) {
+					return 1F;
+				}
+			};
+			this.setCloudRenderer(cloud);
+		}
+		return super.getCloudRenderer();
 	}
 	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public float getCloudHeight() {
+		return  getDimData().getCloudColor() != null ? 180.0F : 0.0F;
+	}
+
+	 
 	@Override
     @SideOnly(Side.CLIENT)
     public IRenderHandler getWeatherRenderer()
@@ -207,7 +239,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 		cp.decorateChunkGen_List .clear(); 
 		cp.biomesList.clear();
 		((WE_ChunkProviderSpace)cp).worldGenerators.clear();		
-		((WE_ChunkProviderSpace)cp).CRATER_PROB = getDimData().getCrateProb();
+		//((WE_ChunkProviderSpace)cp).CRATER_PROB = getDimData().getCrateProb();
 		
 		WE_Biome.setBiomeMap(cp, 1.4D, 4, getDimData().getMapSize(), 1.0D);		
 			
@@ -288,6 +320,15 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 				
 				b.decorateChunkGen_List.add(grassGen);
 			}
+			
+			if(biome.getLakesGenData() != null) {
+				WE_LakeGen lakes = new WE_LakeGen();
+				lakes.lakeBlock = ParseFiles.getBlock(biome.getLakesGenData().getLiquidBlock());
+				lakes.iceGen = false;
+				lakes.chunksForLake = biome.getLakesGenData().getQuantity();
+				b.decorateChunkGen_List.add(lakes);				
+			}
+			
 			WE_Biome.addBiomeToGeneration(cp, b);
 						
 		}
@@ -329,6 +370,11 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 				colors[2] = colors[2] - skyLight / 1.0F;	
 			}				
 		}*/
+	}
+
+	@Override
+	public int getLanderType() {		
+		return getDimData().getLanderType();
 	}
 
 }

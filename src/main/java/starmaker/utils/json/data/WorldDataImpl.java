@@ -31,6 +31,9 @@ public class WorldDataImpl
 	@SerializedName("waterY")
 	@Expose
 	private int waterY;
+	@SerializedName("lander_type")
+	@Expose
+	private Integer lander_type;
 
 	/**
 	 * No args constructor for use in serialization
@@ -49,7 +52,7 @@ public class WorldDataImpl
 	 * @param crateProb
 	 */
 	public WorldDataImpl(Integer tier, Boolean genCave, Boolean genRavine, Integer crateProb, String stoneBlock,
-			double mapSize, String waterBlock, int watery)
+			double mapSize, String waterBlock, int watery, int lander_type)
 	{
 		super();
 		this.tier = tier;
@@ -60,6 +63,7 @@ public class WorldDataImpl
 		this.mapSize = mapSize;
 		this.waterBlock = waterBlock;
 		this.waterY = watery;
+		this.lander_type = lander_type;
 	}
 
 	public Integer getTier()
@@ -188,6 +192,23 @@ public class WorldDataImpl
 	public int getWaterY()
 	{
 		return waterY;
+	}
+	
+	public void setLanderType(int lander_type)
+	{
+		this.lander_type = lander_type;
+	}
+	
+	public WorldDataImpl withLanderType(int lander_type)
+	{
+		this.lander_type = lander_type;
+		return this;
+	}
+	
+	public int getLanderType()
+	{
+		if(lander_type == null) return -1;
+		return lander_type;
 	}
 
 }

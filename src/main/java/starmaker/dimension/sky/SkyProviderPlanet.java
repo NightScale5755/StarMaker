@@ -2,14 +2,17 @@ package starmaker.dimension.sky;
 
 import org.lwjgl.opengl.GL11;
 
+import asmodeuscore.api.dimension.IAdvancedSpace.StarClass;
 import asmodeuscore.api.dimension.IAdvancedSpace.StarColor;
 import asmodeuscore.core.astronomy.BodiesData;
 import asmodeuscore.core.astronomy.BodiesRegistry;
+import asmodeuscore.core.astronomy.gui.screen.NewGuiCelestialSelection;
 import asmodeuscore.core.astronomy.sky.SkyProviderBase;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.IChildBody;
 import micdoodle8.mods.galacticraft.api.galaxies.Moon;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
+import micdoodle8.mods.galacticraft.api.galaxies.Star;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import net.minecraft.client.renderer.BufferBuilder;
@@ -28,6 +31,8 @@ public class SkyProviderPlanet extends SkyProviderBase {
 	
 	@Override
 	protected void rendererSky(Tessellator tessellator, BufferBuilder buffer, float size, float ticks) {
+		
+		
 		if(this.data.getBody() instanceof Moon)
 		{
 			Planet parent = ((Moon)this.data.getBody()).getParentPlanet();
@@ -43,6 +48,13 @@ public class SkyProviderPlanet extends SkyProviderBase {
 			float f = 0.9F;
 			this.renderAtmo(tessellator, x, y, s - 0.4F, new Vector3(parentData.getSkyColor().x / 255.0F * f, parentData.getSkyColor().y / 255.0F * f, parentData.getSkyColor().z / 255.0F * f));
 			GL11.glPopMatrix(); 
+		}
+		
+		if(getStarData().getStarClass() == StarClass.BLACKHOLE) {
+		
+			renderImage(NewGuiCelestialSelection.vortexTexture, 0F, 0F, this.mc.world.getCelestialAngle(ticks) * 360.0F + 180F, size + 25F);
+			renderImage(getStar().getBodyIcon(), 0F, 0F, this.mc.world.getCelestialAngle(ticks) * 360.0F + 180F, size);
+			
 		}
 	}
 
@@ -81,8 +93,10 @@ public class SkyProviderPlanet extends SkyProviderBase {
 	protected StarColor colorSunAura() {
 		BodiesData bd = null;
 		
-		if(data.getBody() instanceof Planet)
-			bd = BodiesRegistry.getData(((Planet)data.getBody()).getParentSolarSystem().getMainStar());
+		if(data.getBody() instanceof Planet) {
+			Star star = ((Planet)data.getBody()).getParentSolarSystem().getMainStar();
+			bd = BodiesRegistry.getData(star);
+		}
 		
 		if(data.getBody() instanceof IChildBody)
 			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
@@ -98,6 +112,23 @@ public class SkyProviderPlanet extends SkyProviderBase {
 	@Override
 	public int expandSizeAura() {return sunSize() < 2.0F ? -2 : 0;}
 	
+	@Override
+	public boolean enableLargeSunAura() {
+		BodiesData bd = null;
+		
+		if(data.getBody() instanceof Planet) {
+			Star star = ((Planet)data.getBody()).getParentSolarSystem().getMainStar();
+			bd = BodiesRegistry.getData(star);
+		}
+		
+		if(data.getBody() instanceof IChildBody)
+			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
+		
+		if(bd.getStarClass() == StarClass.BLACKHOLE) return false;
+		
+		return true;
+	}
+	   
 	@Override
 	public boolean enableSmoothRender() {return sunSize() < 2.0F ? false : data.getBody().atmosphere.hasNoGases();}
 
@@ -118,5 +149,20 @@ public class SkyProviderPlanet extends SkyProviderBase {
 		return max;
 	}
 	
+	private Star getStar() {
+		Star star = null;
+	
+		if(data.getBody() instanceof Planet) 
+			star = ((Planet)data.getBody()).getParentSolarSystem().getMainStar();
+		if(data.getBody() instanceof IChildBody)
+			star = ((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar();
+		
+		return star;
+	}
+	
+	private BodiesData getStarData() {
+		BodiesData bd = BodiesRegistry.getData(getStar());
+		return bd;
+	}
 	
 }

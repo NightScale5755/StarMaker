@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.util.math.Vec3i;
 import starmaker.utils.json.data.BiomeImpl;
+import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.WorldDataImpl;
 
 public class MoonImpl
@@ -16,18 +17,11 @@ public class MoonImpl
 	@SerializedName("parent_planet")
 	@Expose
 	private String parentPlanet;
-	@SerializedName("phase")
+	
+	@SerializedName("orbit_data")
 	@Expose
-	private double phase;
-	@SerializedName("size")
-	@Expose
-	private double size;
-	@SerializedName("distance_from_center")
-	@Expose
-	private double distanceFromCenter;
-	@SerializedName("relative_time")
-	@Expose
-	private double relativeTime;
+	private OrbitDataImpl orbitData;
+	
 	@SerializedName("gravity")
 	@Expose
 	private double gravity;
@@ -79,6 +73,9 @@ public class MoonImpl
 	@SerializedName("precipitation")
 	@Expose
 	private boolean precipitation;
+	@SerializedName("unreachable")
+	@Expose
+	private boolean unreachable;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -109,18 +106,15 @@ public class MoonImpl
 	 * @param wind
 	 * @param fog
 	 */
-	public MoonImpl(String parentPlanet, double phase, double size, double distanceFromCenter, double relativeTime,
+	public MoonImpl(String parentPlanet, OrbitDataImpl orbitData,
 			double gravity, Integer atmospherePressure, double temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
 			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, WorldDataImpl worldData,
-			List<BiomeImpl> biomes, float sun_size, boolean precipitation)
+			List<BiomeImpl> biomes, float sun_size, boolean precipitation, boolean unreachable)
 	{
 		super();
 		this.parentPlanet = parentPlanet;
-		this.phase = phase;
-		this.size = size;
-		this.distanceFromCenter = distanceFromCenter;
-		this.relativeTime = relativeTime;
+		this.orbitData = orbitData;
 		this.gravity = gravity;
 		this.atmospherePressure = atmospherePressure;
 		this.temperature = temperature;
@@ -138,6 +132,7 @@ public class MoonImpl
 		this.biomes = biomes;
 		this.sun_size = sun_size;
 		this.precipitation = precipitation;
+		this.unreachable = unreachable;
 	}
 
 	public String getParentPlanet()
@@ -156,67 +151,19 @@ public class MoonImpl
 		return this;
 	}
 
-	public Float getPhase()
+	public OrbitDataImpl getOrbitData()
 	{
-		return (float) phase;
+		return orbitData;
 	}
 
-	public void setPhase(double phase)
+	public void setOrbitData(OrbitDataImpl orbitData)
 	{
-		this.phase = phase;
+		this.orbitData = orbitData;
 	}
 
-	public MoonImpl withPhase(double phase)
+	public MoonImpl withOrbitData(OrbitDataImpl orbitData)
 	{
-		this.phase = phase;
-		return this;
-	}
-
-	public Float getSize()
-	{
-		return (float) size;
-	}
-
-	public void setSize(double size)
-	{
-		this.size = size;
-	}
-
-	public MoonImpl withSize(double size)
-	{
-		this.size = size;
-		return this;
-	}
-
-	public Float getDistanceFromCenter()
-	{
-		return (float) distanceFromCenter;
-	}
-
-	public void setDistanceFromCenter(double distanceFromCenter)
-	{
-		this.distanceFromCenter = distanceFromCenter;
-	}
-
-	public MoonImpl withDistanceFromCenter(double distanceFromCenter)
-	{
-		this.distanceFromCenter = distanceFromCenter;
-		return this;
-	}
-
-	public Float getRelativeTime()
-	{
-		return (float) relativeTime;
-	}
-
-	public void setRelativeTime(double relativeTime)
-	{
-		this.relativeTime = relativeTime;
-	}
-
-	public MoonImpl withRelativeTime(double relativeTime)
-	{
-		this.relativeTime = relativeTime;
+		this.orbitData = orbitData;
 		return this;
 	}
 
@@ -491,6 +438,22 @@ public class MoonImpl
 	public MoonImpl withPrecipitation(boolean precipitation)
 	{
 		this.precipitation = precipitation;
+		return this;
+	}
+	
+	public void setUnreachable(boolean unreachable)
+	{
+		this.unreachable = unreachable;
+	}
+	
+	public boolean getUnreachable()
+	{
+		return this.unreachable;
+	}
+	
+	public MoonImpl withUnreachable(boolean unreachable)
+	{
+		this.unreachable = unreachable;
 		return this;
 	}
 }

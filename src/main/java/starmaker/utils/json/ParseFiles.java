@@ -63,7 +63,7 @@ public class ParseFiles
 	private static final int LIMIT_PLANETS = 20;
 	private static final int LIMIT_MOONS = 20;
 
-	public void parse(File file)
+	public void parse()
 	{
 		JsonParser parser = new JsonParser();
 		parseSystems(new File(StarMaker.assetRoot), parser);
@@ -146,11 +146,7 @@ public class ParseFiles
 
 			for (File planetFile : files)
 			{
-				if (count > LIMIT_PLANETS)
-				{
-					StarMaker.info("Ignore: " + planetFile.getName() + ". Limit planets = " + LIMIT_PLANETS);
-					break;
-				}
+				
 
 				
 				if (!planetFile.isFile())
@@ -176,68 +172,83 @@ public class ParseFiles
 				
 				BodiesRegistry.setOrbitData(planet, orbitData.getPhase(), orbitData.getSize(), orbitData.getRelativeTime(), orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
 				
-				BodiesRegistry.setPlanetData(planet, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
-				BodiesRegistry.setProviderData(planet, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
-				planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
-
-				StarMaker.LOG.info("Registered New Planet: %s", planet.getName());
-
-				Vec3d skyColor = new Vec3d(impl.getSky());
-				Vec3d fogColor = new Vec3d(impl.getFog());
-				Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
-
-				List<BiomeData> biomes = new ArrayList<BiomeData>();
-				for (int i = 0; i < impl.getBiomes().size(); i++)
-				{
-					if (i > 5)
-						break;
-					BiomeImpl biomeImpl = impl.getBiomes().get(i);
-
-					int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
-					int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
-					int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
-
-					List<OreGenData> oregen = new ArrayList<OreGenData>();
-					for(OreGenImpl data : biomeImpl.getOreGenList())
+				if(!impl.getUnreachable()) {
+					if (count > LIMIT_PLANETS)
 					{
-						oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
+						StarMaker.info("Ignore: " + planetFile.getName() + ". Limit planets = " + LIMIT_PLANETS);
+						break;
 					}
-					TreeGenData treegen = null;
-					if(biomeImpl.getTreeGen() != null) 
-						treegen = new TreeGenData(biomeImpl.getTreeGen().getLog(), biomeImpl.getTreeGen().getLeaves(), biomeImpl.getTreeGen().getSapling(), biomeImpl.getTreeGen().getMinHeight(), biomeImpl.getTreeGen().getVines(), biomeImpl.getTreeGen().getQuantity());
 					
-					List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
-					if(biomeImpl.getGrassGenList() != null)
-						for(GrassGenImpl data : biomeImpl.getGrassGenList())
+					BodiesRegistry.setPlanetData(planet, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
+					BodiesRegistry.setProviderData(planet, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
+					planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
+	
+				
+					Vec3d skyColor = new Vec3d(impl.getSky());
+					Vec3d fogColor = new Vec3d(impl.getFog());
+					Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
+	
+					List<BiomeData> biomes = new ArrayList<BiomeData>();
+					for (int i = 0; i < impl.getBiomes().size(); i++)
+					{
+						if (i > 5)
+							break;
+						BiomeImpl biomeImpl = impl.getBiomes().get(i);
+	
+						int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
+						int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
+						int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
+	
+						List<OreGenData> oregen = new ArrayList<OreGenData>();
+						for(OreGenImpl data : biomeImpl.getOreGenList())
 						{
-							if(data != null)
-								grassgen.add(new GrassGenData(data.getGrassBlock(), data.getGrassCount(), data.onWater(), data.getGroundBlock()));
+							oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
 						}
-					
-					LakesGenData lakesgen = null;
-					if(biomeImpl.getLakesGen() != null)
-						lakesgen = new LakesGenData(biomeImpl.getLakesGen().getLiquidBlock(), biomeImpl.getLakesGen().getQuantity());
+						TreeGenData treegen = null;
+						if(biomeImpl.getTreeGen() != null) 
+							treegen = new TreeGenData(biomeImpl.getTreeGen().getLog(), biomeImpl.getTreeGen().getLeaves(), biomeImpl.getTreeGen().getSapling(), biomeImpl.getTreeGen().getMinHeight(), biomeImpl.getTreeGen().getVines(), biomeImpl.getTreeGen().getQuantity());
+						
+						List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
+						if(biomeImpl.getGrassGenList() != null)
+							for(GrassGenImpl data : biomeImpl.getGrassGenList())
+							{
+								if(data != null)
+									grassgen.add(new GrassGenData(data.getGrassBlock(), data.getGrassCount(), data.onWater(), data.getGroundBlock()));
+							}
+						
+						LakesGenData lakesgen = null;
+						if(biomeImpl.getLakesGen() != null)
+							lakesgen = new LakesGenData(biomeImpl.getLakesGen().getLiquidBlock(), biomeImpl.getLakesGen().getQuantity());
+	
+						biomes.add(new BiomeData("biome_" + i, biomeImpl.getBiomeSize())
+								.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
+								.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
+								.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen));
+	
+					}
+	
+					WorldDataImpl dataImpl = impl.getWorldData();
+	
+					DimData data = new DimData(planet, dataImpl.getStoneBlock(), dataImpl.getMapSize())
+							.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
+							.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
+							.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
+							.setBiomes(biomes).setSunSize(impl.getSunSize())
+							.setWaterY(dataImpl.getWaterY())
+							.setLanderType(dataImpl.getLanderType());
+	
+					regDim(getAvailableID(), data);
 
-					biomes.add(new BiomeData("biome_" + i, biomeImpl.getBiomeSize())
-							.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
-							.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
-							.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen));
-
+					count++;
+				} else {
+					DimData data = new DimData(planet);
+					regUnreachDim(getAvailableID(), data);
 				}
-
-				WorldDataImpl dataImpl = impl.getWorldData();
-
-				DimData data = new DimData(planet, dataImpl.getStoneBlock(), dataImpl.getMapSize())
-						.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
-						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
-						.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
-						.setBiomes(biomes).setSunSize(impl.getSunSize())
-						.setWaterY(dataImpl.getWaterY())
-						.setLanderType(dataImpl.getLanderType());
-
-				regDim(getAvailableID(), data);
-
-				count++;
+				
+				BodiesData data = new BodiesData(TypeBody.PLANET);
+				BodiesRegistry.registerBodyData(planet, data);
+				StarMaker.LOG.info("Registered New Planet: %s", planet.getName());
+				
 			}
 
 		} catch (IOException e)
@@ -260,12 +271,7 @@ public class ParseFiles
 			StarMaker.LOG.info("#  of Moons Jsons: " + files.length);
 			
 			for (File moonsFile : files)
-			{
-				if (count > LIMIT_MOONS)
-				{
-					StarMaker.info("Ignore: " + moonsFile.getName() + ". Limit moons = " + LIMIT_MOONS);
-					break;
-				}
+			{				
 				
 				if (!moonsFile.isFile())
 					continue;
@@ -278,63 +284,79 @@ public class ParseFiles
 
 				Planet planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
 				String moon_name = moonsFile.getName().replaceAll(".json", "");
-
 				
-				Moon moon = BodiesRegistry.registerExMoon(planet, moon_name, CoreConfig.resourceDomain, impl.getDistanceFromCenter());
-				BodiesRegistry.setOrbitData(moon, impl.getPhase(), impl.getSize(), impl.getRelativeTime());
-				BodiesRegistry.setPlanetData(moon, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
-				BodiesRegistry.setProviderData(moon, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
-				moon.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
-
-				StarMaker.LOG.info("Registered New Moon: %s", moon.getName());
+				OrbitDataImpl orbitData = impl.getOrbitData();
 				
-				Vec3d skyColor = new Vec3d(impl.getSky());
-				Vec3d fogColor = new Vec3d(impl.getFog());
-				Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
-				
-				List<BiomeData> biomes = new ArrayList<BiomeData>();
-				for (int i = 0; i < impl.getBiomes().size(); i++)
-				{
-					if (i > 5) break;
-					BiomeImpl biomeImpl = impl.getBiomes().get(i);
-
-					int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
-					int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
-					int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
-
-					List<OreGenData> oregen = new ArrayList();
-					for(OreGenImpl data : biomeImpl.getOreGenList())					
-						oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
-				
-					TreeGenData treegen = null;
-					if(biomeImpl.getTreeGen() != null) 
-						treegen = new TreeGenData(biomeImpl.getTreeGen().getLog(), biomeImpl.getTreeGen().getLeaves(), biomeImpl.getTreeGen().getSapling(), biomeImpl.getTreeGen().getMinHeight(), biomeImpl.getTreeGen().getVines(), biomeImpl.getTreeGen().getQuantity());
+				Moon moon = BodiesRegistry.registerExMoon(planet, moon_name, CoreConfig.resourceDomain, orbitData.getDistanceFromCenter());
+				BodiesRegistry.setOrbitData(moon, orbitData.getPhase(), orbitData.getSize(), orbitData.getRelativeTime());
+				if(!impl.getUnreachable()) {
 					
-					List<GrassGenData> grassgen = new ArrayList();
-					if(biomeImpl.getGrassGenList() != null)
-						for(GrassGenImpl data : biomeImpl.getGrassGenList())						
-							if(data != null)
-								grassgen.add(new GrassGenData(data.getGrassBlock(), data.getGrassCount(), data.onWater(), data.getGroundBlock()));
+					if (count > LIMIT_MOONS)
+					{
+						StarMaker.info("Ignore: " + moonsFile.getName() + ". Limit moons = " + LIMIT_MOONS);
+						break;
+					}
+					
+					BodiesRegistry.setPlanetData(moon, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
+					BodiesRegistry.setProviderData(moon, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
+					moon.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
 						
-					biomes.add(new BiomeData("biome_" + i, biomeImpl.getBiomeSize())
-							.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
-							.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
-							.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen));
+					Vec3d skyColor = new Vec3d(impl.getSky());
+					Vec3d fogColor = new Vec3d(impl.getFog());
+					Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
+					
+					List<BiomeData> biomes = new ArrayList<BiomeData>();
+					for (int i = 0; i < impl.getBiomes().size(); i++)
+					{
+						if (i > 5) break;
+						BiomeImpl biomeImpl = impl.getBiomes().get(i);
+	
+						int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
+						int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
+						int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
+	
+						List<OreGenData> oregen = new ArrayList<OreGenData>();
+						for(OreGenImpl data : biomeImpl.getOreGenList())					
+							oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
+					
+						TreeGenData treegen = null;
+						if(biomeImpl.getTreeGen() != null) 
+							treegen = new TreeGenData(biomeImpl.getTreeGen().getLog(), biomeImpl.getTreeGen().getLeaves(), biomeImpl.getTreeGen().getSapling(), biomeImpl.getTreeGen().getMinHeight(), biomeImpl.getTreeGen().getVines(), biomeImpl.getTreeGen().getQuantity());
+						
+						List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
+						if(biomeImpl.getGrassGenList() != null)
+							for(GrassGenImpl data : biomeImpl.getGrassGenList())						
+								if(data != null)
+									grassgen.add(new GrassGenData(data.getGrassBlock(), data.getGrassCount(), data.onWater(), data.getGroundBlock()));
+							
+						biomes.add(new BiomeData("biome_" + i, biomeImpl.getBiomeSize())
+								.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
+								.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
+								.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen));
+					}
+					
+					WorldDataImpl dataImpl = impl.getWorldData();
+	
+					DimData data = new DimData(moon, dataImpl.getStoneBlock(), dataImpl.getMapSize())
+							.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
+							.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
+							.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
+							.setBiomes(biomes).setSunSize(impl.getSunSize())
+							.setWaterY(dataImpl.getWaterY())
+							.setLanderType(dataImpl.getLanderType());
+	
+					regDim(getAvailableID(), data);
+					
+					count++;
+				} else {
+					DimData data = new DimData(moon);
+					regUnreachDim(getAvailableID(), data);
 				}
 				
-				WorldDataImpl dataImpl = impl.getWorldData();
-
-				DimData data = new DimData(moon, dataImpl.getStoneBlock(), dataImpl.getMapSize())
-						.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
-						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
-						.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
-						.setBiomes(biomes).setSunSize(impl.getSunSize())
-						.setWaterY(dataImpl.getWaterY())
-						.setLanderType(dataImpl.getLanderType());
-
-				regDim(getAvailableID(), data);
-
-				count++;
+				BodiesData data = new BodiesData(TypeBody.MOON);
+				BodiesRegistry.registerBodyData(moon, data);
+				StarMaker.LOG.info("Registered New Moon: %s on Parent Planet: %s", moon.getName(), moon.getParentPlanet().getName());
+				
 			}
 			
 		} catch (IOException e)
@@ -362,6 +384,14 @@ public class ParseFiles
 		GalacticraftRegistry.registerTeleportType(provider, new TeleportTypePlanet());
 		
 		// });
+	}
+	
+	private static void regUnreachDim(int dimID, DimData data)
+	{
+		if (data.getBody() instanceof Moon)
+			GalaxyRegistry.registerMoon((Moon) data.getBody());
+		else
+			GalaxyRegistry.registerPlanet((Planet) data.getBody());
 	}
 	
 	public static IBlockState getBlock(String par1)

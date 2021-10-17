@@ -17,6 +17,7 @@ public class SMEventHandler {
 				StarMaker.debug(i);*/
 			
 			//StarMaker.debug(StarMaker.bodies.get(-1150).getData().getDayLengthPlanet());
+			
 		}
 		
 		

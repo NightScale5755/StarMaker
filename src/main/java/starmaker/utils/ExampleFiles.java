@@ -71,7 +71,8 @@ public class ExampleFiles
 				.withWorldData(exampleDataImpl)
 				.withBiomes(Arrays.asList(exampleBiomeImpl1, exampleBiomeImpl2))
 				.withSunSize(5.0F)
-				.withPrecipitation(false);
+				.withPrecipitation(false)
+				.withUnreachable(false);
 		// @formatter:on
 		
 		if (this.generateSystemsJson == true)

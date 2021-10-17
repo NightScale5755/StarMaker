@@ -21,7 +21,7 @@ public class PlanetImpl
 	@SerializedName("orbit_data")
 	@Expose
 	private OrbitDataImpl orbitData;
-	
+		
 	@SerializedName("gravity")
 	@Expose
 	private double gravity;
@@ -73,7 +73,9 @@ public class PlanetImpl
 	@SerializedName("precipitation")
 	@Expose
 	private boolean precipitation;
-
+	@SerializedName("unreachable")
+	@Expose
+	private boolean unreachable;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -108,15 +110,11 @@ public class PlanetImpl
 			double gravity, Integer atmospherePressure, double temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
 			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, WorldDataImpl worldData,
-			List<BiomeImpl> biomes, float sun_size, boolean precipitation)
+			List<BiomeImpl> biomes, float sun_size, boolean precipitation, boolean unreachable)
 	{
 		super();
-		this.parentSystem = parentSystem;
-		
+		this.parentSystem = parentSystem;		
 		this.orbitData = orbitData;
-		/*
-		
-		*/
 		this.gravity = gravity;
 		this.atmospherePressure = atmospherePressure;
 		this.temperature = temperature;
@@ -134,6 +132,7 @@ public class PlanetImpl
 		this.biomes = biomes;
 		this.sun_size = sun_size;
 		this.precipitation = precipitation;
+		this.unreachable = unreachable;
 	}
 
 	public String getParentSystem()
@@ -439,6 +438,22 @@ public class PlanetImpl
 	public PlanetImpl withPrecipitation(boolean precipitation)
 	{
 		this.precipitation = precipitation;
+		return this;
+	}
+	
+	public void setUnreachable(boolean unreachable)
+	{
+		this.unreachable = unreachable;
+	}
+	
+	public boolean getUnreachable()
+	{
+		return this.unreachable;
+	}
+	
+	public PlanetImpl withUnreachable(boolean unreachable)
+	{
+		this.unreachable = unreachable;
 		return this;
 	}
 }

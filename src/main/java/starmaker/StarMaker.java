@@ -27,7 +27,7 @@ import starmaker.utils.json.ParseFiles;
 @Mod(
 		   modid = StarMaker.MODID,
 		   version = StarMaker.VERSION,
-		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore; required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.26,)",
+		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore; required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.27,)",
 		   acceptedMinecraftVersions = Constants.MCVERSION,
 		   name = StarMaker.NAME
 		)
@@ -77,7 +77,7 @@ public class StarMaker {
 		
 		proxy.register_event(new SMEventHandler());
 		    	
-		ParseFiles.instance.parse(event.getModConfigurationDirectory());
+		
 		
 		ColorBlockHandler.addLeavesBlock(Blocks.LEAVES.getDefaultState());
 	    ColorBlockHandler.addLeavesBlock(Blocks.LEAVES2.getDefaultState());
@@ -93,6 +93,7 @@ public class StarMaker {
     public void init(FMLInitializationEvent event)
     {  
     	proxy.load();  	
+    	ParseFiles.instance.parse();
     }
     
     @EventHandler

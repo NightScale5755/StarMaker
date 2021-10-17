@@ -19,9 +19,13 @@ public class DimData
 	private int waterY = 64;
 	private int lander_type = -1;
 	
+	public DimData(CelestialBody body) {
+		this.body = body;
+	}
+	
 	public DimData(CelestialBody body, String stone, double size)
 	{
-		this.body = body;
+		this(body);
 		this.stone_block = stone;
 		this.mapsize = size;
 	}

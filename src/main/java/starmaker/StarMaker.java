@@ -35,7 +35,7 @@ public class StarMaker {
 	
 	public static final int major_version = 0;
 	public static final int minor_version = 0;
-	public static final int build_version = 3;
+	public static final int build_version = 4;
 	
 	public static final String NAME = "StarMaker";
 	public static final String MODID = "starmaker";
@@ -77,7 +77,7 @@ public class StarMaker {
 		
 		proxy.register_event(new SMEventHandler());
 		    	
-		
+		ParseFiles.instance.parse();
 		
 		ColorBlockHandler.addLeavesBlock(Blocks.LEAVES.getDefaultState());
 	    ColorBlockHandler.addLeavesBlock(Blocks.LEAVES2.getDefaultState());
@@ -93,7 +93,7 @@ public class StarMaker {
     public void init(FMLInitializationEvent event)
     {  
     	proxy.load();  	
-    	ParseFiles.instance.parse();
+    	
     }
     
     @EventHandler

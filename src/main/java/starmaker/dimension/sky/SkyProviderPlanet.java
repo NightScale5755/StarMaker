@@ -124,7 +124,7 @@ public class SkyProviderPlanet extends SkyProviderBase {
 		if(data.getBody() instanceof IChildBody)
 			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
 		
-		if(bd.getStarClass() == StarClass.BLACKHOLE) return false;
+		if(bd != null && bd.getStarClass() == StarClass.BLACKHOLE) return false;
 		
 		return true;
 	}

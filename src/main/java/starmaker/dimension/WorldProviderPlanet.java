@@ -102,12 +102,14 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public Vector3 getFogColor() {
 		float f = 1.0F - this.getStarBrightness(1.0F);
 		return new Vector3(getDimData().getFogColor().x / 255.0F * f, getDimData().getFogColor().y / 255.0F * f, getDimData().getFogColor().z / 255.0F * f);
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public Vector3 getSkyColor() {
 		float f = 1.0F - this.getStarBrightness(1.0F);
 		return new Vector3(getDimData().getSkyColor().x / 255.0F * f, getDimData().getSkyColor().y / 255.0F * f, getDimData().getSkyColor().z / 255.0F * f);
@@ -131,7 +133,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
        f2 = MathHelper.clamp(f2, 0.0F, 1.0F);
 
        f2 = 1.0F - f2;
-       
+              
        return f2 * getDimData().getSunBrightness();
     }
     
@@ -156,6 +158,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 	}
 	 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public IRenderHandler getCloudRenderer() {
 		if(super.getCloudRenderer() == null && getDimData().getCloudColor() != null) {
 			float[] f = {1.0F};
@@ -168,7 +171,10 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 				
 				@Override
 				public Vec3d getCloudColor(float renderPartialTicks) {
-					return getDimData().getCloudColor();
+					float f = 1.0F - this.mc.world.getStarBrightness(renderPartialTicks);
+					return new Vec3d(getDimData().getCloudColor().x * f, getDimData().getCloudColor().y * f, getDimData().getCloudColor().z * f);
+				
+					//return getDimData().getCloudColor();
 				}
 	
 				@Override
@@ -184,6 +190,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 	@Override
 	@SideOnly(Side.CLIENT)
 	public float getCloudHeight() {
+		
 		return  getDimData().getCloudColor() != null ? 180.0F : 0.0F;
 	}
 
@@ -269,6 +276,7 @@ public class WorldProviderPlanet extends WE_WorldProviderSpace implements IWeath
 			cp.createChunkGen_List.add(rg);
 		}
 			
+		
 		
 		for(BiomeData biome : getDimData().getBiomes()) {
 

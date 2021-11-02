@@ -26,6 +26,8 @@ import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.entities.EntityEvolvedZombie;
+import micdoodle8.mods.galacticraft.planets.mars.MarsModule;
+import micdoodle8.mods.galacticraft.planets.venus.VenusModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.ResourceLocation;
@@ -279,10 +281,24 @@ public class ParseFiles
 				Reader reader = new FileReader(moonsFile);
 				MoonImpl impl = MakerUtils.gson.fromJson(reader, MoonImpl.class);
 				
-				if (!GalaxyRegistry.getRegisteredPlanets().containsKey(impl.getParentPlanet()))
-					continue;
+				Planet planet = null;
+				
+				
+				switch(impl.getParentPlanet())
+				{
+					case "mercury": planet = GalacticraftCore.planetMercury; break;
+					case "venus": planet = VenusModule.planetVenus; break;
+					case "overworld": planet = GalacticraftCore.planetOverworld; break;
+					case "mars": planet = MarsModule.planetMars; break;
+					case "jupiter": planet = GalacticraftCore.planetJupiter; break;
+					case "saturn": planet = GalacticraftCore.planetSaturn; break;
+					case "uranus": planet = GalacticraftCore.planetUranus; break;
+					case "neptune": planet = GalacticraftCore.planetNeptune; break;
+					default: planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+				}
+				
+				if (planet == null)	continue;
 
-				Planet planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
 				String moon_name = moonsFile.getName().replaceAll(".json", "");
 				
 				OrbitDataImpl orbitData = impl.getOrbitData();

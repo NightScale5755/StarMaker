@@ -1,8 +1,6 @@
 package starmaker;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import asmodeuscore.core.handler.ColorBlockHandler;
 import micdoodle8.mods.galacticraft.core.Constants;
@@ -21,7 +19,7 @@ import starmaker.proxy.CommonProxy;
 import starmaker.resources.StarMakerAssets;
 import starmaker.utils.ExampleFiles;
 import starmaker.utils.Log;
-import starmaker.utils.data.DimData;
+import starmaker.utils.MakerUtils;
 import starmaker.utils.json.ParseFiles;
 
 @Mod(
@@ -35,20 +33,16 @@ public class StarMaker {
 	
 	public static final int major_version = 0;
 	public static final int minor_version = 0;
-	public static final int build_version = 4;
+	public static final int build_version = 5;
 	
 	public static final String NAME = "StarMaker";
 	public static final String MODID = "starmaker";
     public static final String VERSION = major_version + "." + minor_version + "." + build_version;
     public static final String ASSET_PREFIX = MODID;
     public static final String TEXTURE_PREFIX = ASSET_PREFIX + ":";
-    
-    public static String planetDir, moonDir;    
-    public static String assetRoot;
-    
-    public static DimensionType dimType;
-    
-    public static int dims = 0;
+        
+    public static String planetDir, moonDir, biomesDir;    
+    public static String assetDir;
 
     @Instance(StarMaker.MODID)
     public static StarMaker instance;
@@ -56,20 +50,15 @@ public class StarMaker {
     public static final Log LOG = new Log();
     
     @SidedProxy(clientSide=MODID+".proxy.ClientProxy", serverSide=MODID+".proxy.CommonProxy")
-    public static CommonProxy proxy;
-    
-    public static Map<Integer, DimData> bodies = new HashMap();
-    
-    public static boolean debug = true;
-    
+    public static CommonProxy proxy;   
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) 
     {   
-    	assetRoot = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain;
-    	//systemsDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain;
+    	assetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain;
     	planetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/planets";    	
     	moonDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/moons";    	
+    	biomesDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/biomes";    	
     	
     	new ExampleFiles();
 
@@ -118,7 +107,7 @@ public class StarMaker {
     
     public static void debug(Object message)
    	{ 
-   		if(debug) 
+   		if(MakerUtils.debug) 
    			LOG.info("[DEBUG StarMaker] ",  message.toString());
    	}  
     

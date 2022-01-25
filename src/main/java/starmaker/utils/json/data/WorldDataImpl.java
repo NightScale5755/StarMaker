@@ -34,6 +34,10 @@ public class WorldDataImpl
 	@SerializedName("lander_type")
 	@Expose
 	private Integer lander_type;
+	
+	@SerializedName("throwMeteors")
+	@Expose
+	private Boolean throwMeteors;
 
 	/**
 	 * No args constructor for use in serialization
@@ -52,7 +56,7 @@ public class WorldDataImpl
 	 * @param crateProb
 	 */
 	public WorldDataImpl(Integer tier, Boolean genCave, Boolean genRavine, Integer crateProb, String stoneBlock,
-			double mapSize, String waterBlock, int watery, int lander_type)
+			double mapSize, String waterBlock, int watery, int lander_type, Boolean throwMeteors)
 	{
 		super();
 		this.tier = tier;
@@ -64,6 +68,7 @@ public class WorldDataImpl
 		this.waterBlock = waterBlock;
 		this.waterY = watery;
 		this.lander_type = lander_type;
+		this.throwMeteors = throwMeteors;
 	}
 
 	public Integer getTier()
@@ -209,6 +214,23 @@ public class WorldDataImpl
 	{
 		if(lander_type == null) return -1;
 		return lander_type;
+	}
+	
+	public Boolean getThrowMeteors()
+	{
+		if(throwMeteors == null) return false;
+		return throwMeteors;
+	}
+
+	public void setThrowMeteors(Boolean flag)
+	{
+		this.throwMeteors = flag;
+	}
+
+	public WorldDataImpl withThrowMeteors(Boolean flag)
+	{
+		this.throwMeteors = flag;
+		return this;
 	}
 
 }

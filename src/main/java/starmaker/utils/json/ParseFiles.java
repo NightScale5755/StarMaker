@@ -6,10 +6,13 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.JsonParser;
 
+import asmodeuscore.AsmodeusCore;
 import asmodeuscore.api.dimension.IAdvancedSpace.StarClass;
 import asmodeuscore.api.dimension.IAdvancedSpace.StarColor;
 import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
@@ -37,7 +40,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import starmaker.CoreConfig;
 import starmaker.StarMaker;
-import starmaker.dimension.WorldProviderPlanet;
+import starmaker.dimension.WorldProviderBody;
 import starmaker.utils.MakerUtils;
 import starmaker.utils.data.BiomeData;
 import starmaker.utils.data.DimData;
@@ -45,20 +48,21 @@ import starmaker.utils.data.GrassGenData;
 import starmaker.utils.data.LakesGenData;
 import starmaker.utils.data.OreGenData;
 import starmaker.utils.data.TreeGenData;
-import starmaker.utils.json.body.MoonImpl;
-import starmaker.utils.json.body.PlanetImpl;
-import starmaker.utils.json.body.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
 import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.OreGenImpl;
 import starmaker.utils.json.data.WorldDataImpl;
-import starmaker.world.TeleportTypePlanet;
+import starmaker.utils.json.impl.MoonImpl;
+import starmaker.utils.json.impl.PlanetImpl;
+import starmaker.utils.json.impl.SystemImpl;
+import starmaker.world.TeleportTypeBody;
 
 public class ParseFiles
 {
 
 	public static ParseFiles instance = new ParseFiles();
+	private static Map<String, BiomeData> listBiomes = new HashMap<String, BiomeData>();
 	private static int dimID = CoreConfig.startIDs;
 
 	private static final int LIMIT_SYSTEMS = 10;
@@ -68,12 +72,70 @@ public class ParseFiles
 	public void parse()
 	{
 		JsonParser parser = new JsonParser();
-		parseSystems(new File(StarMaker.assetRoot), parser);
+		parseSystems(new File(StarMaker.assetDir), parser);
+		parseBiomes(new File(StarMaker.biomesDir), parser);
 		parsePlanets(new File(StarMaker.planetDir), parser);
 		parseMoons(new File(StarMaker.moonDir), parser);
 
 	}
 
+	private static void parseBiomes(File file, JsonParser parser) {
+		try
+		{
+
+			FilenameFilter filter = (file1, name) -> name.endsWith(".json");
+			File[] files = file.listFiles(filter);
+			StarMaker.LOG.info("# Count of Biomes Jsons: " + files.length);
+			
+			for (File biomeFiles : files)
+			{			
+								
+				if (!biomeFiles.isFile())
+					continue;					
+				
+				Reader reader = new FileReader(biomeFiles);
+				BiomeImpl impl = MakerUtils.gson.fromJson(reader, BiomeImpl.class);
+				
+				int water = Utils.getIntColor(impl.getWaterColor().intX(), impl.getWaterColor().intY(), impl.getWaterColor().intZ());
+				int foliage = Utils.getIntColor(impl.getFoliageColor().intX(),	impl.getFoliageColor().intY(), impl.getFoliageColor().intZ());
+				int grass = Utils.getIntColor(impl.getGrassColor().intX(), impl.getGrassColor().intY(), impl.getGrassColor().intZ());
+
+				List<OreGenData> oregen = new ArrayList<OreGenData>();
+				for(OreGenImpl data : impl.getOreGenList())
+				{
+					oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
+				}
+				
+				TreeGenData treegen = null;
+				if(impl.getTreeGen() != null) 
+					treegen = new TreeGenData(impl.getTreeGen().getLog(), impl.getTreeGen().getLeaves(), impl.getTreeGen().getSapling(), impl.getTreeGen().getMinHeight(), impl.getTreeGen().getVines(), impl.getTreeGen().getQuantity());
+				
+			
+				List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
+				if(impl.getGrassGenList() != null)
+					for(GrassGenImpl data : impl.getGrassGenList())
+					{
+						if(data != null)
+							grassgen.add(new GrassGenData(data.getGrassBlock(), data.getGrassCount(), data.onWater(), data.getGroundBlock()));
+					}
+				
+				LakesGenData lakesgen = null;
+				if(impl.getLakesGen() != null)
+					lakesgen = new LakesGenData(impl.getLakesGen().getLiquidBlock(), impl.getLakesGen().getQuantity());
+
+				StarMaker.LOG.debug("Registered New Biome: %s", biomeFiles.getName());
+				
+				listBiomes.put(biomeFiles.getName().replace(".json", "").toLowerCase(), new BiomeData(biomeFiles.getName().toLowerCase(), impl.getBiomeSize())
+						.setData(impl.getPersistance(), impl.getHeight(), impl.getOctaves(), impl.getIntquility())
+						.setBlocks(impl.getSurfaceBlock(), impl.getSubsurfaceBlock())
+						.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen));
+
+			}
+			
+		}catch(Exception e) {
+			
+		}
+	}
 	private static void parseSystems(File file, JsonParser parser)
 	{
 		File systems = new File(file, "systems.json");
@@ -102,17 +164,16 @@ public class ParseFiles
 					float posX = systemImpl.getPosX();
 					float posY = systemImpl.getPosY();
 					float star_size = systemImpl.getStarSize();
-					StarMaker.LOG.debug("StarClass: " + systemImpl.getStarClass());
 					StarClass star_class = StarClass.values()[systemImpl.getStarClass()];
 					
 					StarColor star_color = null;
 					if(systemImpl.getStarColor() >= 0)
 						star_color = StarColor.values()[systemImpl.getStarColor()];
 					
-					ResourceLocation icon = new ResourceLocation(StarMaker.ASSET_PREFIX, "textures/gui/celestialbodies/yellow.png");
+					ResourceLocation icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX, "textures/gui/celestialbodies/yellow.png");
 					
 					if(star_color != null) 
-						icon = new ResourceLocation(StarMaker.ASSET_PREFIX, "textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
+						icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX, "textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
 					
 					if(star_class == StarClass.BLACKHOLE)
 						icon = new ResourceLocation(StarMaker.ASSET_PREFIX, "textures/gui/celestialbodies/blackhole.png");
@@ -123,7 +184,7 @@ public class ParseFiles
 
 					BodiesData data = new BodiesData(TypeBody.STAR).setStarClass(star_class).setStarColor(star_color);
 					BodiesRegistry.registerBodyData(system.getMainStar(), data);
-					StarMaker.LOG.debug("Registered New Solar System: %s", system.getName());
+					StarMaker.LOG.info("Registered New Solar System: %s", system.getName());
 					count++;
 				}
 
@@ -144,18 +205,13 @@ public class ParseFiles
 			FilenameFilter filter = (file1, name) -> name.endsWith(".json");
 
 			File[] files = file.listFiles(filter);
-			StarMaker.LOG.info("#  of Planet Jsons: " + files.length);
+			StarMaker.LOG.info("# Count of Planet Jsons: " + files.length);
 
 			for (File planetFile : files)
-			{
-				
-
-				
+			{				
 				if (!planetFile.isFile())
 					continue;
 				
-				StarMaker.LOG.info("FileName: " + planetFile.getName());
-
 				Reader reader = new FileReader(planetFile);
 				PlanetImpl impl = MakerUtils.gson.fromJson(reader, PlanetImpl.class);
 
@@ -166,7 +222,7 @@ public class ParseFiles
 					system = GalacticraftCore.solarSystemSol;
 				}
 				else system = GalaxyRegistry.getRegisteredSolarSystems().get(impl.getParentSystem());
-				String planet_name = planetFile.getName().replaceAll(".json", "");
+				String planet_name = planetFile.getName().replace(".json", "");
 
 				OrbitDataImpl orbitData = impl.getOrbitData();
 				
@@ -182,20 +238,25 @@ public class ParseFiles
 					}
 					
 					BodiesRegistry.setPlanetData(planet, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
-					BodiesRegistry.setProviderData(planet, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
+					BodiesRegistry.setProviderData(planet, WorldProviderBody.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
 					planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
 	
 				
 					Vec3d skyColor = new Vec3d(impl.getSky());
 					Vec3d fogColor = new Vec3d(impl.getFog());
 					Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
-	
+								
 					List<BiomeData> biomes = new ArrayList<BiomeData>();
 					for (int i = 0; i < impl.getBiomes().size(); i++)
 					{
 						if (i > 5)
 							break;
-						BiomeImpl biomeImpl = impl.getBiomes().get(i);
+						
+						String biomename = impl.getBiomes().get(i);
+						if(listBiomes.containsKey(biomename)) {							
+							biomes.add(listBiomes.get(biomename));
+						}
+						/*BiomeImpl biomeImpl = impl.getBiomes().get(i);
 	
 						int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
 						int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
@@ -226,7 +287,7 @@ public class ParseFiles
 								.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
 								.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
 								.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen));
-	
+	*/
 					}
 	
 					WorldDataImpl dataImpl = impl.getWorldData();
@@ -237,7 +298,10 @@ public class ParseFiles
 							.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
 							.setBiomes(biomes).setSunSize(impl.getSunSize())
 							.setWaterY(dataImpl.getWaterY())
-							.setLanderType(dataImpl.getLanderType());
+							.setLanderType(dataImpl.getLanderType())
+							.setThrowMeteors(dataImpl.getThrowMeteors())
+							.setCloudHeight(impl.getCloudHeight())
+							.setTemperatureMod(impl.getTemperatureModificator());
 	
 					regDim(getAvailableID(), data);
 
@@ -270,7 +334,7 @@ public class ParseFiles
 			File[] files = file.listFiles(filter);
 			if(files == null) return;
 			
-			StarMaker.LOG.info("#  of Moons Jsons: " + files.length);
+			StarMaker.LOG.info("# Count of Moons Jsons: " + files.length);
 			
 			for (File moonsFile : files)
 			{				
@@ -314,7 +378,7 @@ public class ParseFiles
 					}
 					
 					BodiesRegistry.setPlanetData(moon, impl.getAtmospherePressure(), impl.getDayLenght(),	impl.getGravity(), impl.getSolarRadiation());
-					BodiesRegistry.setProviderData(moon, WorldProviderPlanet.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
+					BodiesRegistry.setProviderData(moon, WorldProviderBody.class, dimID, impl.getWorldData().getTier(), ACBiome.ACSpace);
 					moon.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(), impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
 						
 					Vec3d skyColor = new Vec3d(impl.getSky());
@@ -383,8 +447,8 @@ public class ParseFiles
 
 	private static void regDim(int dimID, DimData data)
 	{
-		Class<? extends WorldProvider> provider = WorldProviderPlanet.class;
-		StarMaker.bodies.put(dimID, data);
+		Class<? extends WorldProvider> provider = WorldProviderBody.class;
+		MakerUtils.bodies.put(dimID, data);
 		// StarMaker.bodies.forEach((dimID, data) -> {
 
 		data.getBody().setBiomeInfo(ACBiome.ACSpace);
@@ -397,7 +461,7 @@ public class ParseFiles
 		else
 			GalaxyRegistry.registerPlanet((Planet) data.getBody());
 		
-		GalacticraftRegistry.registerTeleportType(provider, new TeleportTypePlanet());
+		GalacticraftRegistry.registerTeleportType(provider, new TeleportTypeBody());
 		
 		// });
 	}

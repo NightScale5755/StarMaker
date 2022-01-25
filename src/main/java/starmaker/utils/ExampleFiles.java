@@ -8,8 +8,6 @@ import java.util.List;
 
 import starmaker.StarMaker;
 import starmaker.utils.json.SolarSystemObjects;
-import starmaker.utils.json.body.PlanetImpl;
-import starmaker.utils.json.body.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
 import starmaker.utils.json.data.LakesGenImpl;
@@ -17,14 +15,18 @@ import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.OreGenImpl;
 import starmaker.utils.json.data.TreeGenImpl;
 import starmaker.utils.json.data.WorldDataImpl;
+import starmaker.utils.json.impl.PlanetImpl;
+import starmaker.utils.json.impl.SystemImpl;
 
 public class ExampleFiles
 {
 
 	private PlanetImpl examplePlanetImpl;
+	private BiomeImpl exampleBiomeImpl;
 	private SolarSystemObjects systemsObjects;
 	private boolean generateSystemsJson = false;
 	private boolean generatePlanetsJson = false;
+	private boolean generateBiomeJson = false;
 
 	public ExampleFiles()
 	{
@@ -35,7 +37,7 @@ public class ExampleFiles
 
 		
 		OrbitDataImpl exampleOrbitData = new OrbitDataImpl(3.14F, 1.2F, 2.5F, 3.9F, 0.0F, 0.0F);
-		WorldDataImpl exampleDataImpl = new WorldDataImpl(6, true, false, 0, "minecraft:concrete:11", 1000.0, "", 64, -1);
+		WorldDataImpl exampleDataImpl = new WorldDataImpl(6, true, false, 0, "minecraft:concrete:11", 1000.0, "", 64, -1, true);
 
 		List<Integer> water = Arrays.asList(255, 255, 0);
 		List<Integer> foliage = Arrays.asList(0, 100, 0);
@@ -46,18 +48,20 @@ public class ExampleFiles
 		List<GrassGenImpl> grassgen = Arrays.asList(new GrassGenImpl("minecraft:tallgrass:1", "minecraft:grass", 5, false));
 		LakesGenImpl lakesgen = new LakesGenImpl("minecraft:lava", 20);
 		
-		BiomeImpl exampleBiomeImpl1 = new BiomeImpl(2.2, 4, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen, treegen, grassgen, null);
+		//BiomeImpl exampleBiomeImpl1 = new BiomeImpl(2.2, 4, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen, treegen, grassgen, null);
 
-		BiomeImpl exampleBiomeImpl2 = new BiomeImpl(1.8, 4, 64, 25, 2.0, water, foliage, grass, "minecraft:cobblestone", "minecraft:dirt", oregen, null, null, lakesgen);
-
+		//BiomeImpl exampleBiomeImpl2 = new BiomeImpl(1.8, 4, 64, 25, 2.0, water, foliage, grass, "minecraft:cobblestone", "minecraft:dirt", oregen, null, null, lakesgen);
+		
 		systemsObjects = new SolarSystemObjects().addSystemToList(exampleSystemImpl);
 
+		exampleBiomeImpl = new BiomeImpl(2.2, 4, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen, treegen, grassgen, lakesgen);
+		
 		examplePlanetImpl = new PlanetImpl()
 				.withParentSystem("example_system")
 				.withOrbitData(exampleOrbitData)
 				.withGravity(0.058)
 				.withAtmospherePressure(1)
-				.withTemperature(-1.0)
+				.withTemperature(Arrays.asList(-1.0F, 1.0F))
 				.withWind(0.0)
 				.withDayLenght(24000)
 				.withBreathable(false)
@@ -67,9 +71,9 @@ public class ExampleFiles
 				.withStarBrightness(0.5)
 				.withSky(Arrays.asList(78, 38, 137))
 				.withFog(Arrays.asList(78, 38, 137))
-				.withCloud(Arrays.asList(150, 150, 150))
+				.withCloud(Arrays.asList(150, 150, 150, 180))
 				.withWorldData(exampleDataImpl)
-				.withBiomes(Arrays.asList(exampleBiomeImpl1, exampleBiomeImpl2))
+				.withBiomes(Arrays.asList("example_biome"))
 				.withSunSize(5.0F)
 				.withPrecipitation(false)
 				.withUnreachable(false);
@@ -79,12 +83,24 @@ public class ExampleFiles
 		{
 			try
 			{
-				genSystemsExample();
+				genSystems();
 			} catch (IOException e)
 			{
 				e.printStackTrace();
 			}
 		}
+		
+		if (this.generateBiomeJson == true)
+		{
+			try
+			{
+				genBiomeExample();
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
 		if (this.generatePlanetsJson == true)
 		{
 			try
@@ -99,12 +115,13 @@ public class ExampleFiles
 
 	private void initializeExampleFiles()
 	{
-		if(!MakerUtils.exampleSystemsJson.exists())
+		if(!MakerUtils.systemsJson.exists())
 		{
 			try
 			{
-				MakerUtils.exampleSystemsJson.getParentFile().mkdirs();
-				MakerUtils.exampleSystemsJson.createNewFile();
+				
+				MakerUtils.systemsJson.getParentFile().mkdirs();
+				MakerUtils.systemsJson.createNewFile();
 				this.generateSystemsJson = true;
 				
 			} catch (IOException e) {
@@ -112,22 +129,35 @@ public class ExampleFiles
 			}
 		}
 		
-		File folder = new File(StarMaker.planetDir);
-		
-		if(!MakerUtils.exmaplePlanetJson.exists() && (!folder.exists() || folder.listFiles().length == 0))
+		File folder = new File(StarMaker.biomesDir);
+		if(!MakerUtils.exampleBiomeJson.exists() && (!folder.exists() || folder.listFiles().length == 0))
 		{
 			try
 			{
-				MakerUtils.exmaplePlanetJson.getParentFile().mkdirs();
-				MakerUtils.exmaplePlanetJson.createNewFile();
-				this.generatePlanetsJson = true;
+				MakerUtils.exampleBiomeJson.getParentFile().mkdirs();
+				MakerUtils.exampleBiomeJson.createNewFile();
+				this.generateBiomeJson = true;
 				
 			} catch (IOException e)	{
 				e.printStackTrace();
 			}
 		}
 		
-		File assets = new File(StarMaker.assetRoot);
+		folder = new File(StarMaker.planetDir);
+		
+		if(!MakerUtils.examplePlanetJson.exists() && (!folder.exists() || folder.listFiles().length == 0))
+		{
+			try
+			{
+				MakerUtils.examplePlanetJson.getParentFile().mkdirs();
+				MakerUtils.examplePlanetJson.createNewFile();
+				this.generatePlanetsJson = true;				
+			} catch (IOException e)	{
+				e.printStackTrace();
+			}
+		}
+		
+		File assets = new File(StarMaker.assetDir);
 		if(!assets.exists())
 		{
 			assets.mkdirs();
@@ -152,17 +182,24 @@ public class ExampleFiles
 		}*/
 	}
 
-	private void genSystemsExample() throws IOException
+	private void genSystems() throws IOException
 	{
-		FileWriter writer = new FileWriter(MakerUtils.exampleSystemsJson.getAbsolutePath());
+		FileWriter writer = new FileWriter(MakerUtils.systemsJson.getAbsolutePath());
 		MakerUtils.gson.toJson(this.systemsObjects, writer);
 		writer.close();
 	}
 
 	private void genPlanetsExample() throws IOException
 	{
-		FileWriter writer = new FileWriter(MakerUtils.exmaplePlanetJson.getAbsolutePath());
+		FileWriter writer = new FileWriter(MakerUtils.examplePlanetJson.getAbsolutePath());
 		MakerUtils.gson.toJson(this.examplePlanetImpl, writer);
+		writer.close();
+	}
+	
+	private void genBiomeExample() throws IOException
+	{
+		FileWriter writer = new FileWriter(MakerUtils.exampleBiomeJson.getAbsolutePath());
+		MakerUtils.gson.toJson(this.exampleBiomeImpl, writer);
 		writer.close();
 	}
 }

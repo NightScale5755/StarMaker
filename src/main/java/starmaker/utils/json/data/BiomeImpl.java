@@ -1,4 +1,3 @@
-
 package starmaker.utils.json.data;
 
 import java.util.List;

@@ -10,7 +10,7 @@ public class DimData
 {
 	private final CelestialBody body;
 	private Vec3d skyColor, fogColor, cloudColor;
-	private boolean genCaves, genRavines;
+	private boolean genCaves, genRavines, throwMeteors;
 	private int crateprob = 0;
 	private String stone_block, water_block;
 	private List<BiomeData> getBiomes = new ArrayList<BiomeData>();
@@ -18,6 +18,8 @@ public class DimData
 	private double mapsize;
 	private int waterY = 64;
 	private int lander_type = -1;
+	private int cloudHeight;
+	private float temp_mod = 0.5F;
 	
 	public DimData(CelestialBody body) {
 		this.body = body;
@@ -81,6 +83,21 @@ public class DimData
 		return this;
 	}
 	
+	public DimData setThrowMeteors(boolean flag) {
+		this.throwMeteors = flag;
+		return this;
+	}
+	
+	public DimData setCloudHeight(int height) {
+		this.cloudHeight = height;
+		return this;
+	}
+	
+	public DimData setTemperatureMod(float mod) {
+		this.temp_mod = mod;
+		return this;
+	}
+	
 	public CelestialBody getBody() 	{ return this.body;	}
 	public Vec3d getSkyColor() { return this.skyColor; }    	
 	public Vec3d getFogColor() { return this.fogColor; }    	
@@ -97,4 +114,7 @@ public class DimData
 	public double getMapSize() { return this.mapsize; }
 	public float getSunSize() { return this.sun_size; }
 	public int getLanderType() { return this.lander_type; }
+	public boolean getThrowMeteors() { return this.throwMeteors; }
+	public int getCloudHeight() { return this.cloudHeight; }
+	public float getTemperatureMod() { return this.temp_mod; }
 }

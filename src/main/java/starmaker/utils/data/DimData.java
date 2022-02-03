@@ -3,6 +3,9 @@ package starmaker.utils.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
+import asmodeuscore.core.astronomy.BodiesData;
+import asmodeuscore.core.astronomy.BodiesRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import net.minecraft.util.math.Vec3d;
 
@@ -20,7 +23,7 @@ public class DimData
 	private int lander_type = -1;
 	private int cloudHeight;
 	private float temp_mod = 0.5F;
-	
+		
 	public DimData(CelestialBody body) {
 		this.body = body;
 	}
@@ -97,7 +100,7 @@ public class DimData
 		this.temp_mod = mod;
 		return this;
 	}
-	
+
 	public CelestialBody getBody() 	{ return this.body;	}
 	public Vec3d getSkyColor() { return this.skyColor; }    	
 	public Vec3d getFogColor() { return this.fogColor; }    	
@@ -117,4 +120,5 @@ public class DimData
 	public boolean getThrowMeteors() { return this.throwMeteors; }
 	public int getCloudHeight() { return this.cloudHeight; }
 	public float getTemperatureMod() { return this.temp_mod; }
+	
 }

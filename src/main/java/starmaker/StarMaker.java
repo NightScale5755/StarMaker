@@ -25,8 +25,8 @@ import starmaker.utils.json.ParseFiles;
 @Mod(
 		   modid = StarMaker.MODID,
 		   version = StarMaker.VERSION,
-		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore; required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.27,)",
-		   acceptedMinecraftVersions = Constants.MCVERSION,
+		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore; required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.29,)",
+		   acceptedMinecraftVersions = "[1.12.2]",
 		   name = StarMaker.NAME
 		)
 public class StarMaker {
@@ -41,8 +41,8 @@ public class StarMaker {
     public static final String ASSET_PREFIX = MODID;
     public static final String TEXTURE_PREFIX = ASSET_PREFIX + ":";
         
-    public static String planetDir, moonDir, biomesDir;    
-    public static String assetDir;
+    public static String planetDir, moonDir, asteroidDir;    
+    public static String assetDir, biomesDir;
 
     @Instance(StarMaker.MODID)
     public static StarMaker instance;
@@ -56,9 +56,10 @@ public class StarMaker {
     public void preInit(FMLPreInitializationEvent event) 
     {   
     	assetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain;
+    	biomesDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/biomes";    	
     	planetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/planets";    	
     	moonDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/moons";    	
-    	biomesDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/biomes";    	
+    	asteroidDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/asteroids";    	
     	
     	new ExampleFiles();
 

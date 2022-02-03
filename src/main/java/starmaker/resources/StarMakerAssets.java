@@ -34,7 +34,7 @@ public class StarMakerAssets implements IResourcePack {
 			return null;
 		} else {
 
-			File file = new File(new File(Minecraft.getMinecraft().mcDataDir, loc + "/" + rl.getResourceDomain()),rl.getResourcePath());
+			File file = new File(new File(Minecraft.getMinecraft().gameDir, loc + "/" + rl.getNamespace()),rl.getPath());
 			String realFileName = file.getCanonicalFile().getName();
 			if (!realFileName.equals(file.getName()))
 			{
@@ -46,7 +46,7 @@ public class StarMakerAssets implements IResourcePack {
 
 	@Override
 	public boolean resourceExists(ResourceLocation rl) {
-		File fileRequested = new File(new File(Minecraft.getMinecraft().mcDataDir, loc + "/" + rl.getResourceDomain()),rl.getResourcePath());
+		File fileRequested = new File(new File(Minecraft.getMinecraft().gameDir, loc + "/" + rl.getNamespace()),rl.getPath());
 		if (debug && !fileRequested.isFile())
 		{
 			StarMaker.LOG.debug("[StarResources] Looking For: " + rl.toString() + " But Cannot Find At: " + fileRequested.getAbsolutePath());
@@ -57,7 +57,7 @@ public class StarMakerAssets implements IResourcePack {
 
 	@Override
 	public Set<String> getResourceDomains() {
-		File folder = new File(Minecraft.getMinecraft().mcDataDir, loc);
+		File folder = new File(Minecraft.getMinecraft().gameDir, loc);
 		if (!folder.exists()) {
 			folder.mkdir();
 		}

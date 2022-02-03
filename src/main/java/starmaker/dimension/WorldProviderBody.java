@@ -37,7 +37,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider.WorldSleepResult;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
@@ -55,9 +54,8 @@ import starmaker.utils.data.OreGenData;
 import starmaker.utils.json.ParseFiles;
 
 public class WorldProviderBody extends WE_WorldProviderSpace implements IWeatherProvider, ILanderTypeProvider {
-	
-	
-	private DimData getDimData()
+
+	protected DimData getDimData()
 	{
 		return MakerUtils.bodies.get(this.getDimension());
 	}
@@ -149,7 +147,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 	public Class<? extends IChunkGenerator> getChunkProviderClass() {
 		return WE_ChunkProviderSpace.class;
 	}
-
+	
 	@Override
 	public DimensionType getDimensionType() {		
 		return WorldUtil.getDimensionTypeById(this.getDimension());

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import starmaker.CoreConfig;
 import starmaker.StarMaker;
 import starmaker.utils.json.SolarSystemObjects;
 import starmaker.utils.json.data.BiomeImpl;
@@ -31,7 +32,8 @@ public class ExampleFiles
 	public ExampleFiles()
 	{
 		// @formatter:off
-		initializeExampleFiles();
+		if(CoreConfig.generateExample)
+			initializeExampleFiles();
 
 		SystemImpl exampleSystemImpl = new SystemImpl("example_system", "milky_way", "example_star", 1.5, 1.5, 0.8, 2, 6);
 

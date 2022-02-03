@@ -1,7 +1,11 @@
 package starmaker.utils.json.impl;
 
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import starmaker.utils.json.data.StarsDataImpl;
 
 public class SystemImpl
 {
@@ -21,6 +25,9 @@ public class SystemImpl
 	@SerializedName("posY")
 	@Expose
 	private double posY;
+	@SerializedName("stars")
+	@Expose
+	private List<StarsDataImpl> starsData;	
 	@SerializedName("star_size")
 	@Expose
 	private double starSize;
@@ -58,6 +65,16 @@ public class SystemImpl
 		this.starSize = starSize;
 		this.starClass = starClass;
 		this.starColor = starColor;
+	}
+	
+	public SystemImpl(String galaxy, String starName, double posX, double posY, List<StarsDataImpl> stars)
+	{
+		super();
+		this.galaxy = galaxy;
+		this.starName = starName;
+		this.posX = posX;
+		this.posY = posY;
+		this.starsData = stars;
 	}
 
 	public String getName()
@@ -186,5 +203,14 @@ public class SystemImpl
 	{
 		this.starColor = starColor;
 		return this;
+	}
+	
+	public List<StarsDataImpl> getStars() {
+		return this.starsData;
+	}
+	
+	public void setStars(List<StarsDataImpl> stars)
+	{
+		this.starsData = stars;
 	}
 }

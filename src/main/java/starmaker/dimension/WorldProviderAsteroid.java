@@ -1,0 +1,233 @@
+package starmaker.dimension;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.TreeMap;
+
+import micdoodle8.mods.galacticraft.core.util.GCLog;
+import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityAstroMiner;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.IChunkGenerator;
+import starmaker.utils.data.AsteroidData;
+import starmaker.utils.data.AsteroidWorldSaveData;
+
+public class WorldProviderAsteroid extends WorldProviderBody {
+	
+	private HashSet<AsteroidData> asteroids = new HashSet<>();
+	private boolean dataNotLoaded = true;
+	private AsteroidWorldSaveData datafile;
+	
+	@Override
+    public void init()
+    {
+        super.init();
+        this.nether = true;
+    }
+	
+	@Override
+	public IChunkGenerator createChunkGenerator() {		
+		return new ChunkProviderAsteroid(this.world, this.world.getSeed(), getDimData());		
+	}
+	
+	@Override
+	public float calculateCelestialAngle(long par1, float par3) {
+		return 0.22F;
+	}
+	 
+	public void addAsteroid(BlockPos pos, int size, int core) {
+		AsteroidData coords = new AsteroidData(pos, size, core);
+		if (!this.asteroids.contains(coords)) {
+			if (this.dataNotLoaded) {
+				this.loadAsteroidSavedData();
+			}
+			if (!this.asteroids.contains(coords)) {
+				this.addToNBT(this.datafile.datacompound, coords);
+				this.asteroids.add(coords);
+			}
+		}
+	}
+
+	public void removeAsteroid(BlockPos pos) {
+		AsteroidData coords = new AsteroidData(pos);
+		if (this.asteroids.contains(coords)) {
+			this.asteroids.remove(coords);
+
+			if (this.dataNotLoaded) {
+				this.loadAsteroidSavedData();
+			}
+			this.writeToNBT(this.datafile.datacompound);
+		}
+	}
+
+	private void loadAsteroidSavedData() {
+		this.datafile = (AsteroidWorldSaveData) this.world.loadData(AsteroidWorldSaveData.class,
+				AsteroidWorldSaveData.saveDataID + "SM" + getDimData().getBody().getName() + "Data");
+
+		if (this.datafile == null) {
+			this.datafile = new AsteroidWorldSaveData(getDimData().getBody().getName());
+			this.world.setData(datafile.saveDataID, this.datafile);
+			this.writeToNBT(this.datafile.datacompound);
+		} else {
+			this.readFromNBT(this.datafile.datacompound);
+		}
+
+		this.dataNotLoaded = false;
+	}
+
+	private void readFromNBT(NBTTagCompound nbt) {
+		NBTTagList coordList = nbt.getTagList("coords", 10);
+		if (coordList.tagCount() > 0) {
+			for (int j = 0; j < coordList.tagCount(); j++) {
+				NBTTagCompound tag1 = coordList.getCompoundTagAt(j);
+
+				if (tag1 != null) {
+					this.asteroids.add(AsteroidData.readFromNBT(tag1));
+				}
+			}
+		}
+	}
+
+	private void writeToNBT(NBTTagCompound nbt) {
+		NBTTagList coordList = new NBTTagList();
+		for (AsteroidData coords : this.asteroids) {
+			NBTTagCompound tag = new NBTTagCompound();
+			coords.writeToNBT(tag);
+			coordList.appendTag(tag);
+		}
+		nbt.setTag("coords", coordList);
+		this.datafile.markDirty();
+	}
+
+	private void addToNBT(NBTTagCompound nbt, AsteroidData coords) {
+		NBTTagList coordList = nbt.getTagList("coords", 10);
+		NBTTagCompound tag = new NBTTagCompound();
+		coords.writeToNBT(tag);
+		coordList.appendTag(tag);
+		nbt.setTag("coords", coordList);
+		this.datafile.markDirty();
+	}
+
+	public boolean checkHasAsteroids() {
+		if (this.dataNotLoaded) {
+			this.loadAsteroidSavedData();
+		}
+
+		if (this.asteroids.size() == 0) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public BlockPos getClosestAsteroidXZ(int x, int y, int z, boolean mark) {
+		if (!this.checkHasAsteroids()) {
+			return null;
+		}
+
+		BlockPos result = null;
+		AsteroidData resultRoid = null;
+		int lowestDistance = Integer.MAX_VALUE;
+
+		for (AsteroidData test : this.asteroids) {
+			if (mark && (test.sizeAndLandedFlag & 128) > 0) {
+				continue;
+			}
+
+			int dx = x - test.centre.getX();
+			int dz = z - test.centre.getZ();
+			int a = dx * dx + dz * dz;
+			if (a < lowestDistance) {
+				lowestDistance = a;
+				result = test.centre;
+				resultRoid = test;
+			}
+		}
+
+		if (result == null) {
+			return null;
+		}
+
+		if (mark) {
+			resultRoid.sizeAndLandedFlag |= 128;
+			this.writeToNBT(this.datafile.datacompound);
+		}
+		// result = result.clone();
+		// result.sideDoneBits = resultRoid.sizeAndLandedFlag & 127;
+		return result;
+	}
+
+	public ArrayList<BlockPos> getClosestAsteroidsXZ(int x, int y, int z, int facing, int count) {
+		if (!this.checkHasAsteroids()) {
+			return null;
+		}
+
+		TreeMap<Integer, BlockPos> targets = new TreeMap<>();
+
+		for (AsteroidData roid : this.asteroids) {
+			BlockPos test = roid.centre;
+			switch (facing) {
+			case 2:
+				if (z - 16 < test.getZ()) {
+					continue;
+				}
+				break;
+			case 3:
+				if (z + 16 > test.getZ()) {
+					continue;
+				}
+				break;
+			case 4:
+				if (x - 16 < test.getX()) {
+					continue;
+				}
+				break;
+			case 5:
+				if (x + 16 > test.getX()) {
+					continue;
+				}
+				break;
+			}
+			int dx = x - test.getX();
+			int dz = z - test.getZ();
+			int a = dx * dx + dz * dz;
+			if (a < 262144) {
+				targets.put(a, test);
+			}
+		}
+
+		int max = Math.max(count, targets.size());
+		if (max <= 0) {
+			return null;
+		}
+
+		ArrayList<BlockPos> returnValues = new ArrayList<>();
+		int i = 0;
+		int offset = EntityAstroMiner.MINE_LENGTH_AST / 2;
+		for (BlockPos target : targets.values()) {
+			BlockPos coords = target;
+			GCLog.debug("Found nearby asteroid at " + target.toString());
+			switch (facing) {
+			case 2:
+				coords.add(0, 0, offset);
+				break;
+			case 3:
+				coords.add(0, 0, -offset);
+				break;
+			case 4:
+				coords.add(offset, 0, 0);
+				break;
+			case 5:
+				coords.add(-offset, 0, 0);
+				break;
+			}
+			returnValues.add(coords);
+			if (++i >= count) {
+				break;
+			}
+		}
+
+		return returnValues;
+	}
+}

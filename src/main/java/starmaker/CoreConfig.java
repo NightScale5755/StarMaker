@@ -15,4 +15,7 @@ public class CoreConfig
 
 	@Config.Comment("Start id for dimensions")
 	public static int startIDs = -1100;
+	
+	@Config.Comment("Enable generate example files.")	
+	public static boolean generateExample = true;
 }

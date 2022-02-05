@@ -30,7 +30,7 @@ public class MoonImpl
 	private int atmospherePressure;
 	@SerializedName("temperature")
 	@Expose
-	private double temperature;
+	private List<Float> temperature;
 	@SerializedName("wind")
 	@Expose
 	private double wind;
@@ -64,9 +64,12 @@ public class MoonImpl
 	@SerializedName("world_data")
 	@Expose
 	private WorldDataImpl worldData;
+	/*@SerializedName("biomes")
+	@Expose
+	private List<BiomeImpl> biomes = null;*/
 	@SerializedName("biomes")
 	@Expose
-	private List<BiomeImpl> biomes = null;
+	private List<String> biomes = null;
 	@SerializedName("sun_size")
 	@Expose
 	private float sun_size;	
@@ -107,10 +110,10 @@ public class MoonImpl
 	 * @param fog
 	 */
 	public MoonImpl(String parentPlanet, OrbitDataImpl orbitData,
-			double gravity, Integer atmospherePressure, double temperature, double wind, Integer dayLenght,
+			double gravity, Integer atmospherePressure, List<Float> temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
 			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, WorldDataImpl worldData,
-			List<BiomeImpl> biomes, float sun_size, boolean precipitation, boolean unreachable)
+			/*List<BiomeImpl> biomes*/List<String> biomes, float sun_size, boolean precipitation, boolean unreachable)
 	{
 		super();
 		this.parentPlanet = parentPlanet;
@@ -199,19 +202,26 @@ public class MoonImpl
 		return this;
 	}
 
-	public Float getTemperature()
+	public float getTemperature()
 	{
-		return (float) temperature;
+		return (float) temperature.get(0);
+	}
+	
+	public float getTemperatureModificator()
+	{
+		if(temperature.size() > 1)
+			return (float) temperature.get(1);
+		return 0.5F;
 	}
 
-	public void setTemperature(double temperature)
+	public void setTemperature(List<Float> temperature)
 	{
 		this.temperature = temperature;
 	}
 
-	public MoonImpl withTemperature(double temperature)
+	public MoonImpl withTemperature(List<Float> temperature)
 	{
-		this.temperature = temperature;
+		setTemperature(temperature);
 		return this;
 	}
 
@@ -366,6 +376,13 @@ public class MoonImpl
 		return new Vec3i(cloud.get(0), cloud.get(1), cloud.get(2));
 	}
 
+	public int getCloudHeight() {
+		if(cloud == null) return 180;
+		if(cloud.size() < 4) return 180;
+		
+		return cloud.get(3);
+	}
+	
 	public void setCloud(List<Integer> cloud)
 	{
 		this.cloud = cloud;
@@ -393,17 +410,17 @@ public class MoonImpl
 		return this;
 	}
 
-	public List<BiomeImpl> getBiomes()
+	public List<String> getBiomes()
 	{
 		return biomes;
 	}
 
-	public void setBiomes(List<BiomeImpl> biomes)
+	public void setBiomes(List<String> biomes)
 	{
 		this.biomes = biomes;
 	}
 
-	public MoonImpl withBiomes(List<BiomeImpl> biomes)
+	public MoonImpl withBiomes(List<String> biomes)
 	{
 		this.biomes = biomes;
 		return this;

@@ -7,6 +7,7 @@ import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
 import asmodeuscore.core.astronomy.BodiesData;
 import asmodeuscore.core.astronomy.BodiesRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.Vec3d;
 
 public class DimData
@@ -23,6 +24,7 @@ public class DimData
 	private int lander_type = -1;
 	private int cloudHeight;
 	private float temp_mod = 0.5F;
+	private List<IBlockState> ores = new ArrayList<>();
 		
 	public DimData(CelestialBody body) {
 		this.body = body;
@@ -100,6 +102,11 @@ public class DimData
 		this.temp_mod = mod;
 		return this;
 	}
+	
+	public DimData setListAsteroidsOres(List<IBlockState> list) {
+		this.ores = list;
+		return this;
+	}
 
 	public CelestialBody getBody() 	{ return this.body;	}
 	public Vec3d getSkyColor() { return this.skyColor; }    	
@@ -120,5 +127,5 @@ public class DimData
 	public boolean getThrowMeteors() { return this.throwMeteors; }
 	public int getCloudHeight() { return this.cloudHeight; }
 	public float getTemperatureMod() { return this.temp_mod; }
-	
+	public List<IBlockState> getAsteroidsOres() { return this.ores; }
 }

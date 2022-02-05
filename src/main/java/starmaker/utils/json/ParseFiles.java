@@ -20,7 +20,9 @@ import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
 import asmodeuscore.core.astronomy.BodiesData;
 import asmodeuscore.core.astronomy.BodiesRegistry;
 import asmodeuscore.core.astronomy.dimension.world.gen.ACBiome;
+import asmodeuscore.core.utils.ACCompatibilityManager;
 import asmodeuscore.core.utils.Utils;
+import galaxyspace.systems.SolarSystem.SolarSystemBodies;
 import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.Moon;
@@ -409,16 +411,23 @@ public class ParseFiles
 				
 				
 				switch(impl.getParentPlanet())
-				{
-					case "mercury": planet = GalacticraftCore.planetMercury; break;
+				{					
 					case "venus": planet = VenusModule.planetVenus; break;
 					case "overworld": planet = GalacticraftCore.planetOverworld; break;
 					case "mars": planet = MarsModule.planetMars; break;
-					case "jupiter": planet = GalacticraftCore.planetJupiter; break;
-					case "saturn": planet = GalacticraftCore.planetSaturn; break;
-					case "uranus": planet = GalacticraftCore.planetUranus; break;
-					case "neptune": planet = GalacticraftCore.planetNeptune; break;
 					default: planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+				}
+				
+				if(ACCompatibilityManager.isGalaxySpaceLoaded()) {
+					switch(impl.getParentPlanet())
+					{
+						case "mercury": planet = SolarSystemBodies.planetMercury; break;
+						case "jupiter": planet = SolarSystemBodies.planetJupiter; break;
+						case "saturn": planet = SolarSystemBodies.planetSaturn; break;
+						case "uranus": planet = SolarSystemBodies.planetUranus; break;
+						case "neptune": planet = SolarSystemBodies.planetNeptune; break;
+						default: planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+					}
 				}
 				
 				if (planet == null)	continue;
@@ -444,13 +453,17 @@ public class ParseFiles
 					Vec3d skyColor = new Vec3d(impl.getSky());
 					Vec3d fogColor = new Vec3d(impl.getFog());
 					Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
-					
+
 					List<BiomeData> biomes = new ArrayList<BiomeData>();
 					for (int i = 0; i < impl.getBiomes().size(); i++)
 					{
 						if (i > 5) break;
-						BiomeImpl biomeImpl = impl.getBiomes().get(i);
 	
+						String biomename = impl.getBiomes().get(i);
+						if(listBiomes.containsKey(biomename)) {							
+							biomes.add(listBiomes.get(biomename));
+						}
+						/*
 						int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
 						int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
 						int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
@@ -473,7 +486,7 @@ public class ParseFiles
 								.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
 								.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
 								.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen));
-					}
+					*/}
 					
 					WorldDataImpl dataImpl = impl.getWorldData();
 	
@@ -483,7 +496,10 @@ public class ParseFiles
 							.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(), dataImpl.getWaterBlock())
 							.setBiomes(biomes).setSunSize(impl.getSunSize())
 							.setWaterY(dataImpl.getWaterY())
-							.setLanderType(dataImpl.getLanderType());
+							.setLanderType(dataImpl.getLanderType())
+							.setThrowMeteors(dataImpl.getThrowMeteors())
+							.setCloudHeight(impl.getCloudHeight())
+							.setTemperatureMod(impl.getTemperatureModificator());
 	
 					regDim(getAvailableID(), data, moon.getWorldProvider(), new TeleportTypeBody());
 					
@@ -550,7 +566,13 @@ public class ParseFiles
 					BodiesRegistry.setProviderData(asteroid, WorldProviderAsteroid.class, dimID, impl.getTier(), ACBiome.ACSpace);
 					asteroid.setAtmosphere(new AtmosphereInfo(false, false, false, impl.getTemperature(), 0F, 0F));
 					asteroid.setRingColorRGB(1.1F, 0.0F, 0.0F);
-					asteroid.setRelativeDistanceFromCenter(new ScalableDistance(orbitData.getDistanceFromCenter() + 0.1F, orbitData.getDistanceFromCenter() - 0.1F));
+					asteroid.setRelativeDistanceFromCenter(new ScalableDistance(orbitData.getDistanceFromCenter() + 0.05F, orbitData.getDistanceFromCenter() - 0.05F));
+					
+					List<IBlockState> oregen = new ArrayList<>();
+					for(OreGenImpl data : impl.getOreGenList())					
+						oregen.add(getBlock(data.getOreBlock()));
+				
+					
 					DimData data = new DimData(asteroid, "", 0)
 							.setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
 							.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
@@ -560,7 +582,8 @@ public class ParseFiles
 							.setLanderType(1)
 							.setThrowMeteors(false)
 							.setCloudHeight(0)
-							.setTemperatureMod(0);
+							.setTemperatureMod(0)
+							.setListAsteroidsOres(oregen);
 	
 					regDim(getAvailableID(), data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
 

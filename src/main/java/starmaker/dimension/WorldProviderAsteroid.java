@@ -2,14 +2,21 @@ package starmaker.dimension;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.TreeMap;
 
+import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
 import micdoodle8.mods.galacticraft.core.util.GCLog;
 import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityAstroMiner;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.IChunkGenerator;
+import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import starmaker.utils.data.AsteroidData;
 import starmaker.utils.data.AsteroidWorldSaveData;
 
@@ -35,7 +42,32 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 	public float calculateCelestialAngle(long par1, float par3) {
 		return 0.22F;
 	}
+	
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IRenderHandler getCloudRenderer() {
+		return new CloudRenderer();
+	}
 	 
+	@Override
+    @SideOnly(Side.CLIENT)
+    public float getSunBrightness(float par1) {
+       float f1 = this.world.getCelestialAngle(1.0F);
+       float f2 = 1.25F - (MathHelper.cos(f1 * 3.1415927F * 2.0F) * 2.0F + 0.2F);
+       float f3 = this.world.getWorldTime();
+       if(f2 < 0.0F) {
+          f2 = 0.0F;
+       }
+
+       if(f2 > 1.0F) {
+          f2 = 1.0F;
+       }
+
+       f2 = 1.2F - f2;
+       return f2 * 0.1F;
+    }
+	
 	public void addAsteroid(BlockPos pos, int size, int core) {
 		AsteroidData coords = new AsteroidData(pos, size, core);
 		if (!this.asteroids.contains(coords)) {

@@ -1,10 +1,13 @@
 
 package starmaker.utils.json.impl;
 
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import starmaker.utils.json.data.OrbitDataImpl;
+import starmaker.utils.json.data.OreGenImpl;
 
 public class AsteroidImpl
 {
@@ -36,6 +39,9 @@ public class AsteroidImpl
 	@SerializedName("unreachable")
 	@Expose
 	private boolean unreachable;
+	@SerializedName("oregen")
+	@Expose
+	private List<OreGenImpl> oregen = null;
 
 	public AsteroidImpl()
 	{
@@ -43,7 +49,7 @@ public class AsteroidImpl
 
 	public AsteroidImpl(String parentSystem, OrbitDataImpl orbitData,
 			float temperature, boolean solarRadiation, double sunBrightness,
-			double starBrightness, int tier, float sun_size, boolean unreachable)
+			double starBrightness, int tier, float sun_size, boolean unreachable, List<OreGenImpl> oregen)
 	{
 		super();
 		this.parentSystem = parentSystem;		
@@ -55,6 +61,7 @@ public class AsteroidImpl
 		this.tier = tier;
 		this.sun_size = sun_size;
 		this.unreachable = unreachable;
+		this.oregen = oregen;
 	}
 
 	public String getParentSystem()
@@ -198,6 +205,22 @@ public class AsteroidImpl
 	public AsteroidImpl withUnreachable(boolean unreachable)
 	{
 		this.unreachable = unreachable;
+		return this;
+	}
+	
+	public List<OreGenImpl> getOreGenList()
+	{
+		return this.oregen;
+	}
+	
+	public void setOreGenList(List<OreGenImpl> oregen)
+	{
+		this.oregen = oregen;
+	}
+	
+	public AsteroidImpl withOreGenList(List<OreGenImpl> oregen)
+	{
+		this.oregen = oregen;
 		return this;
 	}
 }

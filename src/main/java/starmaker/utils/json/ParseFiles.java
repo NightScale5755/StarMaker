@@ -134,7 +134,7 @@ public class ParseFiles
 				if(impl.getLakesGen() != null)
 					lakesgen = new LakesGenData(impl.getLakesGen().getLiquidBlock(), impl.getLakesGen().getQuantity());
 
-				StarMaker.LOG.debug("Registered New Biome: %s", biomeFiles.getName());
+				StarMaker.LOG.info("Registered New Biome: %s", biomeFiles.getName());
 				
 				listBiomes.put(biomeFiles.getName().replace(".json", "").toLowerCase(), new BiomeData(biomeFiles.getName().toLowerCase(), impl.getBiomeSize())
 						.setData(impl.getPersistance(), impl.getHeight(), impl.getOctaves(), impl.getIntquility())
@@ -553,7 +553,7 @@ public class ParseFiles
 				
 				Planet asteroid = BodiesRegistry.registerExPlanet(system, planet_name, CoreConfig.resourceDomain, orbitData.getDistanceFromCenter());
 				
-				BodiesRegistry.setOrbitData(asteroid, orbitData.getPhase(), orbitData.getSize(), orbitData.getRelativeTime(), orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
+				BodiesRegistry.setOrbitData(asteroid, orbitData.getPhase(), 1.0F, orbitData.getRelativeTime(), orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
 				
 				if(!impl.getUnreachable()) {
 					if (count > LIMIT_ASTEROIDS)
@@ -566,7 +566,7 @@ public class ParseFiles
 					BodiesRegistry.setProviderData(asteroid, WorldProviderAsteroid.class, dimID, impl.getTier(), ACBiome.ACSpace);
 					asteroid.setAtmosphere(new AtmosphereInfo(false, false, false, impl.getTemperature(), 0F, 0F));
 					asteroid.setRingColorRGB(1.1F, 0.0F, 0.0F);
-					asteroid.setRelativeDistanceFromCenter(new ScalableDistance(orbitData.getDistanceFromCenter() + 0.05F, orbitData.getDistanceFromCenter() - 0.05F));
+					asteroid.setRelativeDistanceFromCenter(new ScalableDistance(orbitData.getDistanceFromCenter() + orbitData.getSize(), orbitData.getDistanceFromCenter() - orbitData.getSize()));
 					
 					List<IBlockState> oregen = new ArrayList<>();
 					for(OreGenImpl data : impl.getOreGenList())					

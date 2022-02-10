@@ -47,7 +47,7 @@ public class SkyProviderBody extends SkyProviderBase {
 			float speed = ((Moon)this.data.getBody()).getRelativeOrbitTime();
 			float x = this.mc.world.getCelestialAngle(ticks) * -360.0F / 10;
 			float y = this.mc.world.getCelestialAngle(ticks) * 360.0F + 120F;
-			this.renderImage(parent.getBodyIcon(), x, y, 0, s);
+			this.renderImage(parent.getBodyIcon(), x, y, 0, s, 1.0F);
 			
 			DimData parentData = MakerUtils.bodies.get(parent.getDimensionID());
 			GL11.glPushMatrix(); 
@@ -66,26 +66,27 @@ public class SkyProviderBody extends SkyProviderBase {
 		
 		GL11.glPushMatrix();
 		GL11.glRotatef(this.mc.world.getCelestialAngle(ticks) * 360.0F, 0.0F, 0.0F, 1.0F);  
+		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+		OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 		int i = 0;
 		for(Planet planet : GalaxyRegistry.getPlanetsForSolarSystem(getSolarSystem()))
 		{
 			BodiesData data = BodiesRegistry.getData(planet);
 			if(data != null && data.getType() == TypeBody.STAR) {
 				GL11.glPushMatrix();
-				GL11.glShadeModel(GL11.GL_SMOOTH);
 				GL11.glEnable(GL11.GL_BLEND);
-				OpenGlHelper.glBlendFunc(770, 771, 1, 0);
 				GL11.glRotatef(-90, 0.0F, 1.0F, 0.0F); 
 				GL11.glRotatef(5 - (8 * i), 1.0F, 0.0F, 0.0F); 
 				GL11.glRotatef(20 - (12 * i), 0.0F, 0.0F, 1.0F);
 				this.renderSunAura(tessellator, 3.0F + planet.getRelativeSize(), 0.7F, data.getStarColor());
 				GL11.glDisable(GL11.GL_BLEND);
-				GL11.glShadeModel(GL11.GL_FLAT);
 				GL11.glPopMatrix();
 				renderImage(planet.getBodyIcon(), -90F, 185F - (8 * i), -20 + (12 * i), 1.0F + planet.getRelativeSize());
 				i += 2;
 			}
 		}
+		GL11.glShadeModel(GL11.GL_FLAT);
 		GL11.glPopMatrix(); 
 	}
 

@@ -22,6 +22,7 @@ import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.IWeatherProvider;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
+import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
 import micdoodle8.mods.galacticraft.core.util.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -185,7 +186,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 			};
 			this.setCloudRenderer(cloud);
 		}
-		return super.getCloudRenderer();
+		return new CloudRenderer();
 	}
 	
 	@Override

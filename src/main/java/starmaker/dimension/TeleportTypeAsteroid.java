@@ -2,6 +2,7 @@ package starmaker.dimension;
 
 import java.util.Random;
 
+import micdoodle8.mods.galacticraft.api.vector.BlockVec3;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.ITeleportType;
 import micdoodle8.mods.galacticraft.core.entities.player.GCPlayerStats;
@@ -68,7 +69,7 @@ public class TeleportTypeAsteroid implements ITeleportType
 
             do
             {
-                BlockPos bv3 = null;
+            	BlockVec3 bv3 = null;
                 if (world.provider instanceof WorldProviderAsteroid)
                 {
                     bv3 = ((WorldProviderAsteroid) world.provider).getClosestAsteroidXZ(x, 0, z, true);
@@ -77,45 +78,45 @@ public class TeleportTypeAsteroid implements ITeleportType
                 if (bv3 != null)
                 {
                     //Check whether the returned asteroid is too far from the desired entry location in which case, give up
-                    if (bv3.distanceSq(new BlockPos(x, 128, z)) > 25600)
+                    if (bv3.distanceSquared(new BlockVec3(x, 128, z)) > 25600)
                     {
                         break;
                     }
 
                     if (ConfigManagerCore.enableDebug)
                     {
-                        GCLog.info("Testing asteroid at x" + (bv3.getX()) + " y" + (bv3.getY()) + " z" + bv3.getZ());
+                        GCLog.info("Testing asteroid at x" + (bv3.x) + " y" + (bv3.y) + " z" + bv3.z);
                     }
-                    this.loadChunksAround(bv3.getX(), bv3.getZ(), 2, world.getChunkProvider());
-                    this.loadChunksAround(bv3.getX(), bv3.getZ(), -3, world.getChunkProvider());
+                    this.loadChunksAround(bv3.x, bv3.z, 2, world.getChunkProvider());
+                    this.loadChunksAround(bv3.x, bv3.z, -3, world.getChunkProvider());
 
-                    if (goodAsteroidEntry(world, bv3.getX(), bv3.getY(), bv3.getZ()))
+                    if (goodAsteroidEntry(world, bv3.x, bv3.y, bv3.z))
                     {
-                        return new Vector3(bv3.getX(), 310, bv3.getZ());
+                        return new Vector3(bv3.x, 310, bv3.z);
                     }
-                    if (goodAsteroidEntry(world, bv3.getX() + 2, bv3.getY(), bv3.getZ() + 2))
+                    if (goodAsteroidEntry(world, bv3.x + 2, bv3.y, bv3.z + 2))
                     {
-                        return new Vector3(bv3.getX() + 2, 310, bv3.getZ() + 2);
+                        return new Vector3(bv3.x + 2, 310, bv3.z + 2);
                     }
-                    if (goodAsteroidEntry(world, bv3.getX() + 2, bv3.getY(), bv3.getZ() - 2))
+                    if (goodAsteroidEntry(world, bv3.x + 2, bv3.y, bv3.z - 2))
                     {
-                        return new Vector3(bv3.getX() + 2, 310, bv3.getZ() - 2);
+                        return new Vector3(bv3.x + 2, 310, bv3.z - 2);
                     }
-                    if (goodAsteroidEntry(world, bv3.getX() - 2, bv3.getY(), bv3.getZ() - 2))
+                    if (goodAsteroidEntry(world, bv3.x - 2, bv3.y, bv3.z - 2))
                     {
-                        return new Vector3(bv3.getX() - 2, 310, bv3.getZ() - 2);
+                        return new Vector3(bv3.x - 2, 310, bv3.z - 2);
                     }
-                    if (goodAsteroidEntry(world, bv3.getX() - 2, bv3.getY(), bv3.getZ() + 2))
+                    if (goodAsteroidEntry(world, bv3.x - 2, bv3.y, bv3.z + 2))
                     {
-                        return new Vector3(bv3.getX() - 2, 310, bv3.getZ() + 2);
+                        return new Vector3(bv3.x - 2, 310, bv3.z + 2);
                     }
 
                     //Failed to find an asteroid even though there should be one there
                     if (ConfigManagerCore.enableDebug)
                     {
-                        GCLog.info("Removing drilled out asteroid at x" + (bv3.getX()) + " z" + (bv3.getZ()));
+                        GCLog.info("Removing drilled out asteroid at x" + (bv3.x) + " z" + (bv3.z));
                     }
-                    ((WorldProviderAsteroid) world.provider).removeAsteroid(bv3);
+                    ((WorldProviderAsteroid) world.provider).removeAsteroid(bv3.toBlockPos());
                 }
 
                 attemptCount++;

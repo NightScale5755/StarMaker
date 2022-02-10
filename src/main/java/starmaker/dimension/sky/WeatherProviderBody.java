@@ -150,10 +150,10 @@ public class WeatherProviderBody extends IRenderHandler
 	                        int ly = light & 65535;
 	                        double xc = x + 0.5D;
 	                        double zc = z + 0.5D;
-	                        worldrenderer.pos(xc - dx, (double)ymax - yo, zc - dz).tex(0.0D, (double)y * 0.25D + dy).color(0.8F, 0.4F, 0.6F, alpha).lightmap(lx, ly).endVertex();
-	                        worldrenderer.pos(xc + dx, (double)ymax - yo, zc + dz).tex(1.0D, (double)y * 0.25D + dy).color(0.8F, 0.4F, 0.6F, alpha).lightmap(lx, ly).endVertex();
-	                        worldrenderer.pos(xc + dx, (double)y - yo, zc + dz).tex(1.0D, (double)ymax * 0.25D + dy).color(0.8F, 0.4F, 0.6F, alpha).lightmap(lx, ly).endVertex();
-	                        worldrenderer.pos(xc - dx, (double)y - yo, zc - dz).tex(0.0D, (double)ymax * 0.25D + dy).color(0.8F, 0.4F, 0.6F, alpha).lightmap(lx, ly).endVertex();
+	                        worldrenderer.pos(xc - dx, (double)ymax - yo, zc - dz).tex(0.0D, (double)y * 0.25D + dy).color(1.0F, 1.0F, 1.0F, alpha).lightmap(lx, ly).endVertex();
+	                        worldrenderer.pos(xc + dx, (double)ymax - yo, zc + dz).tex(1.0D, (double)y * 0.25D + dy).color(1.0F, 1.0F, 1.0F, alpha).lightmap(lx, ly).endVertex();
+	                        worldrenderer.pos(xc + dx, (double)y - yo, zc + dz).tex(1.0D, (double)ymax * 0.25D + dy).color(1.0F, 1.0F, 1.0F, alpha).lightmap(lx, ly).endVertex();
+	                        worldrenderer.pos(xc - dx, (double)y - yo, zc - dz).tex(0.0D, (double)ymax * 0.25D + dy).color(1.0F, 1.0F, 1.0F, alpha).lightmap(lx, ly).endVertex();
 	                    }
                         else
                         {

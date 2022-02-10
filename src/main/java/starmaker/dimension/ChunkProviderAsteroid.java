@@ -9,6 +9,7 @@ import java.util.Random;
 import asmodeuscore.core.astronomy.dimension.world.gen.ACBiome;
 import micdoodle8.mods.galacticraft.api.vector.BlockVec3;
 import micdoodle8.mods.galacticraft.api.world.ChunkProviderBase;
+import micdoodle8.mods.galacticraft.core.GCBlocks;
 import micdoodle8.mods.galacticraft.core.perlin.NoiseModule;
 import micdoodle8.mods.galacticraft.core.perlin.generator.Billowed;
 import micdoodle8.mods.galacticraft.core.perlin.generator.Gradient;
@@ -547,6 +548,7 @@ public class ChunkProviderAsteroid extends ChunkProviderBase
             biomesArray[i] = b;
         }
 
+        //var4.generateSkylightMap();
 //        long time3 = System.nanoTime();
         this.generateSkylightMap(var4, par1, par2);
 //        long time4 = System.nanoTime();
@@ -758,146 +760,162 @@ public class ChunkProviderAsteroid extends ChunkProviderBase
     public void generateSkylightMap(Chunk chunk, int cx, int cz)
     {
     	
-        boolean flag = world.provider.hasSkyLight();
-        for (int j = 0; j < 16; j++)
-        {
-            if (chunk.getBlockStorageArray()[j] == null)
-            {
-                chunk.getBlockStorageArray()[j] = new ExtendedBlockStorage(j << 4, flag);
-            }
-        }
+    	  boolean flag = world.provider.hasSkyLight();
+          for (int j = 0; j < 16; j++)
+          {
+              if (chunk.getBlockStorageArray()[j] == null)
+              {
+                  chunk.getBlockStorageArray()[j] = new ExtendedBlockStorage(j << 4, flag);
+              }
+          }
 
-        int i = chunk.getTopFilledSegment();
-        chunk.heightMapMinimum = Integer.MAX_VALUE;
+          int i = chunk.getTopFilledSegment();
+          chunk.heightMapMinimum = Integer.MAX_VALUE;
 
-        for (int j = 0; j < 16; ++j)
-        {
-            int k = 0;
+          for (int j = 0; j < 16; ++j)
+          {
+              int k = 0;
 
-            while (k < 16)
-            {
-                chunk.precipitationHeightMap[j + (k << 4)] = -999;
-                int y = i + 15;
+              while (k < 16)
+              {
+                  chunk.precipitationHeightMap[j + (k << 4)] = -999;
+                  int y = i + 15;
 
-                while (true)
-                {
-                    if (y > 0)
-                    {
-                        if (chunk.getBlockLightOpacity(new BlockPos(j, y - 1, k)) == 0)
-                        {
-                            --y;
-                            continue;
-                        }
+                  while (true)
+                  {
+                      if (y > 0)
+                      {
+                          if (chunk.getBlockLightOpacity(new BlockPos(j, y - 1, k)) == 0)
+                          {
+                              --y;
+                              continue;
+                          }
 
-                        chunk.heightMap[k << 4 | j] = y;
+                          chunk.heightMap[k << 4 | j] = y;
 
-                        if (y < chunk.heightMapMinimum)
-                        {
-                            chunk.heightMapMinimum = y;
-                        }
-                    }
+                          if (y < chunk.heightMapMinimum)
+                          {
+                              chunk.heightMapMinimum = y;
+                          }
+                      }
 
-                    ++k;
-                    break;
-                }
-            }
-        }
+                      ++k;
+                      break;
+                  }
+              }
+          }
 
-        for (AsteroidData a : this.largeAsteroids)
-        {
-            int yMin = a.asteroidYArray - a.asteroidSizeArray;
-            int yMax = a.asteroidYArray + a.asteroidSizeArray;
-            int xMin = a.xMinArray;
-            if (yMin < 0)
-            {
-                yMin = 0;
-            }
-            if (yMax > 255)
-            {
-                yMax = 255;
-            }
-            if (xMin == 0)
-            {
-                xMin = 1;
-            }
-            for (int x = a.xMax - 1; x >= xMin; x--)
-            {
-                for (int z = a.zMinArray; z < a.zMax; z++)
-                {
-                    for (int y = yMin; y < yMax; y++)
-                    {
-                        if (chunk.getBlockState(x - 1, y, z).getBlock() instanceof BlockAir && !(chunk.getBlockState(x, y, z).getBlock() instanceof BlockAir))
-                        {
-                            int count = 2;
+          for (AsteroidData a : this.largeAsteroids)
+          {
+              int yMin = a.asteroidYArray - a.asteroidSizeArray;
+              int yMax = a.asteroidYArray + a.asteroidSizeArray;
+              int xMin = a.xMinArray;
+              if (yMin < 0)
+              {
+                  yMin = 0;
+              }
+              if (yMax > 255)
+              {
+                  yMax = 255;
+              }
+              if (xMin == 0)
+              {
+                  xMin = 1;
+              }
+              for (int x = a.xMax - 1; x >= xMin; x--)
+              {
+                  for (int z = a.zMinArray; z < a.zMax; z++)
+                  {
+                      for (int y = yMin; y < yMax; y++)
+                      {
+                          if (chunk.getBlockState(x - 1, y, z).getBlock() instanceof BlockAir && !(chunk.getBlockState(x, y, z).getBlock() instanceof BlockAir))
+                          {
+                              int count = 2;
 
-                            if (x > 1)
-                            {
-                                if ((chunk.getBlockState(x - 2, y, z).getBlock() instanceof BlockAir))
-                                {
-                                    count += 2;
-                                }
-                            }
-                            if (x > 2)
-                            {
-                                if ((chunk.getBlockState(x - 3, y, z).getBlock() instanceof BlockAir))
-                                {
-                                    count += 2;
-                                }
-                                if ((chunk.getBlockState(x - 3, y + 1, z).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                                if ((chunk.getBlockState(x - 3, y + 1, z).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                                if ((z > 0 /*|| ((xPos & 15) > 2 ? flagZDChunk : flagXZDChunk)*/) && (chunk.getBlockState(x - 3, y, z - 1).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                                if ((z < 15/* || ((xPos & 15) > 2 ? flagZUChunk : flagXZUChunk)*/) && (chunk.getBlockState(x - 3, y, z + 1).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                            }
-                            if (/*flagXChunk || */x > 3)
-                            {
-                                if ((chunk.getBlockState(x - 4, y, z).getBlock() instanceof BlockAir))
-                                {
-                                    count += 2;
-                                }
-                                if ((chunk.getBlockState(x - 4, y + 1, z).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                                if ((chunk.getBlockState(x - 4, y + 1, z).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                                if ((z > 0/* || ((xPos & 15) > 3 ? flagZDChunk : flagXZDChunk)*/) && !(chunk.getBlockState(x - 4, y, z - 1).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                                if ((z < 15/* || ((xPos & 15) > 3 ? flagZUChunk : flagXZUChunk)*/) && !(chunk.getBlockState(x - 4, y, z + 1).getBlock() instanceof BlockAir))
-                                {
-                                    count++;
-                                }
-                            }
+                              if (x > 1)
+                              {
+                                  if ((chunk.getBlockState(x - 2, y, z).getBlock() instanceof BlockAir))
+                                  {
+                                      count += 2;
+                                  }
+                              }
+                              if (x > 2)
+                              {
+                                  if ((chunk.getBlockState(x - 3, y, z).getBlock() instanceof BlockAir))
+                                  {
+                                      count += 2;
+                                  }
+                                  if ((chunk.getBlockState(x - 3, y + 1, z).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                                  if ((chunk.getBlockState(x - 3, y + 1, z).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                                  if ((z > 0 /*
+                                              * || ((xPos & 15) > 2 ? flagZDChunk
+                                              * : flagXZDChunk)
+                                              */) && (chunk.getBlockState(x - 3, y, z - 1).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                                  if ((z < 15/*
+                                              * || ((xPos & 15) > 2 ? flagZUChunk
+                                              * : flagXZUChunk)
+                                              */) && (chunk.getBlockState(x - 3, y, z + 1).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                              }
+                              if (x > 3)
+                              {
+                                  if ((chunk.getBlockState(x - 4, y, z).getBlock() instanceof BlockAir))
+                                  {
+                                      count += 2;
+                                  }
+                                  if ((chunk.getBlockState(x - 4, y + 1, z).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                                  if ((chunk.getBlockState(x - 4, y + 1, z).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                                  if ((z > 0/*
+                                             * || ((xPos & 15) > 3 ? flagZDChunk :
+                                             * flagXZDChunk)
+                                             */) && !(chunk.getBlockState(x - 4, y, z - 1).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                                  if ((z < 15/*
+                                              * || ((xPos & 15) > 3 ? flagZUChunk
+                                              * : flagXZUChunk)
+                                              */) && !(chunk.getBlockState(x - 4, y, z + 1).getBlock() instanceof BlockAir))
+                                  {
+                                      count++;
+                                  }
+                              }
+                              if (count > 12)
+                              {
+                                  count = 12;
+                              }
+                              if (count > 12)
+                                  count = 12;
+                              chunk.setBlockState(new BlockPos(x - 1, y, z), GCBlocks.brightAir.getStateFromMeta(13 - count));
+                              ExtendedBlockStorage extendedblockstorage = chunk.getBlockStorageArray()[y >> 4];
+                              if (extendedblockstorage != null)
+                              {
+                                  extendedblockstorage.setBlockLight(x - 1, y & 15, z, count + 2);
+                              }
+                          }
+                      }
+                  }
+              }
+          }
 
-                            if (count > 4) count = 4;
-                            //chunk.setBlockState(new BlockPos(x - 1, y, z), GCBlocks.brightAir.getStateFromMeta(13 - count));
-                            ExtendedBlockStorage extendedblockstorage = chunk.getBlockStorageArray()[y >> 4];
-                            if (extendedblockstorage != null)
-                            {
-                                extendedblockstorage.setBlockLight(x - 1, y & 15, z, count + 2);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        chunk.setModified(true);
+          chunk.setModified(true);
     }
 
     public void resetBase()

@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeMap;
 
+import galaxyspace.systems.SolarSystem.planets.kuiperbelt.world.gen.BiomeProviderKuiperBelt;
+import micdoodle8.mods.galacticraft.api.vector.BlockVec3;
 import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
 import micdoodle8.mods.galacticraft.core.util.GCLog;
 import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityAstroMiner;
@@ -13,6 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -34,9 +37,32 @@ public class WorldProviderAsteroid extends WorldProviderBody {
     }
 	
 	@Override
+    public boolean isDaytime()
+    {
+        return true;
+    }
+
+	@Override
+    public boolean hasSunset()
+    {
+        return false;
+    }
+	
+	@Override
+    public int getAverageGroundLevel()
+    {
+        return 96;
+    }
+	
+	@Override
 	public IChunkGenerator createChunkGenerator() {		
 		return new ChunkProviderAsteroid(this.world, this.world.getSeed(), getDimData());		
 	}
+	
+	@Override 
+    public Class<? extends BiomeProvider> getBiomeProviderClass() { 
+    	return BiomeProviderKuiperBelt.class; 
+    }
 	
 	@Override
 	public float calculateCelestialAngle(long par1, float par3) {
@@ -65,7 +91,7 @@ public class WorldProviderAsteroid extends WorldProviderBody {
        }
 
        f2 = 1.2F - f2;
-       return f2 * 0.1F;
+       return f2 * 1.0F;
     }
 	
 	public void addAsteroid(BlockPos pos, int size, int core) {
@@ -153,12 +179,12 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 		return true;
 	}
 
-	public BlockPos getClosestAsteroidXZ(int x, int y, int z, boolean mark) {
+	public BlockVec3 getClosestAsteroidXZ(int x, int y, int z, boolean mark) {
 		if (!this.checkHasAsteroids()) {
 			return null;
 		}
 
-		BlockPos result = null;
+		BlockVec3 result = null;
 		AsteroidData resultRoid = null;
 		int lowestDistance = Integer.MAX_VALUE;
 
@@ -172,7 +198,7 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 			int a = dx * dx + dz * dz;
 			if (a < lowestDistance) {
 				lowestDistance = a;
-				result = test.centre;
+				result = new BlockVec3(test.centre);
 				resultRoid = test;
 			}
 		}
@@ -185,8 +211,8 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 			resultRoid.sizeAndLandedFlag |= 128;
 			this.writeToNBT(this.datafile.datacompound);
 		}
-		// result = result.clone();
-		// result.sideDoneBits = resultRoid.sizeAndLandedFlag & 127;
+		result = result.clone();
+		result.sideDoneBits = resultRoid.sizeAndLandedFlag & 127;
 		return result;
 	}
 
@@ -262,4 +288,15 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 
 		return returnValues;
 	}
+	
+	@Override
+	public boolean hasSkyLight() {
+		return false;
+	}
+	
+    @Override
+    public float getArrowGravity()
+    {
+        return 0.002F;
+    }
 }

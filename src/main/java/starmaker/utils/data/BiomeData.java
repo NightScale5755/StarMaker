@@ -3,6 +3,8 @@ package starmaker.utils.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import starmaker.utils.json.data.EntitySpawnImpl;
+
 
 public class BiomeData
 {
@@ -15,6 +17,10 @@ public class BiomeData
 	private TreeGenData getTreeGenData;
 	private List<GrassGenData> getGrassGenData = new ArrayList<GrassGenData>();
 	private LakesGenData getLakesGenData;
+	
+	private List<EntitySpawnImpl> creatureSpawn = new ArrayList<EntitySpawnImpl>(),
+			monsterSpawn = new ArrayList<EntitySpawnImpl>(), 
+			water_creatureSpawn = new ArrayList<EntitySpawnImpl>();
 	
 	public BiomeData(String name, float biomesize)
 	{
@@ -69,6 +75,16 @@ public class BiomeData
 		this.getLakesGenData = data;
 		return this;
 	}
+	
+	public BiomeData setSpawnLists(List<EntitySpawnImpl> creature, List<EntitySpawnImpl> monster, List<EntitySpawnImpl> water) {
+		if(creature != null)
+			this.creatureSpawn = creature;
+		if(monster != null)
+			this.monsterSpawn = monster;
+		if(water != null)
+			this.water_creatureSpawn = water;
+		return this;
+	}
 
 	
 	public float getPersistance() { return this.persistance; }
@@ -87,4 +103,8 @@ public class BiomeData
 	public TreeGenData getTreeGenData() {return this.getTreeGenData; }
 	public List<GrassGenData> getGrassGenData() { return this.getGrassGenData; }
 	public LakesGenData getLakesGenData() {return this.getLakesGenData; }
+	public List<EntitySpawnImpl> getCreatureSpawnList(){return this.creatureSpawn;}
+	public List<EntitySpawnImpl> getMonsterSpawnList(){return this.monsterSpawn;}
+	public List<EntitySpawnImpl> getWaterCreatureSpawnList(){return this.water_creatureSpawn;}
+	
 }

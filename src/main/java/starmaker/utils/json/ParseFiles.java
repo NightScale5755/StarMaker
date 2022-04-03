@@ -55,16 +55,16 @@ import starmaker.utils.data.GrassGenData;
 import starmaker.utils.data.LakesGenData;
 import starmaker.utils.data.OreGenData;
 import starmaker.utils.data.TreeGenData;
+import starmaker.utils.json.celestialimpl.AsteroidImpl;
+import starmaker.utils.json.celestialimpl.MoonImpl;
+import starmaker.utils.json.celestialimpl.PlanetImpl;
+import starmaker.utils.json.celestialimpl.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
 import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.OreGenImpl;
 import starmaker.utils.json.data.StarsDataImpl;
 import starmaker.utils.json.data.WorldDataImpl;
-import starmaker.utils.json.impl.AsteroidImpl;
-import starmaker.utils.json.impl.MoonImpl;
-import starmaker.utils.json.impl.PlanetImpl;
-import starmaker.utils.json.impl.SystemImpl;
 import starmaker.world.TeleportTypeBody;
 
 public class ParseFiles
@@ -74,10 +74,10 @@ public class ParseFiles
 	private static Map<String, BiomeData> listBiomes = new HashMap<String, BiomeData>();
 	private static int dimID = CoreConfig.startIDs;
 
-	private static final int LIMIT_SYSTEMS = 10;
-	private static final int LIMIT_PLANETS = 20;
-	private static final int LIMIT_MOONS = 20;
-	private static final int LIMIT_ASTEROIDS = 10;
+	private static final int LIMIT_SYSTEMS = 50;
+	private static final int LIMIT_PLANETS = 100;
+	private static final int LIMIT_MOONS = 50;
+	private static final int LIMIT_ASTEROIDS = 25;
 
 	public void parse()
 	{
@@ -139,7 +139,8 @@ public class ParseFiles
 				listBiomes.put(biomeFiles.getName().replace(".json", "").toLowerCase(), new BiomeData(biomeFiles.getName().toLowerCase(), impl.getBiomeSize())
 						.setData(impl.getPersistance(), impl.getHeight(), impl.getOctaves(), impl.getIntquility())
 						.setBlocks(impl.getSurfaceBlock(), impl.getSubsurfaceBlock())
-						.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen));
+						.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen)
+						.setSpawnLists(impl.getCreatureSpawnList(), impl.getMonsterSpawnList(), impl.getWaterCreatureSpawnList()));
 
 			}
 			
@@ -196,6 +197,32 @@ public class ParseFiles
 						GalaxyRegistry.registerSolarSystem(system);
 	
 						BodiesData data = new BodiesData(TypeBody.STAR).setStarClass(star_class).setStarColor(star_color);
+						switch(star_color) {
+							case BLUE:
+								data.setStarHabitableZone(1.8F, 0.35F);
+								break;
+							case BROWN:
+								data.setStarHabitableZone(0.3F, 0.05F);
+								break;
+							case LIGHTBLUE:
+								data.setStarHabitableZone(1.5F, 0.3F);
+								break;
+							case ORANGE:
+								data.setStarHabitableZone(0.7F, 0.15F);
+								break;
+							case RED:
+								data.setStarHabitableZone(0.5F, 0.1F);
+								break;
+							case WHITE:
+								data.setStarHabitableZone(2.2F, 0.35F);
+								break;
+							case YELLOW:
+								data.setStarHabitableZone(1.0F, 0.22F);
+								break;
+							default:
+								break;
+									
+						}
 						BodiesRegistry.registerBodyData(system.getMainStar(), data);
 						StarMaker.LOG.info("Registered New Solar System: %s", system.getName());
 						count++;

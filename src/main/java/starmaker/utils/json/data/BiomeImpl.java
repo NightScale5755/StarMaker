@@ -48,11 +48,20 @@ public class BiomeImpl
 	private TreeGenImpl treegen = null;
 	@SerializedName("grassgen")
 	@Expose
-	private List<GrassGenImpl> grassgen = null;
-	
+	private List<GrassGenImpl> grassgen = null;	
 	@SerializedName("lakesgen")
 	@Expose
 	private LakesGenImpl lakesgen = null;
+	
+	@SerializedName("creature_spawnlist") @Expose
+	private List<EntitySpawnImpl> creatureSpawn = null;
+	
+	@SerializedName("monster_spawnlist") @Expose
+	private List<EntitySpawnImpl> monsterSpawn = null;
+	
+	@SerializedName("water_creature_spawnlist") @Expose
+	private List<EntitySpawnImpl> water_creatureSpawn = null;
+	
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -95,6 +104,23 @@ public class BiomeImpl
 		this.lakesgen = lakesgen;
 	}
 
+	public BiomeImpl setCreatureEntityList(List<EntitySpawnImpl> list)
+	{
+		this.creatureSpawn = list;
+		return this;
+	}
+	
+	public BiomeImpl setMonsterEntityList(List<EntitySpawnImpl> list)
+	{
+		this.monsterSpawn = list;
+		return this;
+	}
+	public BiomeImpl setWaterCreatureEntityList(List<EntitySpawnImpl> list)
+	{
+		this.water_creatureSpawn = list;
+		return this;
+	}
+	
 	public Float getPersistance()
 	{
 		return (float) persistance;
@@ -303,5 +329,17 @@ public class BiomeImpl
 	public void setLakesGen(LakesGenImpl lakesgen)
 	{
 		this.lakesgen = lakesgen;
+	}
+	
+	public List<EntitySpawnImpl> getCreatureSpawnList() {
+		return this.creatureSpawn;
+	}
+	
+	public List<EntitySpawnImpl> getMonsterSpawnList() {
+		return this.monsterSpawn;
+	}
+	
+	public List<EntitySpawnImpl> getWaterCreatureSpawnList() {
+		return this.water_creatureSpawn;
 	}
 }

@@ -28,6 +28,9 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.Particle;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumParticleTypes;
@@ -38,10 +41,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.common.ForgeHooks;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import starmaker.api.ILanderTypeProvider;
@@ -53,6 +60,7 @@ import starmaker.utils.data.DimData;
 import starmaker.utils.data.GrassGenData;
 import starmaker.utils.data.OreGenData;
 import starmaker.utils.json.ParseFiles;
+import starmaker.utils.json.data.EntitySpawnImpl;
 
 public class WorldProviderBody extends WE_WorldProviderSpace implements IWeatherProvider, ILanderTypeProvider {
 
@@ -90,7 +98,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 	public double getMeteorFrequency() {
 		if(!getDimData().getThrowMeteors()) return 0;
 		
-		return (3 - (getSkyColor().x + getSkyColor().y + getSkyColor().z)) * 10;
+		return 4;//(3 - (getSkyColor().x + getSkyColor().y + getSkyColor().z)) * 10;
 	}
 	 
 	@Override
@@ -162,7 +170,12 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IRenderHandler getCloudRenderer() {
-		if(super.getCloudRenderer() == null && getDimData().getCloudColor() != null) {
+
+		if(getDimData().getCloudColor() == null)
+			return new CloudRenderer();
+		
+		if(super.getCloudRenderer() == null) {
+			
 			float[] f = {1.0F};
 			CustomCloudRender cloud = new CustomCloudRender(f) {
 				
@@ -173,7 +186,8 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 				
 				@Override
 				public Vec3d getCloudColor(float renderPartialTicks) {
-					float f = 1.0F - this.mc.world.getStarBrightness(renderPartialTicks);
+					float f = this.mc.world.provider.getSunBrightness(1.0F);
+					
 					return new Vec3d(getDimData().getCloudColor().x * f, getDimData().getCloudColor().y * f, getDimData().getCloudColor().z * f);
 				
 					//return getDimData().getCloudColor();
@@ -186,7 +200,9 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 			};
 			this.setCloudRenderer(cloud);
 		}
-		return new CloudRenderer();
+		return super.getCloudRenderer();
+		
+		
 	}
 	
 	@Override
@@ -300,7 +316,40 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 				{
 				}
 				
-			}.setSize(280.0D, 1.5D).setBaseSpawn().setColors(biome.getGrassColor(), biome.getWaterColor(), biome.getFoliageColor());
+			}.setSize(280.0D, 1.5D).setColors(biome.getGrassColor(), biome.getWaterColor(), biome.getFoliageColor());
+			
+			if(!biome.getCreatureSpawnList().isEmpty()) {
+				for(EntitySpawnImpl entities : biome.getCreatureSpawnList())
+				{
+					EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
+					//FIXME: ADD LOG
+					if(entry == null) continue;
+					Class<? extends Entity> entityClass = entry.getEntityClass();
+					b.getSpawnableList(EnumCreatureType.CREATURE).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
+				}
+			}
+			
+			if(!biome.getMonsterSpawnList().isEmpty()) {
+				for(EntitySpawnImpl entities : biome.getMonsterSpawnList())
+				{
+					EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
+					//FIXME: ADD LOG
+					if(entry == null) continue;
+					Class<? extends Entity> entityClass = entry.getEntityClass();
+					b.getSpawnableList(EnumCreatureType.MONSTER).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
+				}
+			}
+			
+			if(!biome.getWaterCreatureSpawnList().isEmpty()) {
+				for(EntitySpawnImpl entities : biome.getWaterCreatureSpawnList())
+				{
+					EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
+					//FIXME: ADD LOG
+					if(entry == null) continue;
+					Class<? extends Entity> entityClass = entry.getEntityClass();
+					b.getSpawnableList(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
+				}
+			}
 			
 			if(!biome.getOreGenData().isEmpty()) {
 				WE_OreGen standardOres = new WE_OreGen();

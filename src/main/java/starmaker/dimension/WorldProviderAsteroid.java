@@ -7,6 +7,7 @@ import java.util.TreeMap;
 
 import galaxyspace.systems.SolarSystem.planets.kuiperbelt.world.gen.BiomeProviderKuiperBelt;
 import micdoodle8.mods.galacticraft.api.vector.BlockVec3;
+import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
 import micdoodle8.mods.galacticraft.core.util.GCLog;
 import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityAstroMiner;
@@ -69,6 +70,23 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 		return 0.22F;
 	}
 	
+	@Override
+	public double getMeteorFrequency() {
+		return 0;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Vector3 getFogColor() {
+	
+		return new Vector3(0, 0, 0);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Vector3 getSkyColor() {
+		return new Vector3(0, 0, 0);	
+	}
 	
 	@Override
 	@SideOnly(Side.CLIENT)

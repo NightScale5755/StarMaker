@@ -1,4 +1,4 @@
-package starmaker.utils.json.impl;
+package starmaker.utils.json.celestialimpl;
 
 import java.util.List;
 

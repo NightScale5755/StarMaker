@@ -9,6 +9,8 @@ import java.util.List;
 import starmaker.CoreConfig;
 import starmaker.StarMaker;
 import starmaker.utils.json.SolarSystemObjects;
+import starmaker.utils.json.celestialimpl.PlanetImpl;
+import starmaker.utils.json.celestialimpl.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
 import starmaker.utils.json.data.LakesGenImpl;
@@ -16,8 +18,6 @@ import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.OreGenImpl;
 import starmaker.utils.json.data.TreeGenImpl;
 import starmaker.utils.json.data.WorldDataImpl;
-import starmaker.utils.json.impl.PlanetImpl;
-import starmaker.utils.json.impl.SystemImpl;
 
 public class ExampleFiles
 {

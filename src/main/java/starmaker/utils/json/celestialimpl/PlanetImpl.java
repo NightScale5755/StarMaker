@@ -1,5 +1,5 @@
 
-package starmaker.utils.json.impl;
+package starmaker.utils.json.celestialimpl;
 
 import java.util.List;
 
@@ -81,6 +81,9 @@ public class PlanetImpl
 	@SerializedName("unreachable")
 	@Expose
 	private boolean unreachable;
+	
+	@SerializedName("ringTexture") @Expose
+	private String ringTexture;
 	/**
 	 * No args constructor for use in serialization
 	 * 

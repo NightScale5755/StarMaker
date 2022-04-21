@@ -260,7 +260,9 @@ public class ParseFiles
 							if(star_color != null) 
 								icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX, "textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
 							
-							Planet star = BodiesRegistry.registerExPlanet(system, star_data.getName(), StarMaker.ASSET_PREFIX, 0.3F * i);
+							float distance = star_data.getDistanceFromCenter() != null ? star_data.getDistanceFromCenter() : 0.3F * i;
+							
+							Planet star = BodiesRegistry.registerExPlanet(system, star_data.getName(), StarMaker.ASSET_PREFIX, distance);
 							star.setRingColorRGB(0.0F, 0.0F, 0.0F);
 							star.setBodyIcon(icon);
 							BodiesRegistry.setOrbitData(star, star_data.getStarPhase(), star_data.getStarSize(), 1000F);
@@ -345,38 +347,7 @@ public class ParseFiles
 						if(listBiomes.containsKey(biomename)) {							
 							biomes.add(listBiomes.get(biomename));
 						}
-						/*BiomeImpl biomeImpl = impl.getBiomes().get(i);
-	
-						int water = Utils.getIntColor(biomeImpl.getWaterColor().intX(), biomeImpl.getWaterColor().intY(), biomeImpl.getWaterColor().intZ());
-						int foliage = Utils.getIntColor(biomeImpl.getFoliageColor().intX(),	biomeImpl.getFoliageColor().intY(), biomeImpl.getFoliageColor().intZ());
-						int grass = Utils.getIntColor(biomeImpl.getGrassColor().intX(), biomeImpl.getGrassColor().intY(), biomeImpl.getGrassColor().intZ());
-	
-						List<OreGenData> oregen = new ArrayList<OreGenData>();
-						for(OreGenImpl data : biomeImpl.getOreGenList())
-						{
-							oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(), data.getMaxY(), data.getAmountPerChunk()));
-						}
-						TreeGenData treegen = null;
-						if(biomeImpl.getTreeGen() != null) 
-							treegen = new TreeGenData(biomeImpl.getTreeGen().getLog(), biomeImpl.getTreeGen().getLeaves(), biomeImpl.getTreeGen().getSapling(), biomeImpl.getTreeGen().getMinHeight(), biomeImpl.getTreeGen().getVines(), biomeImpl.getTreeGen().getQuantity());
 						
-						List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
-						if(biomeImpl.getGrassGenList() != null)
-							for(GrassGenImpl data : biomeImpl.getGrassGenList())
-							{
-								if(data != null)
-									grassgen.add(new GrassGenData(data.getGrassBlock(), data.getGrassCount(), data.onWater(), data.getGroundBlock()));
-							}
-						
-						LakesGenData lakesgen = null;
-						if(biomeImpl.getLakesGen() != null)
-							lakesgen = new LakesGenData(biomeImpl.getLakesGen().getLiquidBlock(), biomeImpl.getLakesGen().getQuantity());
-	
-						biomes.add(new BiomeData("biome_" + i, biomeImpl.getBiomeSize())
-								.setData(biomeImpl.getPersistance(), biomeImpl.getHeight(), biomeImpl.getOctaves(), biomeImpl.getIntquility())
-								.setBlocks(biomeImpl.getSurfaceBlock(), biomeImpl.getSubsurfaceBlock())
-								.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen));
-	*/
 					}
 	
 					WorldDataImpl dataImpl = impl.getWorldData();
@@ -390,7 +361,9 @@ public class ParseFiles
 							.setLanderType(dataImpl.getLanderType())
 							.setThrowMeteors(dataImpl.getThrowMeteors())
 							.setCloudHeight(impl.getCloudHeight())
-							.setTemperatureMod(impl.getTemperatureModificator());
+							.setTemperatureMod(impl.getTemperatureModificator())
+							.setRingTexture(impl.getRingTextureName())
+							.setSunTexture(impl.getSunTextureName());
 	
 					regDim(getAvailableID(), data, planet.getWorldProvider(), new TeleportTypeBody());
 
@@ -449,6 +422,11 @@ public class ParseFiles
 					switch(impl.getParentPlanet())
 					{
 						case "mercury": planet = SolarSystemBodies.planetMercury; break;
+						
+						case "venus": planet = VenusModule.planetVenus; break;
+						case "overworld": planet = GalacticraftCore.planetOverworld; break;
+						case "mars": planet = MarsModule.planetMars; break;
+						
 						case "jupiter": planet = SolarSystemBodies.planetJupiter; break;
 						case "saturn": planet = SolarSystemBodies.planetSaturn; break;
 						case "uranus": planet = SolarSystemBodies.planetUranus; break;

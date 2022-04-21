@@ -20,6 +20,8 @@ public class StarsDataImpl {
 	@SerializedName("star_color")
 	@Expose
 	private Integer starColor;
+	@SerializedName("distance_from_center") @Expose
+	private Float distanceFromCenter = -1F;
 	
 	public StarsDataImpl(String name, float star_phase, float star_size, int star_class, int star_color) {
 		this.name = name;
@@ -27,6 +29,11 @@ public class StarsDataImpl {
 		this.starSize = star_size;
 		this.starClass = star_class;
 		this.starColor = star_color;		
+	}
+	
+	public StarsDataImpl setDistanceFromCenter(float distance) {
+		this.distanceFromCenter = distance;
+		return this;
 	}
 	
 	public String getName() {
@@ -47,5 +54,9 @@ public class StarsDataImpl {
 	
 	public int getStarColor() {
 		return this.starColor;
+	}
+	
+	public Float getDistanceFromCenter() {
+		return this.distanceFromCenter;
 	}
 }

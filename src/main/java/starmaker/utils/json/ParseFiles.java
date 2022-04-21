@@ -504,7 +504,8 @@ public class ParseFiles
 							.setLanderType(dataImpl.getLanderType())
 							.setThrowMeteors(dataImpl.getThrowMeteors())
 							.setCloudHeight(impl.getCloudHeight())
-							.setTemperatureMod(impl.getTemperatureModificator());
+							.setTemperatureMod(impl.getTemperatureModificator())
+							.setSunTexture(impl.getSunTextureName());
 	
 					regDim(getAvailableID(), data, moon.getWorldProvider(), new TeleportTypeBody());
 					

@@ -74,16 +74,22 @@ public class SkyProviderBody extends SkyProviderBase {
 		{
 			BodiesData data = BodiesRegistry.getData(planet);
 			if(data != null && data.getType() == TypeBody.STAR) {
+				float distance = planet.getRelativeDistanceFromCenter().scaledDistance;
+				distance *= 40;
+				if(planet.getPhaseShift() < 0 && planet.getPhaseShift() > Math.PI)
+					distance *= -1;
 				GL11.glPushMatrix();
 				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glRotatef(-90, 0.0F, 1.0F, 0.0F); 
 				GL11.glRotatef(5 - (8 * i), 1.0F, 0.0F, 0.0F); 
-				GL11.glRotatef(20 - (12 * i), 0.0F, 0.0F, 1.0F);
+				GL11.glRotatef(20 - (12 * i) + distance, 0.0F, 0.0F, 1.0F);
 				this.renderSunAura(tessellator, 3.0F + planet.getRelativeSize(), 0.7F, data.getStarColor());
 				GL11.glDisable(GL11.GL_BLEND);
 				GL11.glPopMatrix();
-				renderImage(planet.getBodyIcon(), -90F, 185F - (8 * i), -20 + (12 * i), 1.0F + planet.getRelativeSize());
+				renderImage(planet.getBodyIcon(), -90F, 185F - (8 * i), -20 + (12 * i) - distance, 1.0F + planet.getRelativeSize());
 				i += 2;
+				
+				
 			}
 		}
 		GL11.glShadeModel(GL11.GL_FLAT);
@@ -112,6 +118,8 @@ public class SkyProviderBody extends SkyProviderBase {
 
 	@Override
 	protected ResourceLocation sunImage() {
+		if(data.getSunTexture() != null) 
+			return data.getSunTexture();
 		return getSolarSystem().getMainStar().getBodyIcon();
 	}
 

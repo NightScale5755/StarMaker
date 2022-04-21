@@ -10,32 +10,23 @@ import starmaker.utils.json.data.StarsDataImpl;
 public class SystemImpl
 {
 
-	@SerializedName("name")
-	@Expose
+	@SerializedName("name") @Expose
 	private String name;
-	@SerializedName("galaxy")
-	@Expose
+	@SerializedName("galaxy") @Expose
 	private String galaxy;
-	@SerializedName("star_name")
-	@Expose
+	@SerializedName("star_name") @Expose
 	private String starName;
-	@SerializedName("posX")
-	@Expose
+	@SerializedName("posX")	@Expose
 	private double posX;
-	@SerializedName("posY")
-	@Expose
+	@SerializedName("posY")	@Expose
 	private double posY;
-	@SerializedName("stars")
-	@Expose
+	@SerializedName("stars") @Expose
 	private List<StarsDataImpl> starsData;	
-	@SerializedName("star_size")
-	@Expose
+	@SerializedName("star_size") @Expose
 	private double starSize;
-	@SerializedName("star_class")
-	@Expose
+	@SerializedName("star_class") @Expose
 	private Integer starClass;
-	@SerializedName("star_color")
-	@Expose
+	@SerializedName("star_color") @Expose
 	private Integer starColor;
 
 	public SystemImpl()

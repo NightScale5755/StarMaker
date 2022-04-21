@@ -7,7 +7,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.util.math.Vec3i;
-import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.WorldDataImpl;
 
@@ -79,6 +78,9 @@ public class MoonImpl
 	@SerializedName("unreachable")
 	@Expose
 	private boolean unreachable;
+	
+	@SerializedName("sunTexture") @Expose
+	private String customSunTexture;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -138,6 +140,11 @@ public class MoonImpl
 		this.unreachable = unreachable;
 	}
 
+	public MoonImpl setSunTexture(String texture) {
+		this.customSunTexture = texture;
+		return this;
+	}
+	
 	public String getParentPlanet()
 	{
 		return parentPlanet;
@@ -472,5 +479,9 @@ public class MoonImpl
 	{
 		this.unreachable = unreachable;
 		return this;
+	}
+	
+	public String getSunTextureName() {
+		return this.customSunTexture;
 	}
 }

@@ -7,7 +7,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.util.math.Vec3i;
-import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.WorldDataImpl;
 
@@ -84,6 +83,9 @@ public class PlanetImpl
 	
 	@SerializedName("ringTexture") @Expose
 	private String ringTexture;
+	
+	@SerializedName("sunTexture") @Expose
+	private String customSunTexture;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -142,7 +144,18 @@ public class PlanetImpl
 		this.precipitation = precipitation;
 		this.unreachable = unreachable;
 	}
-
+	
+	public PlanetImpl setRingPlanet(String texture) {
+		this.ringTexture = texture;
+		return this;
+	}
+	
+	public PlanetImpl setSunTexture(String texture) {
+		this.customSunTexture = texture;
+		return this;
+	}
+	
+	
 	public String getParentSystem()
 	{
 		return parentSystem;
@@ -477,5 +490,12 @@ public class PlanetImpl
 	{
 		this.unreachable = unreachable;
 		return this;
+	}
+	
+	public String getRingTextureName() {
+		return this.ringTexture;
+	}
+	public String getSunTextureName() {
+		return this.customSunTexture;
 	}
 }

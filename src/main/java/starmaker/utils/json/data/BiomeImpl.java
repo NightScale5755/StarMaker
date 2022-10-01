@@ -53,6 +53,9 @@ public class BiomeImpl
 	@Expose
 	private LakesGenImpl lakesgen = null;
 	
+	@SerializedName("nbt_structures") @Expose
+	private List<StructuresDataImpl> structures = null;	
+	
 	@SerializedName("creature_spawnlist") @Expose
 	private List<EntitySpawnImpl> creatureSpawn = null;
 	
@@ -118,6 +121,11 @@ public class BiomeImpl
 	public BiomeImpl setWaterCreatureEntityList(List<EntitySpawnImpl> list)
 	{
 		this.water_creatureSpawn = list;
+		return this;
+	}
+	
+	public BiomeImpl setStructuresList(List<StructuresDataImpl> list) {
+		this.structures = list;
 		return this;
 	}
 	
@@ -341,5 +349,9 @@ public class BiomeImpl
 	
 	public List<EntitySpawnImpl> getWaterCreatureSpawnList() {
 		return this.water_creatureSpawn;
+	}
+	
+	public List<StructuresDataImpl> getStructuresList() {
+		return this.structures;
 	}
 }

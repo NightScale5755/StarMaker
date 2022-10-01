@@ -64,13 +64,10 @@ public class StarMakerAssets implements IResourcePack {
 		HashSet<String> folders = new HashSet<String>();
 		StarMaker.LOG.debug("[StarResources] Domains: ");
 		File[] resourceDomains = folder.listFiles((FileFilter) DirectoryFileFilter.DIRECTORY);
-		for (File resourceFolder : resourceDomains)
-		{
-			if (resourceFolder.getName().equals("debug"))
-			{
-				debug = true;
-			}
-		}
+		
+		if(resourceDomains == null) 
+			throw new RuntimeException("Folder '" + loc + "' is empty! Please add some config files or delete 'StarMaker' folder from configs.");
+		
 		for (File resourceFolder : resourceDomains)
 		{
 			StarMaker.LOG.debug("[StarResources]  - " + resourceFolder.getName() + " | " + resourceFolder.getAbsolutePath());

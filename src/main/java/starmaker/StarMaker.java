@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import asmodeuscore.core.handler.ColorBlockHandler;
+import galaxyspace.systems.SolarSystem.planets.overworld.world.gen.NickelGenerator;
 import micdoodle8.mods.galacticraft.core.Constants;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.DimensionType;
@@ -15,6 +16,7 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import starmaker.events.SMEventHandler;
 import starmaker.proxy.CommonProxy;
@@ -23,6 +25,7 @@ import starmaker.utils.ExampleFiles;
 import starmaker.utils.Log;
 import starmaker.utils.MakerUtils;
 import starmaker.utils.json.ParseFiles;
+import starmaker.world.gen.NBTStructureGenerator;
 
 @Mod(
 		   modid = StarMaker.MODID,
@@ -35,7 +38,7 @@ public class StarMaker {
 	
 	public static final int major_version = 0;
 	public static final int minor_version = 0;
-	public static final int build_version = 5;
+	public static final int build_version = 6;
 	
 	public static final String NAME = "StarMaker";
 	public static final String MODID = "starmaker";
@@ -87,7 +90,6 @@ public class StarMaker {
     public void init(FMLInitializationEvent event)
     {  
     	proxy.load();  	
-    	
     }
     
     @EventHandler

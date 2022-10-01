@@ -19,9 +19,12 @@ import micdoodle8.mods.galacticraft.api.galaxies.Star;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import starmaker.utils.MakerUtils;
 import starmaker.utils.data.DimData;
 
@@ -59,9 +62,55 @@ public class SkyProviderBody extends SkyProviderBase {
 		
 		if(getStarData().getStarClass() == StarClass.BLACKHOLE) {
 		
-			renderImage(NewGuiCelestialSelection.vortexTexture, 0F, 0F, this.mc.world.getCelestialAngle(ticks) * 360.0F + 180F, size + 25F);
-			renderImage(getStar().getBodyIcon(), 0F, 0F, this.mc.world.getCelestialAngle(ticks) * 360.0F + 180F, size);
+			//GlStateManager.enableAlpha();
+			//GlStateManager.alphaFunc(GL11.GL_GREATER, 0.08f);
+			//renderImage(NewGuiCelestialSelection.vortexTexture, 0F, 0F, this.mc.world.getCelestialAngle(ticks) * 360.0F + 180F, size + 25F);
+
+			GlStateManager.depthMask(false);
+			GlStateManager.pushMatrix();
 			
+				GlStateManager.rotate(this.getCelestialAngle(getDayLength()) + 40F, 0, 0, 1);
+				GlStateManager.pushMatrix();
+					
+					
+					
+					
+					//GlStateManager.rotate(this.getCelestialAngle(getDayLength() / 50), 0, 0, 1);
+		
+					GlStateManager.translate(0, 120F, 0);
+					
+					GlStateManager.rotate(180, -1, 1, 0);
+					GlStateManager.rotate(this.getCelestialAngle(getDayLength() / 50), 0, 1, 0);
+					
+					
+					float f10 = size + 40F;
+					FMLClientHandler.instance().getClient().renderEngine.bindTexture(NewGuiCelestialSelection.vortexTexture);
+		
+					buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+					buffer.pos(-f10, -100.0D, f10).tex(0, 1).color(1, 1, 1, 1.0F).endVertex();
+					buffer.pos(f10, -100.0D, f10).tex(1, 1).color(1, 1, 1, 1.0F).endVertex();
+					buffer.pos(f10, -100.0D, -f10).tex(1, 0).color(1, 1, 1, 1.0F).endVertex();
+					buffer.pos(-f10, -100.0D, -f10).tex(0, 0).color(1, 1, 1, 1.0F).endVertex();
+					tessellator.draw();
+				GlStateManager.popMatrix();
+			GlStateManager.popMatrix();
+			
+			GlStateManager.pushMatrix();
+				//GlStateManager.enableAlpha();
+				//GlStateManager.alphaFunc(GL11.GL_GREATER, 0.08f);
+				//renderImage(getStar().getBodyIcon(), 10F, 0F, this.getCelestialAngle(getDayLength()) + 180F, size - 20F);
+				//GlStateManager.disableAlpha();	
+			GlStateManager.popMatrix();
+			
+			
+
+			GlStateManager.depthMask(true);
+			GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+			GlStateManager.depthMask(false);
+			//
+			renderImage(getStar().getBodyIcon(), 0F, 0F, this.getCelestialAngle(getDayLength()) + 180F, size);
+
+			//GlStateManager.disableAlpha();	
 		}
 		
 		GL11.glPushMatrix();
@@ -103,6 +152,19 @@ public class SkyProviderBody extends SkyProviderBase {
 
 	@Override
 	protected ModeLight modeLight() {
+		
+		BodiesData bd = null;
+		
+		if(data.getBody() instanceof Planet) {
+			Star star = ((Planet)data.getBody()).getParentSolarSystem().getMainStar();
+			bd = BodiesRegistry.getData(star);
+		}
+		
+		if(data.getBody() instanceof IChildBody)
+			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
+		
+		if(bd != null && bd.getStarClass() == StarClass.BLACKHOLE) return ModeLight.DEFAULT;
+		
 		return ModeLight.DEFAULT;
 	}
 

@@ -134,13 +134,16 @@ public class ParseFiles
 				if(impl.getLakesGen() != null)
 					lakesgen = new LakesGenData(impl.getLakesGen().getLiquidBlock(), impl.getLakesGen().getQuantity());
 
+				
 				StarMaker.LOG.info("Registered New Biome: %s", biomeFiles.getName());
 				
 				listBiomes.put(biomeFiles.getName().replace(".json", "").toLowerCase(), new BiomeData(biomeFiles.getName().toLowerCase(), impl.getBiomeSize())
 						.setData(impl.getPersistance(), impl.getHeight(), impl.getOctaves(), impl.getIntquility())
 						.setBlocks(impl.getSurfaceBlock(), impl.getSubsurfaceBlock())
 						.setColors(water, foliage, grass).setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen).setLakesGenData(lakesgen)
-						.setSpawnLists(impl.getCreatureSpawnList(), impl.getMonsterSpawnList(), impl.getWaterCreatureSpawnList()));
+						.setSpawnLists(impl.getCreatureSpawnList(), impl.getMonsterSpawnList(), impl.getWaterCreatureSpawnList())
+						.setStructureList(impl.getStructuresList())
+						);
 
 			}
 			

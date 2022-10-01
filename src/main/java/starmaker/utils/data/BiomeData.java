@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import starmaker.utils.json.data.EntitySpawnImpl;
+import starmaker.utils.json.data.StructuresDataImpl;
 
 
 public class BiomeData
@@ -21,6 +22,8 @@ public class BiomeData
 	private List<EntitySpawnImpl> creatureSpawn = new ArrayList<EntitySpawnImpl>(),
 			monsterSpawn = new ArrayList<EntitySpawnImpl>(), 
 			water_creatureSpawn = new ArrayList<EntitySpawnImpl>();
+	
+	private List<StructuresDataImpl> structures = new ArrayList<StructuresDataImpl>();
 	
 	public BiomeData(String name, float biomesize)
 	{
@@ -86,6 +89,11 @@ public class BiomeData
 		return this;
 	}
 
+	public BiomeData setStructureList(List<StructuresDataImpl> structures) {
+		if(structures != null)
+			this.structures = structures;
+		return this;
+	}
 	
 	public float getPersistance() { return this.persistance; }
 	public float getBiomeSize() { return this.biomesize; }
@@ -106,5 +114,6 @@ public class BiomeData
 	public List<EntitySpawnImpl> getCreatureSpawnList(){return this.creatureSpawn;}
 	public List<EntitySpawnImpl> getMonsterSpawnList(){return this.monsterSpawn;}
 	public List<EntitySpawnImpl> getWaterCreatureSpawnList(){return this.water_creatureSpawn;}
+	public List<StructuresDataImpl> getStructureList(){return this.structures;}
 	
 }

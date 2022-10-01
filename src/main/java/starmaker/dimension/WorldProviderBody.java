@@ -61,6 +61,9 @@ import starmaker.utils.data.GrassGenData;
 import starmaker.utils.data.OreGenData;
 import starmaker.utils.json.ParseFiles;
 import starmaker.utils.json.data.EntitySpawnImpl;
+import starmaker.utils.json.data.StructuresDataImpl;
+import starmaker.world.gen.NBTStructureConfiguration;
+import starmaker.world.gen.NBTStructureGenerator;
 
 public class WorldProviderBody extends WE_WorldProviderSpace implements IWeatherProvider, ILanderTypeProvider {
 
@@ -388,6 +391,14 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 					grassGen.add(ParseFiles.getBlock(data.getGrass()), data.getBlockCount(), data.onWater(), ParseFiles.getBlock(data.getGround()));
 				
 				b.decorateChunkGen_List.add(grassGen);
+			}
+			
+			if(!biome.getStructureList().isEmpty()) {
+				
+				for(StructuresDataImpl data : biome.getStructureList()) {
+					NBTStructureConfiguration config = new NBTStructureConfiguration(data);
+					b.decorateChunkGen_List.add(new NBTStructureGenerator(config));
+				}
 			}
 			
 			

@@ -29,6 +29,8 @@ public class DimData
 	private List<IBlockState> ores = new ArrayList<>();
 	private String ringTexture;
 	private String sunTexture;
+	private float gravity;
+	private long dayLenght;
 		
 	public DimData(CelestialBody body) {
 		this.body = body;
@@ -123,6 +125,16 @@ public class DimData
 		this.sunTexture = texture;
 		return this;
 	}
+	
+	public DimData setGravity(float gravity) {
+		this.gravity = gravity;
+		return this;
+	}
+	
+	public DimData setDayLenght(long lenght) {
+		this.dayLenght = lenght;
+		return this;
+	}
 
 	public CelestialBody getBody() 	{ return this.body;	}
 	public Vec3d getSkyColor() { return this.skyColor; }    	
@@ -153,4 +165,6 @@ public class DimData
 		if(this.sunTexture == null) return null;
 		return new ResourceLocation(CoreConfig.resourceDomain, "textures/" + this.sunTexture + ".png"); 
 	}
+	public float getGravity() {	return this.gravity; }
+	public long getDayLenght() { return this.dayLenght; }
 }

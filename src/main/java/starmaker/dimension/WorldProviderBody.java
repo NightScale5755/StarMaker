@@ -1,6 +1,8 @@
 package starmaker.dimension;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_ChunkProviderSpace;
@@ -79,6 +81,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 			//StarMaker.debug(StarMaker.bodies.get(this.getDimension()).getBody().getName());
 			return getDimData().getBody(); 
 		}
+		
 		return GalacticraftCore.moonMoon;
 	}
 	
@@ -271,8 +274,10 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 		cp.createChunkGen_InXYZ_List.clear(); 
 		cp.decorateChunkGen_List .clear(); 
 		cp.biomesList.clear();
-		((WE_ChunkProviderSpace)cp).worldGenerators.clear();		
+		
+		((WE_ChunkProviderSpace)cp).worldGenerators.clear();			
 		((WE_ChunkProviderSpace)cp).CRATER_PROB = getDimData().getCrateProb();
+			
 		
 		WE_Biome.setBiomeMap(cp, 1.4D, 4, getDimData().getMapSize(), 1.0D);		
 			
@@ -303,109 +308,108 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 			cp.createChunkGen_List.add(rg);
 		}
 			
-		
-		
-		for(BiomeData biome : getDimData().getBiomes()) {
-
-			WE_BiomeLayer layer = new WE_BiomeLayer();		
-			layer.add(ParseFiles.getBlock(biome.getSubsurfaceBlock()), terrainGenerator.worldStoneBlock, -256, 0, -4, -2, true);
-			layer.add(ParseFiles.getBlock(biome.getSurfaceBlock()), ParseFiles.getBlock(biome.getSubsurfaceBlock()), -256, 0, -1, 0, false);
-			//layer.add(Blocks.BEDROCK.getDefaultState(), 0, 0, 1, 2, true);
-		
-			WE_Biome b = new WE_BaseBiome(biome.getBiomeSize(), biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer) {
+		if(getDimData().getBiomes() != null)
+			for(BiomeData biome : getDimData().getBiomes()) {
+	
+				WE_BiomeLayer layer = new WE_BiomeLayer();		
+				layer.add(ParseFiles.getBlock(biome.getSubsurfaceBlock()), terrainGenerator.worldStoneBlock, -256, 0, -4, -2, true);
+				layer.add(ParseFiles.getBlock(biome.getSurfaceBlock()), ParseFiles.getBlock(biome.getSubsurfaceBlock()), -256, 0, -1, 0, false);
+				//layer.add(Blocks.BEDROCK.getDefaultState(), 0, 0, 1, 2, true);
+			
+				WE_Biome b = new WE_BaseBiome(biome.getBiomeSize(), biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer) {
+					
+					@Override
+					public void decorateBiome(World world, Random rand, int x, int z)
+					{
+					}
+					
+				}.setSize(280.0D, 1.5D).setColors(biome.getGrassColor(), biome.getWaterColor(), biome.getFoliageColor());
 				
-				@Override
-				public void decorateBiome(World world, Random rand, int x, int z)
-				{
+				if(!biome.getCreatureSpawnList().isEmpty()) {
+					for(EntitySpawnImpl entities : biome.getCreatureSpawnList())
+					{
+						EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
+						//FIXME: ADD LOG
+						if(entry == null) continue;
+						Class<? extends Entity> entityClass = entry.getEntityClass();
+						b.getSpawnableList(EnumCreatureType.CREATURE).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
+					}
 				}
 				
-			}.setSize(280.0D, 1.5D).setColors(biome.getGrassColor(), biome.getWaterColor(), biome.getFoliageColor());
-			
-			if(!biome.getCreatureSpawnList().isEmpty()) {
-				for(EntitySpawnImpl entities : biome.getCreatureSpawnList())
-				{
-					EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
-					//FIXME: ADD LOG
-					if(entry == null) continue;
-					Class<? extends Entity> entityClass = entry.getEntityClass();
-					b.getSpawnableList(EnumCreatureType.CREATURE).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
+				if(!biome.getMonsterSpawnList().isEmpty()) {
+					for(EntitySpawnImpl entities : biome.getMonsterSpawnList())
+					{
+						EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
+						//FIXME: ADD LOG
+						if(entry == null) continue;
+						Class<? extends Entity> entityClass = entry.getEntityClass();
+						b.getSpawnableList(EnumCreatureType.MONSTER).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
+					}
 				}
-			}
-			
-			if(!biome.getMonsterSpawnList().isEmpty()) {
-				for(EntitySpawnImpl entities : biome.getMonsterSpawnList())
-				{
-					EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
-					//FIXME: ADD LOG
-					if(entry == null) continue;
-					Class<? extends Entity> entityClass = entry.getEntityClass();
-					b.getSpawnableList(EnumCreatureType.MONSTER).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
-				}
-			}
-			
-			if(!biome.getWaterCreatureSpawnList().isEmpty()) {
-				for(EntitySpawnImpl entities : biome.getWaterCreatureSpawnList())
-				{
-					EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
-					//FIXME: ADD LOG
-					if(entry == null) continue;
-					Class<? extends Entity> entityClass = entry.getEntityClass();
-					b.getSpawnableList(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
-				}
-			}
-			
-			if(!biome.getOreGenData().isEmpty()) {
-				WE_OreGen standardOres = new WE_OreGen();
-			
-				for(OreGenData oregen : biome.getOreGenData())
-				{
-					standardOres.add(ParseFiles.getBlock(oregen.getOre()), ParseFiles.getBlock(oregen.getReplaced()), oregen.getBlockCount(), oregen.getMinY(), oregen.getMaxY(), oregen.getAmountPerChunk());
-				}				
-				b.decorateChunkGen_List.add(standardOres);
-			}
-			
-			if(biome.getLakesGenData() != null) {
-				WE_LakeGen lakes = new WE_LakeGen();
-				lakes.lakeBlock = ParseFiles.getBlock(biome.getLakesGenData().getLiquidBlock());
-				lakes.iceGen = false;
-				lakes.chunksForLake = biome.getLakesGenData().getQuantity();
-				b.decorateChunkGen_List.add(lakes);				
-			}
-			
-			if(biome.getTreeGenData() != null) {
-				WE_WorldTreeGen treeGen = new WE_WorldTreeGen();
-				treeGen.add(ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock(), 
-						ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLog())),
-						ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock(), 
-						ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLeaves())), 
-						ParseFiles.getBlock(biome.getTreeGenData().getSapling()).getBlock(), Blocks.VINE, Blocks.COCOA, biome.getTreeGenData().getQuantity(), 1, 8, biome.getTreeGenData().getMinHeight(), biome.getTreeGenData().getVines(),
-						(byte)2, (byte)0, (byte)0, (byte)1, (byte)2, (byte)1, 1, 12, 4, 0.618D, 0.381D, 1.0D, 1.0D);
-				b.decorateChunkGen_List.add(treeGen);
-			
-			}
-			
-			if(!biome.getGrassGenData().isEmpty()) {
 				
-				WE_GrassGen grassGen = new WE_GrassGen();
-				for(GrassGenData data : biome.getGrassGenData())
-					grassGen.add(ParseFiles.getBlock(data.getGrass()), data.getBlockCount(), data.onWater(), ParseFiles.getBlock(data.getGround()));
-				
-				b.decorateChunkGen_List.add(grassGen);
-			}
-			
-			if(!biome.getStructureList().isEmpty()) {
-				
-				for(StructuresDataImpl data : biome.getStructureList()) {
-					NBTStructureConfiguration config = new NBTStructureConfiguration(data);
-					b.decorateChunkGen_List.add(new NBTStructureGenerator(config));
+				if(!biome.getWaterCreatureSpawnList().isEmpty()) {
+					for(EntitySpawnImpl entities : biome.getWaterCreatureSpawnList())
+					{
+						EntityEntry entry = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(entities.getEntity()));
+						//FIXME: ADD LOG
+						if(entry == null) continue;
+						Class<? extends Entity> entityClass = entry.getEntityClass();
+						b.getSpawnableList(EnumCreatureType.WATER_CREATURE).add(new Biome.SpawnListEntry((Class<? extends EntityLiving>) entityClass, entities.getWeight(), entities.getMinCount(), entities.getMaxCount()));
+					}
 				}
+				
+				if(!biome.getOreGenData().isEmpty()) {
+					WE_OreGen standardOres = new WE_OreGen();
+				
+					for(OreGenData oregen : biome.getOreGenData())
+					{
+						standardOres.add(ParseFiles.getBlock(oregen.getOre()), ParseFiles.getBlock(oregen.getReplaced()), oregen.getBlockCount(), oregen.getMinY(), oregen.getMaxY(), oregen.getAmountPerChunk());
+					}				
+					b.decorateChunkGen_List.add(standardOres);
+				}
+				
+				if(biome.getLakesGenData() != null) {
+					WE_LakeGen lakes = new WE_LakeGen();
+					lakes.lakeBlock = ParseFiles.getBlock(biome.getLakesGenData().getLiquidBlock());
+					lakes.iceGen = false;
+					lakes.chunksForLake = biome.getLakesGenData().getQuantity();
+					b.decorateChunkGen_List.add(lakes);				
+				}
+				
+				if(biome.getTreeGenData() != null) {
+					WE_WorldTreeGen treeGen = new WE_WorldTreeGen();
+					treeGen.add(ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock(), 
+							ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLog())),
+							ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock(), 
+							ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLeaves())), 
+							ParseFiles.getBlock(biome.getTreeGenData().getSapling()).getBlock(), Blocks.VINE, Blocks.COCOA, biome.getTreeGenData().getQuantity(), 1, 8, biome.getTreeGenData().getMinHeight(), biome.getTreeGenData().getVines(),
+							(byte)2, (byte)0, (byte)0, (byte)1, (byte)2, (byte)1, 1, 12, 4, 0.618D, 0.381D, 1.0D, 1.0D);
+					b.decorateChunkGen_List.add(treeGen);
+				
+				}
+				
+				if(!biome.getGrassGenData().isEmpty()) {
+					
+					WE_GrassGen grassGen = new WE_GrassGen();
+					for(GrassGenData data : biome.getGrassGenData())
+						grassGen.add(ParseFiles.getBlock(data.getGrass()), data.getBlockCount(), data.onWater(), ParseFiles.getBlock(data.getGround()));
+					
+					b.decorateChunkGen_List.add(grassGen);
+				}
+				
+				if(!biome.getStructureList().isEmpty()) {
+					
+					for(StructuresDataImpl data : biome.getStructureList()) {
+						NBTStructureConfiguration config = new NBTStructureConfiguration(data);
+						b.decorateChunkGen_List.add(new NBTStructureGenerator(config));
+					}
+				}
+				
+				
+				
+				WE_Biome.addBiomeToGeneration(cp, b);
+							
 			}
-			
-			
-			
-			WE_Biome.addBiomeToGeneration(cp, b);
-						
-		}
 	}
 
 	@Override

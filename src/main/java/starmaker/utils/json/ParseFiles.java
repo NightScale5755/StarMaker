@@ -24,11 +24,12 @@ import asmodeuscore.core.utils.ACCompatibilityManager;
 import asmodeuscore.core.utils.Utils;
 import galaxyspace.systems.SolarSystem.SolarSystemBodies;
 import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
+import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody.ScalableDistance;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.Moon;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
+import micdoodle8.mods.galacticraft.api.galaxies.Satellite;
 import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
-import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody.ScalableDistance;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
 import micdoodle8.mods.galacticraft.api.world.ITeleportType;
@@ -48,6 +49,7 @@ import starmaker.StarMaker;
 import starmaker.dimension.TeleportTypeAsteroid;
 import starmaker.dimension.WorldProviderAsteroid;
 import starmaker.dimension.WorldProviderBody;
+import starmaker.dimension.WorldProviderSatellite;
 import starmaker.utils.MakerUtils;
 import starmaker.utils.data.BiomeData;
 import starmaker.utils.data.DimData;
@@ -56,8 +58,10 @@ import starmaker.utils.data.LakesGenData;
 import starmaker.utils.data.OreGenData;
 import starmaker.utils.data.TreeGenData;
 import starmaker.utils.json.celestialimpl.AsteroidImpl;
+import starmaker.utils.json.celestialimpl.GalaxyImpl;
 import starmaker.utils.json.celestialimpl.MoonImpl;
 import starmaker.utils.json.celestialimpl.PlanetImpl;
+import starmaker.utils.json.celestialimpl.SatelliteImpl;
 import starmaker.utils.json.celestialimpl.SystemImpl;
 import starmaker.utils.json.data.BiomeImpl;
 import starmaker.utils.json.data.GrassGenImpl;
@@ -74,20 +78,23 @@ public class ParseFiles
 	private static Map<String, BiomeData> listBiomes = new HashMap<String, BiomeData>();
 	private static int dimID = CoreConfig.startIDs;
 
-	private static final int LIMIT_SYSTEMS = 50;
-	private static final int LIMIT_PLANETS = 100;
-	private static final int LIMIT_MOONS = 50;
-	private static final int LIMIT_ASTEROIDS = 25;
+	private static final int LIMIT_GALAXIES = 10;
+	private static final int LIMIT_SYSTEMS = 100;
+	private static final int LIMIT_PLANETS = 300;
+	private static final int LIMIT_MOONS = 150;
+	private static final int LIMIT_ASTEROIDS = 50;
+	private static final int LIMIT_SATELLITES = 20;
 
 	public void parse()
 	{
 		JsonParser parser = new JsonParser();
+		parseGalaxies(new File(StarMaker.assetDir), parser);
 		parseSystems(new File(StarMaker.assetDir), parser);
 		parseBiomes(new File(StarMaker.biomesDir), parser);
 		parsePlanets(new File(StarMaker.planetDir), parser);
 		parseMoons(new File(StarMaker.moonDir), parser);
 		parseAsteroids(new File(StarMaker.asteroidDir), parser);
-
+		parseSatellites(new File(StarMaker.satelliteDir), parser);
 	}
 
 	private static void parseBiomes(File file, JsonParser parser) {
@@ -151,6 +158,40 @@ public class ParseFiles
 			
 		}
 	}
+	private static void parseGalaxies(File file, JsonParser parser)
+	{
+		File galaxies = new File(file, "galaxies.json");
+		int count = 1;
+		
+		try
+		{
+			if (galaxies.exists() && galaxies.isFile())
+			{
+				Reader reader = new FileReader(galaxies);
+				GalaxyObjects galaxiesObjects = MakerUtils.gson.fromJson(reader, GalaxyObjects.class);
+				for (GalaxyImpl galaxyImpl : galaxiesObjects.getGalaxies())
+				{
+					if (count++ > LIMIT_GALAXIES)
+					{
+						StarMaker.info("Limit galaxies = " + LIMIT_GALAXIES);
+						break;
+					}
+					
+					if(galaxyImpl == null) continue;
+					String name = galaxyImpl.getName();
+					
+					ResourceLocation icon = new ResourceLocation(CoreConfig.resourceDomain, "textures/gui/celestialbodies/galaxy/" + name + ".png");
+					
+					BodiesRegistry.registerGalaxy(name, icon);
+				}
+			}
+		} 
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	private static void parseSystems(File file, JsonParser parser)
 	{
 		File systems = new File(file, "systems.json");
@@ -166,7 +207,7 @@ public class ParseFiles
 				{
 					if (count > LIMIT_SYSTEMS)
 					{
-						StarMaker.info("Limit system = " + LIMIT_SYSTEMS);
+						StarMaker.info("Limit systems = " + LIMIT_SYSTEMS);
 						break;
 					}
 					
@@ -373,12 +414,12 @@ public class ParseFiles
 					count++;
 				} else {
 					DimData data = new DimData(planet);
-					regUnreachDim(getAvailableID(), data);
+					regUnreachDim(data);
 				}
 				
 				BodiesData data = new BodiesData(TypeBody.PLANET);
 				BodiesRegistry.registerBodyData(planet, data);
-				StarMaker.LOG.info("Registered New Planet: %s", planet.getName());
+				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Planet: %s", planet.getName());
 				
 			}
 
@@ -515,12 +556,12 @@ public class ParseFiles
 					count++;
 				} else {
 					DimData data = new DimData(moon);
-					regUnreachDim(getAvailableID(), data);
+					regUnreachDim(data);
 				}
 				
 				BodiesData data = new BodiesData(TypeBody.MOON);
 				BodiesRegistry.registerBodyData(moon, data);
-				StarMaker.LOG.info("Registered New Moon: %s on Parent Planet: %s", moon.getName(), moon.getParentPlanet().getName());
+				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Moon: %s on Parent Planet: %s", moon.getName(), moon.getParentPlanet().getName());
 				
 			}
 			
@@ -600,12 +641,95 @@ public class ParseFiles
 				}
 				else {
 					DimData data = new DimData(asteroid);
-					regUnreachDim(getAvailableID(), data);
+					regUnreachDim(data);
 				}
 				BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
 				BodiesRegistry.registerBodyData(asteroid, data);
-				StarMaker.LOG.info("Registered New Asteroid: %s on Parent System: %s", asteroid.getName(), asteroid.getParentSolarSystem().getName());
+				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Asteroid: %s on Parent System: %s | %s", asteroid.getName(), asteroid.getParentSolarSystem().getName(), asteroid.getWorldProvider());
 			
+			}
+			
+		}	catch (IOException e)	{
+			e.printStackTrace();
+		}
+	}
+	
+	private static void parseSatellites(File file, JsonParser parser)
+	{
+		int count = 1;
+
+		try
+		{
+			FilenameFilter filter = (file1, name) -> name.endsWith(".json");
+
+			File[] files = file.listFiles(filter);
+			if(files == null) return;
+			
+			StarMaker.LOG.info("# Count of Satellites Jsons: " + files.length);
+			
+			for (File satellitesFile : files)
+			{
+				if (!satellitesFile.isFile())
+					continue;
+				
+				Reader reader = new FileReader(satellitesFile);
+				SatelliteImpl impl = MakerUtils.gson.fromJson(reader, SatelliteImpl.class);
+				
+				Planet planet = null;
+				
+				switch(impl.getParentPlanet())
+				{					
+					case "venus": planet = VenusModule.planetVenus; break;
+					case "overworld": planet = GalacticraftCore.planetOverworld; break;
+					case "mars": planet = MarsModule.planetMars; break;
+					default: planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+				}
+				
+				if(ACCompatibilityManager.isGalaxySpaceLoaded()) {
+					switch(impl.getParentPlanet())
+					{
+						case "mercury": planet = SolarSystemBodies.planetMercury; break;
+						
+						case "venus": planet = VenusModule.planetVenus; break;
+						case "overworld": planet = GalacticraftCore.planetOverworld; break;
+						case "mars": planet = MarsModule.planetMars; break;
+						
+						case "jupiter": planet = SolarSystemBodies.planetJupiter; break;
+						case "saturn": planet = SolarSystemBodies.planetSaturn; break;
+						case "uranus": planet = SolarSystemBodies.planetUranus; break;
+						case "neptune": planet = SolarSystemBodies.planetNeptune; break;
+						default: planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+					}
+				}
+				
+				if (planet == null)	continue;
+				String satellite_name = satellitesFile.getName().replaceAll(".json", "");
+				
+				Satellite satellite = BodiesRegistry.registerSatellite(planet, WorldProviderSatellite.class, dimID, dimID - 10000);
+				
+				if (count++ > LIMIT_SATELLITES)
+				{
+					StarMaker.info("Ignore: " + satellitesFile.getName() + ". Limit satellites = " + LIMIT_SATELLITES);
+					break;
+				}
+				
+				Vec3d skyColor = new Vec3d(impl.getSky());
+				Vec3d fogColor = new Vec3d(impl.getFog());
+				Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
+				
+				DimData data = new DimData(satellite)
+						.setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
+						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())						
+						.setSunSize(impl.getSunSize())						
+						.setCloudHeight(impl.getCloudHeight())
+						.setTemperatureMod(impl.getTemperatureModificator())
+						.setSunTexture(impl.getSunTextureName())
+						.setGravity(impl.getGravity())
+						.setDayLenght(impl.getDayLenght());
+				
+				MakerUtils.bodies.put(getAvailableID(), data);
+				GalaxyRegistry.registerSatellite((Satellite)data.getBody());
+				GalacticraftRegistry.registerTeleportType(satellite.getWorldProvider(), new TeleportTypeBody(data));
 			}
 			
 		}	catch (IOException e)	{
@@ -633,7 +757,7 @@ public class ParseFiles
 		// });
 	}
 	
-	private static void regUnreachDim(int dimID, DimData data)
+	private static void regUnreachDim(DimData data)
 	{
 		if (data.getBody() instanceof Moon)
 			GalaxyRegistry.registerMoon((Moon) data.getBody());
@@ -644,11 +768,14 @@ public class ParseFiles
 	public static IBlockState getBlock(String par1)
 	{
 		String[] meta = par1.split(":");
-		Block blocks = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(meta[0] + ":" + meta[1]));
-		if (meta.length > 2)
-		{
+	
+		Block blocks = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(meta[0] + ":" + 0));
+		if(meta.length > 1)
+			blocks = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(meta[0] + ":" + meta[1]));
+		
+		if (meta.length > 2)		
 			return blocks.getStateFromMeta(Integer.parseInt(meta[2]));
-		}
+		
 		return blocks.getDefaultState();
 	}
 	

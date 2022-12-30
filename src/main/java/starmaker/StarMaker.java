@@ -46,7 +46,7 @@ public class StarMaker {
     public static final String ASSET_PREFIX = MODID;
     public static final String TEXTURE_PREFIX = ASSET_PREFIX + ":";
         
-    public static String planetDir, moonDir, asteroidDir;    
+    public static String planetDir, moonDir, asteroidDir, satelliteDir;    
     public static String assetDir, biomesDir;
 
     @Instance(StarMaker.MODID)
@@ -60,11 +60,12 @@ public class StarMaker {
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) 
     {   
-    	assetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain;
+    	assetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies";
     	biomesDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/biomes";    	
     	planetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/planets";    	
     	moonDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/moons";    	
     	asteroidDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/asteroids";    	
+    	satelliteDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/satellites";    	
     
     	initModInfo(event.getModMetadata());
     	

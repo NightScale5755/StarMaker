@@ -2,16 +2,13 @@ package starmaker.dimension;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.TreeMap;
 
-import galaxyspace.systems.SolarSystem.planets.kuiperbelt.world.gen.BiomeProviderKuiperBelt;
 import micdoodle8.mods.galacticraft.api.vector.BlockVec3;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
 import micdoodle8.mods.galacticraft.core.util.GCLog;
 import micdoodle8.mods.galacticraft.planets.asteroids.entities.EntityAstroMiner;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.math.BlockPos;
@@ -23,6 +20,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import starmaker.utils.data.AsteroidData;
 import starmaker.utils.data.AsteroidWorldSaveData;
+import starmaker.world.BiomeProviderBody;
 
 public class WorldProviderAsteroid extends WorldProviderBody {
 	
@@ -62,7 +60,7 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 	
 	@Override 
     public Class<? extends BiomeProvider> getBiomeProviderClass() { 
-    	return BiomeProviderKuiperBelt.class; 
+    	return BiomeProviderBody.class; 
     }
 	
 	@Override
@@ -73,6 +71,11 @@ public class WorldProviderAsteroid extends WorldProviderBody {
 	@Override
 	public double getMeteorFrequency() {
 		return 0;
+	}
+	
+	@Override
+	public long getDayLength() {
+		return 0L;
 	}
 	
 	@Override

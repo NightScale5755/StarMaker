@@ -273,7 +273,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 		cp.createChunkGen_InXZ_List .clear(); 
 		cp.createChunkGen_InXYZ_List.clear(); 
 		cp.decorateChunkGen_List .clear(); 
-		cp.biomesList.clear();
+		cp.biomesList.clear();		
 		
 		((WE_ChunkProviderSpace)cp).worldGenerators.clear();			
 		((WE_ChunkProviderSpace)cp).CRATER_PROB = getDimData().getCrateProb();

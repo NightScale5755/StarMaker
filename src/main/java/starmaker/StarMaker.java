@@ -30,7 +30,7 @@ import starmaker.world.gen.NBTStructureGenerator;
 @Mod(
 		   modid = StarMaker.MODID,
 		   version = StarMaker.VERSION,
-		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore; required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.29,)",
+		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore@[4.0.2.282,); required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.32,)",
 		   acceptedMinecraftVersions = "[1.12.2]",
 		   name = StarMaker.NAME
 		)

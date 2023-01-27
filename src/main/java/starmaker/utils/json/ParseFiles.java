@@ -78,12 +78,13 @@ public class ParseFiles
 	private static Map<String, BiomeData> listBiomes = new HashMap<String, BiomeData>();
 	private static int dimID = CoreConfig.startIDs;
 
-	private static final int LIMIT_GALAXIES = 10;
+	private static final int LIMIT_GALAXIES = 5;
 	private static final int LIMIT_SYSTEMS = 100;
 	private static final int LIMIT_PLANETS = 300;
 	private static final int LIMIT_MOONS = 150;
 	private static final int LIMIT_ASTEROIDS = 50;
 	private static final int LIMIT_SATELLITES = 20;
+	private static final int LIMIT_BIOMES = 10;
 
 	public void parse()
 	{
@@ -94,7 +95,7 @@ public class ParseFiles
 		parsePlanets(new File(StarMaker.planetDir), parser);
 		parseMoons(new File(StarMaker.moonDir), parser);
 		parseAsteroids(new File(StarMaker.asteroidDir), parser);
-		parseSatellites(new File(StarMaker.satelliteDir), parser);
+		//parseSatellites(new File(StarMaker.satelliteDir), parser);
 	}
 
 	private static void parseBiomes(File file, JsonParser parser) {
@@ -365,6 +366,8 @@ public class ParseFiles
 				
 				BodiesRegistry.setOrbitData(planet, orbitData.getPhase(), orbitData.getSize(), orbitData.getRelativeTime(), orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
 				
+				int id = -1;
+				
 				if(!impl.getUnreachable()) {
 					if (count > LIMIT_PLANETS)
 					{
@@ -384,7 +387,7 @@ public class ParseFiles
 					List<BiomeData> biomes = new ArrayList<BiomeData>();
 					for (int i = 0; i < impl.getBiomes().size(); i++)
 					{
-						if (i > 5)
+						if (i >= LIMIT_BIOMES)
 							break;
 						
 						String biomename = impl.getBiomes().get(i);
@@ -409,7 +412,9 @@ public class ParseFiles
 							.setRingTexture(impl.getRingTextureName())
 							.setSunTexture(impl.getSunTextureName());
 	
-					regDim(getAvailableID(), data, planet.getWorldProvider(), new TeleportTypeBody());
+
+					id = getAvailableID();
+					regDim(id, data, planet.getWorldProvider(), new TeleportTypeBody());
 
 					count++;
 				} else {
@@ -419,7 +424,7 @@ public class ParseFiles
 				
 				BodiesData data = new BodiesData(TypeBody.PLANET);
 				BodiesRegistry.registerBodyData(planet, data);
-				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Planet: %s", planet.getName());
+				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Planet: %s | %s | %s", planet.getName(), planet.getWorldProvider(), id);
 				
 			}
 
@@ -487,6 +492,8 @@ public class ParseFiles
 				
 				Moon moon = BodiesRegistry.registerExMoon(planet, moon_name, CoreConfig.resourceDomain, orbitData.getDistanceFromCenter());
 				BodiesRegistry.setOrbitData(moon, orbitData.getPhase(), orbitData.getSize(), orbitData.getRelativeTime());
+				
+				int id = -1;
 				if(!impl.getUnreachable()) {
 					
 					if (count > LIMIT_MOONS)
@@ -506,7 +513,7 @@ public class ParseFiles
 					List<BiomeData> biomes = new ArrayList<BiomeData>();
 					for (int i = 0; i < impl.getBiomes().size(); i++)
 					{
-						if (i > 5) break;
+						if (i >= LIMIT_BIOMES) break;
 	
 						String biomename = impl.getBiomes().get(i);
 						if(listBiomes.containsKey(biomename)) {							
@@ -550,8 +557,9 @@ public class ParseFiles
 							.setCloudHeight(impl.getCloudHeight())
 							.setTemperatureMod(impl.getTemperatureModificator())
 							.setSunTexture(impl.getSunTextureName());
-	
-					regDim(getAvailableID(), data, moon.getWorldProvider(), new TeleportTypeBody());
+
+					id = getAvailableID();
+					regDim(id, data, moon.getWorldProvider(), new TeleportTypeBody());
 					
 					count++;
 				} else {
@@ -561,7 +569,7 @@ public class ParseFiles
 				
 				BodiesData data = new BodiesData(TypeBody.MOON);
 				BodiesRegistry.registerBodyData(moon, data);
-				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Moon: %s on Parent Planet: %s", moon.getName(), moon.getParentPlanet().getName());
+				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Moon: %s on Parent Planet: %s | %s | %s", moon.getName(), moon.getParentPlanet().getName(), moon.getWorldProvider(), id);
 				
 			}
 			
@@ -605,6 +613,8 @@ public class ParseFiles
 				
 				BodiesRegistry.setOrbitData(asteroid, orbitData.getPhase(), 1.0F, orbitData.getRelativeTime(), orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
 				
+				int id = -1;
+				
 				if(!impl.getUnreachable()) {
 					if (count > LIMIT_ASTEROIDS)
 					{
@@ -634,8 +644,9 @@ public class ParseFiles
 							.setCloudHeight(0)
 							.setTemperatureMod(0)
 							.setListAsteroidsOres(oregen);
-	
-					regDim(getAvailableID(), data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
+
+					id = getAvailableID();
+					regDim(id, data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
 
 					count++;
 				}
@@ -645,7 +656,7 @@ public class ParseFiles
 				}
 				BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
 				BodiesRegistry.registerBodyData(asteroid, data);
-				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Asteroid: %s on Parent System: %s | %s", asteroid.getName(), asteroid.getParentSolarSystem().getName(), asteroid.getWorldProvider());
+				StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Asteroid: %s on Parent System: %s | %s | %s", asteroid.getName(), asteroid.getParentSolarSystem().getName(), asteroid.getWorldProvider(), id);
 			
 			}
 			
@@ -726,10 +737,13 @@ public class ParseFiles
 						.setSunTexture(impl.getSunTextureName())
 						.setGravity(impl.getGravity())
 						.setDayLenght(impl.getDayLenght());
-				
-				MakerUtils.bodies.put(getAvailableID(), data);
+
+				int id = getAvailableID();
+				MakerUtils.bodies.put(id, data);
 				GalaxyRegistry.registerSatellite((Satellite)data.getBody());
 				GalacticraftRegistry.registerTeleportType(satellite.getWorldProvider(), new TeleportTypeBody(data));
+				StarMaker.LOG.info("Registered new Sattelite: %s on Parent Planet: %s | %s", satellite.getName(), satellite.getParentPlanet().getName(), id);
+				
 			}
 			
 		}	catch (IOException e)	{

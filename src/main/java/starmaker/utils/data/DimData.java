@@ -20,7 +20,7 @@ public class DimData
 	private int crateprob = 0;
 	private String stone_block, water_block;
 	private List<BiomeData> getBiomes = new ArrayList<BiomeData>();
-	private float sunBrightness, starBrightness, sun_size;
+	private float sunBrightness, starBrightness, sun_size, planet_size;
 	private double mapsize;
 	private int waterY = 64;
 	private int lander_type = -1;
@@ -75,6 +75,11 @@ public class DimData
 	public DimData setSunSize(float size)
 	{
 		this.sun_size = size;
+		return this;
+	}
+	
+	public DimData setPlanetSize(float size) {
+		this.planet_size = size;
 		return this;
 	}
 	
@@ -167,4 +172,5 @@ public class DimData
 	}
 	public float getGravity() {	return this.gravity; }
 	public long getDayLenght() { return this.dayLenght; }
+	public float getPlanetSize() { return this.planet_size; }
 }

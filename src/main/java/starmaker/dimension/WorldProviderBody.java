@@ -396,7 +396,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 					
 					b.decorateChunkGen_List.add(grassGen);
 				}
-				
+
 				if(!biome.getStructureList().isEmpty()) {
 					
 					for(StructuresDataImpl data : biome.getStructureList()) {
@@ -404,9 +404,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 						b.decorateChunkGen_List.add(new NBTStructureGenerator(config));
 					}
 				}
-				
-				
-				
+					
 				WE_Biome.addBiomeToGeneration(cp, b);
 							
 			}

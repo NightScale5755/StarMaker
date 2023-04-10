@@ -46,9 +46,9 @@ public class SolarSystemObjects
 	{
 		if (this.systems.contains(systemImpl))
 		{
-			StarMaker.LOG.error(
+			/*StarMaker.LOG.error(
 					"Duplicate SolarSystem Found! Tried to add existing solar system %s to the list when it already existed.",
-					systemImpl.getName());
+					systemImpl.getName());*/
 		} else
 		{
 			this.systems.add(systemImpl);

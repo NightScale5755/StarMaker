@@ -81,6 +81,9 @@ public class MoonImpl
 	
 	@SerializedName("sunTexture") @Expose
 	private String customSunTexture;
+	
+	@SerializedName("planet_size") @Expose
+	private float planet_size;	
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -483,5 +486,14 @@ public class MoonImpl
 	
 	public String getSunTextureName() {
 		return this.customSunTexture;
+	}
+	
+	public float getPlanetSize() {
+		return this.planet_size;
+	}
+	
+	public MoonImpl setPlanetSize(float size) {
+		this.planet_size = size;
+		return this;
 	}
 }

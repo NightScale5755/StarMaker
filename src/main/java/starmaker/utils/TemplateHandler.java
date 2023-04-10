@@ -91,7 +91,7 @@ public class TemplateHandler {
 		}
 	}
 	
-	private void readTemplateFromStream(String id, InputStream stream) throws IOException {
+	public void readTemplateFromStream(String id, InputStream stream) throws IOException {
 		NBTTagCompound nbttagcompound = CompressedStreamTools.readCompressed(stream);
 
 		if (!nbttagcompound.hasKey("DataVersion", 99)) {

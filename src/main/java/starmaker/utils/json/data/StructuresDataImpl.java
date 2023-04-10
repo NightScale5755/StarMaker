@@ -21,14 +21,18 @@ public class StructuresDataImpl {
 	@SerializedName("offset_position") @Expose
 	private List<Integer> offsetPos = null;
 	
+	@SerializedName("ignore_air") @Expose
+	private boolean ignoreAir;
+	
 	public StructuresDataImpl() {
 	}
 	
-	public StructuresDataImpl(String nbt, int amount_per_chunk, int chance, List<Integer> offset) {
+	public StructuresDataImpl(String nbt, int amount_per_chunk, int chance, List<Integer> offset, boolean ignoreAir) {
 		this.nbt_file = nbt;
 		this.amountPerChunk = amount_per_chunk;
 		this.genChance = chance;
 		this.offsetPos = offset;
+		this.ignoreAir = ignoreAir;
 	}
 	
 	public String getNBTFileName() {
@@ -46,5 +50,9 @@ public class StructuresDataImpl {
 	public BlockPos getOffsetPos() {
 		if(offsetPos == null) return BlockPos.ORIGIN;
 		return new BlockPos(offsetPos.get(0), offsetPos.get(1), offsetPos.get(2));
+	}
+	
+	public boolean getIgnoreAir() {
+		return this.ignoreAir;
 	}
 }

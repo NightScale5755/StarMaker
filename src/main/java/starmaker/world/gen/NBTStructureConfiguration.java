@@ -26,4 +26,8 @@ public class NBTStructureConfiguration {
 	public BlockPos getOffsetPos() {
 		return this.structure_data.getOffsetPos();
 	}
+	
+	public boolean getIgnoreAir() {
+		return this.structure_data.getIgnoreAir();
+	}
 }

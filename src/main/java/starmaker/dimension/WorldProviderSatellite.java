@@ -2,10 +2,12 @@ package starmaker.dimension;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import asmodeuscore.core.astronomy.sky.CustomCloudRender;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
+import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.Satellite;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.IExitHeight;
@@ -23,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
+import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.client.IRenderHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -31,6 +34,7 @@ import starmaker.dimension.sky.SkyProviderBody;
 import starmaker.dimension.sky.WeatherProviderBody;
 import starmaker.utils.MakerUtils;
 import starmaker.utils.data.DimData;
+import starmaker.world.BiomeProviderBody;
 
 public class WorldProviderSatellite extends WorldProviderSpaceStation
 		implements IOrbitDimension, IZeroGDimension, ISolarLevel, IExitHeight {
@@ -38,7 +42,15 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
 	Set<Entity> freefallingEntities = new HashSet<Entity>();
 
 	protected DimData getDimData() {
-		return MakerUtils.bodies.get(this.getDimension());
+		int id = -1;
+		for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
+			if(map.getValue() == this.getDimension()) {
+				Satellite s = GalaxyRegistry.getRegisteredSatellites().get(map.getKey());
+				id = s.getDimensionID();
+			}
+		}
+		System.out.println(id + " | " + MakerUtils.bodies + " | " + MakerUtils.bodies.get(id));
+		return MakerUtils.bodies.get(id);
 	}
 
 	@Override
@@ -57,9 +69,24 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
         return ChunkProviderSatellite.class;
     }
     
+    @Override
+    public Class<? extends BiomeProvider> getBiomeProviderClass()
+    {
+    	return BiomeProviderBody.class;
+    }
+    
 	@Override
 	public DimensionType getDimensionType() {
-		return WorldUtil.getDimensionTypeById(this.getDimension());
+		int id = -1;
+		for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
+			if(map.getValue() == this.getDimension()) {
+				Satellite s = GalaxyRegistry.getRegisteredSatellites().get(map.getKey());
+				id = s.getDimensionID();
+			}
+		}
+
+		
+		return WorldUtil.getDimensionTypeById(id);
 	}
 
 	@Override
@@ -247,7 +274,8 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
 
 	@Override
 	public void createSkyProvider() {
-
+        if (this.getCloudRenderer() == null)
+            this.setCloudRenderer(super.getCloudRenderer());
 	}
 
 	@Override

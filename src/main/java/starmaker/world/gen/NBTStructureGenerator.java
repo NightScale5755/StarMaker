@@ -38,15 +38,9 @@ public class NBTStructureGenerator implements IWorldGenerator {
 
 		pos = new BlockPos(pos.getX() + this.settings.getOffsetPos().getX(), pos.getY() + this.settings.getOffsetPos().getY(), pos.getZ() + this.settings.getOffsetPos().getZ());
 		
-		
+
 		if(this.settings.getAmountPerChunk() > 0) {
 			for(int i = 0; i < this.settings.getAmountPerChunk(); i++) {
-				x = chunkX + random.nextInt(16);
-				z = chunkZ + random.nextInt(16);
-				xzPos = new BlockPos(x, 1, z);
-				pos = world.getTopSolidOrLiquidBlock(xzPos);
-				pos.add(this.settings.getOffsetPos());
-				
 				generateStructureAt(this.settings.getStructureName(), server_world, random, pos);
 			}
 		}
@@ -58,22 +52,24 @@ public class NBTStructureGenerator implements IWorldGenerator {
 		
 	}
 
-	private static void generateStructureAt(String name, WorldServer world, Random random, BlockPos pos) {
+	private void generateStructureAt(String name, WorldServer world, Random random, BlockPos pos) {
 		MinecraftServer server = world.getMinecraftServer();
 		ResourceLocation loc = new ResourceLocation(CoreConfig.resourceDomain, name);
 		Template template = MakerUtils.templates.get(server, loc);
+		//Template template = world.getSaveHandler().getStructureTemplateManager().get(server, loc);
 		PlacementSettings settings = new PlacementSettings();
-		
-		BlockPos size = template.getSize();
-		for(int x = 0; x < size.getX(); x++)
-			for(int y = 0; y < size.getY(); y++)
-				for(int z = 0; z < size.getZ(); z++) {
-					BlockPos checkPos = pos.add(Template.transformedBlockPos(settings, new BlockPos(x, y, z)));
-					IBlockState checkState = world.getBlockState(checkPos);
-					//if(!checkState.getBlock().isAir(checkState, world, checkPos))
-						//return; // Obstructed, can't generate here
-				}		
-
-		template.addBlocksToWorld(world, pos, settings);
+		if(template != null) {		
+			BlockPos size = template.getSize();
+			for(int x = 0; x < size.getX(); x++)
+				for(int y = 0; y < size.getY(); y++)
+					for(int z = 0; z < size.getZ(); z++) {
+						BlockPos checkPos = pos.add(Template.transformedBlockPos(settings, new BlockPos(x, y, z)));
+						IBlockState checkState = world.getBlockState(checkPos);
+						if(!checkState.getBlock().isAir(checkState, world, checkPos) && this.settings.getIgnoreAir())
+							return; // Obstructed, can't generate here
+					}		
+	
+			template.addBlocksToWorld(world, pos, settings);
+		}
 	}
 }

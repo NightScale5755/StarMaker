@@ -10,24 +10,15 @@ import starmaker.utils.json.data.StarsDataImpl;
 public class SystemImpl
 {
 
-	@SerializedName("name") @Expose
-	private String name;
 	@SerializedName("galaxy") @Expose
 	private String galaxy;
-	@SerializedName("star_name") @Expose
-	private String starName;
 	@SerializedName("posX")	@Expose
 	private double posX;
 	@SerializedName("posY")	@Expose
 	private double posY;
 	@SerializedName("stars") @Expose
 	private List<StarsDataImpl> starsData;	
-	@SerializedName("star_size") @Expose
-	private double starSize;
-	@SerializedName("star_class") @Expose
-	private Integer starClass;
-	@SerializedName("star_color") @Expose
-	private Integer starColor;
+
 
 	public SystemImpl()
 	{
@@ -35,53 +26,18 @@ public class SystemImpl
 
 	/**
 	 *
+	 * @param galaxy
 	 * @param posX
 	 * @param posY
-	 * @param starName
-	 * @param name
-	 * @param starClass
-	 * @param galaxy
-	 * @param starSize
-	 * @param starColor
+	 * @param stars
 	 */
-	public SystemImpl(String name, String galaxy, String starName, double posX, double posY, double starSize,
-			Integer starClass, Integer starColor)
-	{
-		super();
-		this.name = name;
-		this.galaxy = galaxy;
-		this.starName = starName;
-		this.posX = posX;
-		this.posY = posY;
-		this.starSize = starSize;
-		this.starClass = starClass;
-		this.starColor = starColor;
-	}
-	
-	public SystemImpl(String galaxy, String starName, double posX, double posY, List<StarsDataImpl> stars)
+	public SystemImpl(String galaxy, double posX, double posY, List<StarsDataImpl> stars)
 	{
 		super();
 		this.galaxy = galaxy;
-		this.starName = starName;
 		this.posX = posX;
 		this.posY = posY;
 		this.starsData = stars;
-	}
-
-	public String getName()
-	{
-		return name;
-	}
-
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-
-	public SystemImpl withName(String name)
-	{
-		this.name = name;
-		return this;
 	}
 
 	public String getGalaxy()
@@ -102,18 +58,8 @@ public class SystemImpl
 
 	public String getStarName()
 	{
-		return starName;
-	}
-
-	public void setStarName(String starName)
-	{
-		this.starName = starName;
-	}
-
-	public SystemImpl withStarName(String starName)
-	{
-		this.starName = starName;
-		return this;
+		String firstStarName = this.starsData.get(0).getName();
+		return firstStarName;
 	}
 
 	public Float getPosX()
@@ -145,54 +91,6 @@ public class SystemImpl
 	public SystemImpl withPosY(double posY)
 	{
 		this.posY = posY;
-		return this;
-	}
-
-	public Float getStarSize()
-	{
-		return (float) starSize;
-	}
-
-	public void setStarSize(double starSize)
-	{
-		this.starSize = starSize;
-	}
-
-	public SystemImpl withStarSize(double starSize)
-	{
-		this.starSize = starSize;
-		return this;
-	}
-
-	public Integer getStarClass()
-	{
-		return starClass;
-	}
-
-	public void setStarClass(Integer starClass)
-	{
-		this.starClass = starClass;
-	}
-
-	public SystemImpl withStarClass(Integer starClass)
-	{
-		this.starClass = starClass;
-		return this;
-	}
-
-	public Integer getStarColor()
-	{
-		return starColor;
-	}
-
-	public void setStarColor(Integer starColor)
-	{
-		this.starColor = starColor;
-	}
-
-	public SystemImpl withStarColor(Integer starColor)
-	{
-		this.starColor = starColor;
 		return this;
 	}
 	

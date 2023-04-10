@@ -64,7 +64,7 @@ public class Transformer implements IClassTransformer
 					if (min.name.equals(ObfHelper.method("func_110541_a")))
 					{
 						InsnList toInsert = new InsnList();
-						toInsert.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "starmaker/StarMaker",
+						toInsert.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "starmaker/client/ResourcePackLoad",
 								"defineResourcePack", "(Ljava/util/List;)V", false));
 						toInsert.add(new VarInsnNode(Opcodes.ALOAD, 1));
 						refreshResources.instructions.insertBefore(min, toInsert);
@@ -74,7 +74,7 @@ public class Transformer implements IClassTransformer
 						AbstractInsnNode target = refreshResources.instructions.get(i + 1);
 						InsnList toInsert = new InsnList();
 						toInsert.add(new VarInsnNode(Opcodes.ALOAD, 1));
-						toInsert.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "starmaker/StarMaker",
+						toInsert.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "starmaker/client/ResourcePackLoad",
 								"defineResourcePack", "(Ljava/util/List;)V", false));
 						refreshResources.instructions.insert(target, toInsert);
 					}

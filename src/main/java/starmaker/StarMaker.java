@@ -1,31 +1,25 @@
 package starmaker;
 
 import java.util.Arrays;
-import java.util.List;
 
 import asmodeuscore.core.handler.ColorBlockHandler;
-import galaxyspace.systems.SolarSystem.planets.overworld.world.gen.NickelGenerator;
 import micdoodle8.mods.galacticraft.core.Constants;
 import net.minecraft.init.Blocks;
-import net.minecraft.world.DimensionType;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLConstructionEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import starmaker.events.SMEventHandler;
 import starmaker.proxy.CommonProxy;
-import starmaker.resources.StarMakerAssets;
-import starmaker.utils.ExampleFiles;
 import starmaker.utils.Log;
 import starmaker.utils.MakerUtils;
 import starmaker.utils.json.ParseFiles;
-import starmaker.world.gen.NBTStructureGenerator;
+import starmaker.utils.zip.ZipUtils;
 
 @Mod(
 		   modid = StarMaker.MODID,
@@ -58,6 +52,12 @@ public class StarMaker {
     public static CommonProxy proxy;   
     
     @EventHandler
+    public void construct(FMLConstructionEvent e)
+    {
+    	ZipUtils.initZipFiles();
+    }
+    
+    @EventHandler
     public void preInit(FMLPreInitializationEvent event) 
     {   
     	assetDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies";
@@ -66,16 +66,15 @@ public class StarMaker {
     	moonDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/moons";    	
     	asteroidDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/asteroids";    	
     	satelliteDir = event.getModConfigurationDirectory() + "/StarMaker/resources/" + CoreConfig.resourceDomain + "/bodies/satellites";    	
+    	  	
     
     	initModInfo(event.getModMetadata());
-    	
-    	new ExampleFiles();
 
     	proxy.preload();
 		
 		proxy.register_event(new SMEventHandler());
-		    	
-		ParseFiles.instance.parse();
+		    		
+		ZipUtils.parseCelestialFiles();
 		
 		ColorBlockHandler.addLeavesBlock(Blocks.LEAVES.getDefaultState());
 	    ColorBlockHandler.addLeavesBlock(Blocks.LEAVES2.getDefaultState());
@@ -91,6 +90,7 @@ public class StarMaker {
     public void init(FMLInitializationEvent event)
     {  
     	proxy.load();  	
+    	ParseFiles.instance.printResults();
     }
     
     @EventHandler
@@ -108,16 +108,7 @@ public class StarMaker {
         info.description = "StarMaker for Galacticraft 4!";
         info.authorList = Arrays.asList("Vi[Told]");
     }
-    
-	public static void defineResourcePack(List<StarMakerAssets> resourceList)
-	{
-		if (FMLLaunchHandler.side().isClient())
-		{
-			resourceList.add(new StarMakerAssets());
-		}
-
-	}
-   
+       
     public static void info(Object message)
    	{ 
    		LOG.info(message.toString());

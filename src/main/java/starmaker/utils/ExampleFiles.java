@@ -32,10 +32,10 @@ public class ExampleFiles
 	public ExampleFiles()
 	{
 		// @formatter:off
-		if(CoreConfig.generateExample)
-			initializeExampleFiles();
+		/*if(CoreConfig.generateExample)
+			initializeExampleFiles();*/
 
-		SystemImpl exampleSystemImpl = new SystemImpl("example_system", "milky_way", "example_star", 1.5, 1.5, 0.8, 2, 6);
+		//SystemImpl exampleSystemImpl = new SystemImpl("example_system", "milky_way", "example_star", 1.5, 1.5, 0.8, 2, 6);
 
 		
 		OrbitDataImpl exampleOrbitData = new OrbitDataImpl(3.14F, 1.2F, 2.5F, 3.9F, 0.0F, 0.0F);
@@ -54,7 +54,7 @@ public class ExampleFiles
 
 		//BiomeImpl exampleBiomeImpl2 = new BiomeImpl(1.8, 4, 64, 25, 2.0, water, foliage, grass, "minecraft:cobblestone", "minecraft:dirt", oregen, null, null, lakesgen);
 		
-		systemsObjects = new SolarSystemObjects().addSystemToList(exampleSystemImpl);
+		//systemsObjects = new SolarSystemObjects().addSystemToList(exampleSystemImpl);
 
 		exampleBiomeImpl = new BiomeImpl(2.2, 4, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen, treegen, grassgen, lakesgen);
 		

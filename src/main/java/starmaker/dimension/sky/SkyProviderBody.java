@@ -46,7 +46,7 @@ public class SkyProviderBody extends SkyProviderBase {
 		{
 			Planet parent = ((Moon)this.data.getBody()).getParentPlanet();
 			float s = ((Moon)this.data.getBody()).getRelativeDistanceFromCenter().scaledDistance;
-			s = getMaxDistance() - s * 0.5F;
+			s = getMaxDistance() - s * 0.5F * this.data.getPlanetSize();
 			float speed = ((Moon)this.data.getBody()).getRelativeOrbitTime();
 			float x = this.mc.world.getCelestialAngle(ticks) * -360.0F / 10;
 			float y = this.mc.world.getCelestialAngle(ticks) * 360.0F + 120F;

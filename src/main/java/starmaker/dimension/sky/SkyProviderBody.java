@@ -187,15 +187,21 @@ public class SkyProviderBody extends SkyProviderBase {
 
 	@Override
 	protected StarColor colorSunAura() {
+		Star star = null;
 		BodiesData bd = null;
 		
-		if(data.getBody() instanceof Planet) {
-			Star star = ((Planet)data.getBody()).getParentSolarSystem().getMainStar();
-			bd = BodiesRegistry.getData(star);
-		}
+		if(data.getBody() instanceof Planet) 
+			star = ((Planet)data.getBody()).getParentSolarSystem().getMainStar();
+					
 		
 		if(data.getBody() instanceof IChildBody)
-			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
+			star = ((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar();
+	
+		if(star != null)
+			bd = BodiesRegistry.getData(star);
+		
+		if(star == GalacticraftCore.solarSystemSol.getMainStar())
+			bd = null;
 		
 		return bd != null ? bd.getStarColor() : StarColor.WHITE;
 	}

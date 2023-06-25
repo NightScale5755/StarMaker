@@ -17,8 +17,9 @@ public class SystemImpl
 	@SerializedName("posY")	@Expose
 	private double posY;
 	@SerializedName("stars") @Expose
-	private List<StarsDataImpl> starsData;	
-
+	private List<StarsDataImpl> starsData;
+	@SerializedName("habitable_zone") @Expose
+	private List<Float> habitable_zone = null;
 
 	public SystemImpl()
 	{
@@ -31,13 +32,14 @@ public class SystemImpl
 	 * @param posY
 	 * @param stars
 	 */
-	public SystemImpl(String galaxy, double posX, double posY, List<StarsDataImpl> stars)
+	public SystemImpl(String galaxy, double posX, double posY, List<StarsDataImpl> stars, List<Float> habitable_zone)
 	{
 		super();
 		this.galaxy = galaxy;
 		this.posX = posX;
 		this.posY = posY;
 		this.starsData = stars;
+		this.habitable_zone = habitable_zone;
 	}
 
 	public String getGalaxy()
@@ -101,5 +103,13 @@ public class SystemImpl
 	public void setStars(List<StarsDataImpl> stars)
 	{
 		this.starsData = stars;
+	}
+	
+	public List<Float> getHabitableZone() {
+		return this.habitable_zone;
+	}
+	
+	public void setHabitableZone(List<Float> habitable_zone) {
+		this.habitable_zone = habitable_zone;
 	}
 }

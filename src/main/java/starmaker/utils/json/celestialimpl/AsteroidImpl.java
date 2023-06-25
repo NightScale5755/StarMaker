@@ -15,6 +15,9 @@ public class AsteroidImpl
 	@SerializedName("parent_system")
 	@Expose
 	private String parentSystem;	
+	@SerializedName("parent_planet") @Expose
+	private String parentPlanet;
+	
 	@SerializedName("orbit_data")
 	@Expose
 	private OrbitDataImpl orbitData;			
@@ -39,6 +42,8 @@ public class AsteroidImpl
 	@SerializedName("unreachable")
 	@Expose
 	private boolean unreachable;
+	@SerializedName("asteroid_blocks") @Expose
+	private List<String> asteroid_blocks;	
 	@SerializedName("oregen")
 	@Expose
 	private List<OreGenImpl> oregen = null;
@@ -47,12 +52,13 @@ public class AsteroidImpl
 	{
 	}
 
-	public AsteroidImpl(String parentSystem, OrbitDataImpl orbitData,
+	public AsteroidImpl(String parentSystem, String parentPlanet, OrbitDataImpl orbitData,
 			float temperature, boolean solarRadiation, double sunBrightness,
-			double starBrightness, int tier, float sun_size, boolean unreachable, List<OreGenImpl> oregen)
+			double starBrightness, int tier, float sun_size, boolean unreachable, List<String> asteroid_blocks, List<OreGenImpl> oregen)
 	{
 		super();
-		this.parentSystem = parentSystem;		
+		this.parentSystem = parentSystem;	
+		this.parentPlanet = parentPlanet;
 		this.orbitData = orbitData;
 		this.temperature = temperature;
 		this.solarRadiation = solarRadiation;
@@ -61,7 +67,8 @@ public class AsteroidImpl
 		this.tier = tier;
 		this.sun_size = sun_size;
 		this.unreachable = unreachable;
-		this.oregen = oregen;
+		this.asteroid_blocks = asteroid_blocks;
+		this.oregen = oregen;		
 	}
 
 	public String getParentSystem()
@@ -80,6 +87,14 @@ public class AsteroidImpl
 		return this;
 	}
 
+	public String getParentPlanet() {
+		return parentPlanet;
+	}
+	
+	public void setParentPlanet(String parentPlanet) {
+		this.parentPlanet = parentPlanet;
+	}
+	
 	public OrbitDataImpl getOrbitData()
 	{
 		return orbitData;
@@ -222,5 +237,13 @@ public class AsteroidImpl
 	{
 		this.oregen = oregen;
 		return this;
+	}
+	
+	public List<String> getAsteroidBlocks() {
+		return this.asteroid_blocks;
+	}
+	
+	public void setAsteroidBlocks(List<String> core_block) {
+		this.asteroid_blocks = core_block;
 	}
 }

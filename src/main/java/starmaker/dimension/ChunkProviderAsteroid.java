@@ -39,6 +39,7 @@ import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraft.world.gen.feature.WorldGenTallGrass;
 import net.minecraft.world.gen.feature.WorldGenTrees;
 import starmaker.utils.data.DimData;
+import starmaker.utils.json.ParseFiles;
 
 public class ChunkProviderAsteroid extends ChunkProviderBase
 {
@@ -125,10 +126,13 @@ public class ChunkProviderAsteroid extends ChunkProviderBase
     private int largeAsteroidsLastChunkX;
     private int largeAsteroidsLastChunkZ;
     
+    private DimData dimdata;
+    
     public ChunkProviderAsteroid(World world, long seed, DimData dimdata)
     {
         this.world = world;
         this.rand = new Random(seed);
+        this.dimdata = dimdata;
 
         this.asteroidDensity = new Billowed(this.rand.nextLong(), 2, .25F);
         this.asteroidDensity.setFrequency(.009F);
@@ -151,13 +155,14 @@ public class ChunkProviderAsteroid extends ChunkProviderBase
         this.asteroidSkewZ.frequencyZ = 0.005F;
 
         this.coreHandler = new SpecialAsteroidBlockHandler();
-        this.coreHandler.addBlock(new SpecialAsteroidBlock(this.ASTEROID_STONE, this.ASTEROID_STONE_META_2, 5, .3));
-        this.coreHandler.addBlock(new SpecialAsteroidBlock(this.ASTEROID_STONE, this.ASTEROID_STONE_META_1, 7, .3));
+        this.coreHandler.addBlock(new SpecialAsteroidBlock(this.ASTEROID_STONE, this.ASTEROID_STONE_META_2, 5, .3));        
+        this.coreHandler.addBlock(new SpecialAsteroidBlock(this.ASTEROID_STONE, this.ASTEROID_STONE_META_1, 7, .3));        
         this.coreHandler.addBlock(new SpecialAsteroidBlock(this.ASTEROID_STONE, this.ASTEROID_STONE_META_0, 11, .25));
-
-        for(IBlockState block : dimdata.getAsteroidsOres())
-        	this.coreHandler.addBlock(new SpecialAsteroidBlock(block.getBlock(), (byte) block.getBlock().getMetaFromState(block), 2, .5));
         
+        for(String block : dimdata.getAsteroidsOres()) {
+        	IBlockState state = ParseFiles.getBlock(block);
+        	this.coreHandler.addBlock(new SpecialAsteroidBlock(state.getBlock(), (byte) state.getBlock().getMetaFromState(state), 2, .5));
+        }
         this.shellHandler = new SpecialAsteroidBlockHandler();
         this.shellHandler.addBlock(new SpecialAsteroidBlock(this.ASTEROID_STONE, this.ASTEROID_STONE_META_0, 1, .15));
         this.shellHandler.addBlock(new SpecialAsteroidBlock(this.ASTEROID_STONE, this.ASTEROID_STONE_META_1, 3, .15));
@@ -308,6 +313,18 @@ public class ChunkProviderAsteroid extends ChunkProviderBase
         IBlockState airBlock = Blocks.AIR.getDefaultState();
         IBlockState dirtBlock = this.DIRT.getStateFromMeta(this.DIRT_META);
         IBlockState grassBlock = this.GRASS.getStateFromMeta(this.GRASS_META);
+        
+        if(dimdata.getAsteroidBlocks() != null) {
+	        int len = dimdata.getAsteroidBlocks().size();
+	        if(len > 0) {
+	        	
+		        asteroidRock1 = ParseFiles.getBlock(dimdata.getAsteroidBlocks().get(0));
+		        if(len > 1) {
+		        	asteroidRock0 = ParseFiles.getBlock(dimdata.getAsteroidBlocks().get(1));
+		        }
+	        }
+        }
+
         
         for (int x = xMax - 1; x >= xMin; x--)
         {

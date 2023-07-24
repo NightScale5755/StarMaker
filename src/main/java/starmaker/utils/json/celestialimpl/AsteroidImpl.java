@@ -23,7 +23,9 @@ public class AsteroidImpl
 	private OrbitDataImpl orbitData;			
 	@SerializedName("temperature")
 	@Expose
-	private float temperature;	
+	private float temperature;
+	@SerializedName("gravity")	@Expose
+	private float gravity;
 	@SerializedName("solar_radiation")
 	@Expose
 	private boolean solarRadiation;	
@@ -53,7 +55,7 @@ public class AsteroidImpl
 	}
 
 	public AsteroidImpl(String parentSystem, String parentPlanet, OrbitDataImpl orbitData,
-			float temperature, boolean solarRadiation, double sunBrightness,
+			float temperature, float gravity, boolean solarRadiation, double sunBrightness,
 			double starBrightness, int tier, float sun_size, boolean unreachable, List<String> asteroid_blocks, List<OreGenImpl> oregen)
 	{
 		super();
@@ -61,6 +63,7 @@ public class AsteroidImpl
 		this.parentPlanet = parentPlanet;
 		this.orbitData = orbitData;
 		this.temperature = temperature;
+		this.gravity = gravity;
 		this.solarRadiation = solarRadiation;
 		this.sunBrightness = sunBrightness;
 		this.starBrightness = starBrightness;
@@ -120,6 +123,9 @@ public class AsteroidImpl
 	{
 		this.temperature = temperature;
 	}
+
+	public float getGravity() { return this.gravity; }
+	public void setGravity(float gravity) { this.gravity = gravity; }
 
 	public AsteroidImpl withTemperature(float temperature)
 	{

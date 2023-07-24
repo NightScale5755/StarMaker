@@ -320,4 +320,5 @@ public class WorldProviderAsteroid extends WorldProviderBody {
     {
         return 0.002F;
     }
+
 }

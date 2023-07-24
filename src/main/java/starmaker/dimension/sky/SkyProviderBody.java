@@ -2,9 +2,9 @@ package starmaker.dimension.sky;
 
 import org.lwjgl.opengl.GL11;
 
-import asmodeuscore.api.dimension.IAdvancedSpace.StarClass;
+import asmodeuscore.api.dimension.IAdvancedSpace.StarColor;
 import asmodeuscore.api.dimension.IAdvancedSpace.StarType;
-import asmodeuscore.api.dimension.IAdvancedSpace.Body;
+import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
 import asmodeuscore.core.astronomy.BodiesData;
 import asmodeuscore.core.astronomy.BodiesRegistry;
 import asmodeuscore.core.astronomy.gui.screen.NewGuiCelestialSelection;
@@ -59,7 +59,7 @@ public class SkyProviderBody extends SkyProviderBase {
 			GL11.glPopMatrix(); 
 		}
 		
-		if(getStarData().getStarClass() == StarType.BLACKHOLE) {
+		if(getStarData().getStarType() == StarType.BLACKHOLE) {
 		
 			//GlStateManager.enableAlpha();
 			//GlStateManager.alphaFunc(GL11.GL_GREATER, 0.08f);
@@ -121,7 +121,7 @@ public class SkyProviderBody extends SkyProviderBase {
 		for(Planet planet : GalaxyRegistry.getPlanetsForSolarSystem(getSolarSystem()))
 		{
 			BodiesData data = BodiesRegistry.getData(planet);
-			if(data != null && data.getType() == Body.STAR) {
+			if(data != null && data.getType() == TypeBody.STAR) {
 				float distance = planet.getRelativeDistanceFromCenter().scaledDistance;
 				distance *= 40;
 				if(planet.getPhaseShift() < 0 && planet.getPhaseShift() > Math.PI)
@@ -162,7 +162,7 @@ public class SkyProviderBody extends SkyProviderBase {
 		if(data.getBody() instanceof IChildBody)
 			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
 		
-		if(bd != null && bd.getStarClass() == StarType.BLACKHOLE) return ModeLight.DEFAULT;
+		if(bd != null && bd.getStarType() == StarType.BLACKHOLE) return ModeLight.DEFAULT;
 		
 		return ModeLight.DEFAULT;
 	}
@@ -185,7 +185,7 @@ public class SkyProviderBody extends SkyProviderBase {
 	}
 
 	@Override
-	protected StarClass colorSunAura() {
+	protected StarColor colorSunAura() {
 		Star star = null;
 		BodiesData bd = null;
 		
@@ -202,7 +202,7 @@ public class SkyProviderBody extends SkyProviderBase {
 		if(star == GalacticraftCore.solarSystemSol.getMainStar())
 			bd = null;
 		
-		return bd != null ? bd.getStarColor() : StarClass.WHITE;
+		return bd != null ? bd.getStarColor() : StarColor.WHITE;
 	}
 	
 	private SolarSystem getSolarSystem() {
@@ -235,7 +235,7 @@ public class SkyProviderBody extends SkyProviderBase {
 		if(data.getBody() instanceof IChildBody)
 			bd = BodiesRegistry.getData(((IChildBody)data.getBody()).getParentPlanet().getParentSolarSystem().getMainStar());
 		
-		if(bd != null && bd.getStarClass() == StarType.BLACKHOLE) return false;
+		if(bd != null && bd.getStarType() == StarType.BLACKHOLE) return false;
 		
 		return true;
 	}
@@ -278,6 +278,6 @@ public class SkyProviderBody extends SkyProviderBase {
 	
 	@Override
 	public boolean enableRenderPlanet() {
-		return this.body_data.getType() != Body.ASTEROID;
+		return this.body_data.getType() != TypeBody.ASTEROID;
 	}
 }

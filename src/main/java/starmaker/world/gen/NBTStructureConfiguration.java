@@ -30,4 +30,8 @@ public class NBTStructureConfiguration {
 	public boolean getIgnoreAir() {
 		return this.structure_data.getIgnoreAir();
 	}
+	
+	public String getBlockOnGen() {
+		return this.structure_data.getOnBlock();
+	}
 }

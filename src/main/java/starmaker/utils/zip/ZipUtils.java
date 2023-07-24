@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import starmaker.StarMaker;
 import starmaker.utils.MakerUtils;
 import starmaker.utils.json.ParseFiles;
 
@@ -30,6 +31,7 @@ public class ZipUtils {
 		for (File file : files) {
 			try {
 				celestial_packs.put(file, new ZipFile(file));
+				StarMaker.info("Loaded celestialpack: " + file.getName());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

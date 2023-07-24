@@ -1,8 +1,6 @@
 package starmaker.dimension;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 
 import asmodeuscore.core.astronomy.dimension.world.worldengine.WE_ChunkProviderSpace;
@@ -19,7 +17,6 @@ import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_LakeGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_OreGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_RavineGen;
 import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_TerrainGenerator;
-import asmodeuscore.core.utils.worldengine.standardcustomgen.WE_WorldTreeGen;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.IWeatherProvider;
@@ -48,7 +45,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.client.IRenderHandler;
-import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
@@ -375,19 +371,15 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 					lakes.chunksForLake = biome.getLakesGenData().getQuantity();
 					b.decorateChunkGen_List.add(lakes);				
 				}
-				
-				if(biome.getTreeGenData() != null) {
-					WE_WorldTreeGen treeGen = new WE_WorldTreeGen();
-					treeGen.add(ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock(), 
-							ParseFiles.getBlock(biome.getTreeGenData().getLog()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLog())),
-							ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock(), 
-							ParseFiles.getBlock(biome.getTreeGenData().getLeaves()).getBlock().getMetaFromState(ParseFiles.getBlock(biome.getTreeGenData().getLeaves())), 
-							ParseFiles.getBlock(biome.getTreeGenData().getSapling()).getBlock(), Blocks.VINE, Blocks.COCOA, biome.getTreeGenData().getQuantity(), 1, 8, biome.getTreeGenData().getMinHeight(), biome.getTreeGenData().getVines(),
-							(byte)2, (byte)0, (byte)0, (byte)1, (byte)2, (byte)1, 1, 12, 4, 0.618D, 0.381D, 1.0D, 1.0D);
-					b.decorateChunkGen_List.add(treeGen);
-				
+
+				if(!biome.getStructureList().isEmpty()) {
+
+					for(StructuresDataImpl data : biome.getStructureList()) {
+						NBTStructureConfiguration config = new NBTStructureConfiguration(data);
+						b.decorateChunkGen_List.add(new NBTStructureGenerator(config));
+					}
 				}
-				
+
 				if(!biome.getGrassGenData().isEmpty()) {
 					
 					WE_GrassGen grassGen = new WE_GrassGen();
@@ -395,14 +387,6 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 						grassGen.add(ParseFiles.getBlock(data.getGrass()), data.getBlockCount(), data.onWater(), ParseFiles.getBlock(data.getGround()));
 					
 					b.decorateChunkGen_List.add(grassGen);
-				}
-
-				if(!biome.getStructureList().isEmpty()) {
-					
-					for(StructuresDataImpl data : biome.getStructureList()) {
-						NBTStructureConfiguration config = new NBTStructureConfiguration(data);
-						b.decorateChunkGen_List.add(new NBTStructureGenerator(config));
-					}
 				}
 					
 				WE_Biome.addBiomeToGeneration(cp, b);

@@ -88,8 +88,8 @@ public class ChunkProviderAsteroid extends ChunkProviderBase
 
     private static final int MAX_ASTEROID_SKEW = 8;
 
-    private static final int MIN_ASTEROID_Y = 48;
-    private static final int MAX_ASTEROID_Y = CHUNK_SIZE_Y - 48;
+    private static final int MIN_ASTEROID_Y = MAX_ASTEROID_RADIUS + 15;
+    private static final int MAX_ASTEROID_Y = CHUNK_SIZE_Y - MAX_ASTEROID_RADIUS - 15;
 
     private static final int ASTEROID_CHANCE = 800; //About 1 / n chance per XZ pair
 

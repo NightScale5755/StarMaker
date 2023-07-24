@@ -10,9 +10,9 @@ import java.util.Map;
 
 import asmodeuscore.AsmodeusCore;
 import asmodeuscore.api.dimension.IAdvancedSpace.ClassBody;
-import asmodeuscore.api.dimension.IAdvancedSpace.StarClass;
+import asmodeuscore.api.dimension.IAdvancedSpace.StarColor;
 import asmodeuscore.api.dimension.IAdvancedSpace.StarType;
-import asmodeuscore.api.dimension.IAdvancedSpace.Body;
+import asmodeuscore.api.dimension.IAdvancedSpace.TypeBody;
 import asmodeuscore.core.astronomy.BodiesData;
 import asmodeuscore.core.astronomy.BodiesRegistry;
 import asmodeuscore.core.astronomy.dimension.world.gen.ACBiome;
@@ -99,6 +99,11 @@ public class ParseFiles {
 
 	public void parseBiomes(InputStream file, String name) {
 
+		if(listBiomes.containsKey(name)) {
+			StarMaker.LOG.info("Biome: %s already registered. Skipped!", name);
+			return;
+		}
+
 		Reader reader = new InputStreamReader(file);
 		BiomeImpl impl = MakerUtils.gson.fromJson(reader, BiomeImpl.class);
 
@@ -114,12 +119,7 @@ public class ParseFiles {
 			oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(),
 					data.getMaxY(), data.getAmountPerChunk()));
 		}
-
-		TreeGenData treegen = null;
-		if (impl.getTreeGen() != null)
-			treegen = new TreeGenData(impl.getTreeGen().getLog(), impl.getTreeGen().getLeaves(),
-					impl.getTreeGen().getSapling(), impl.getTreeGen().getMinHeight(), impl.getTreeGen().getVines(),
-					impl.getTreeGen().getQuantity());
+	
 
 		List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
 		if (impl.getGrassGenList() != null)
@@ -139,7 +139,7 @@ public class ParseFiles {
 				new BiomeData(name, impl.getBiomeSize())
 						.setData(impl.getPersistance(), impl.getHeight(), impl.getOctaves(), impl.getIntquility())
 						.setBlocks(impl.getSurfaceBlock(), impl.getSubsurfaceBlock()).setColors(water, foliage, grass)
-						.setOreGenData(oregen).setTreeGenData(treegen).setGrassGenData(grassgen)
+						.setOreGenData(oregen).setGrassGenData(grassgen)
 						.setLakesGenData(lakesgen).setSpawnLists(impl.getCreatureSpawnList(),
 								impl.getMonsterSpawnList(), impl.getWaterCreatureSpawnList())
 						.setStructureList(impl.getStructuresList()));
@@ -176,10 +176,10 @@ public class ParseFiles {
 		ResourceLocation icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
 				"textures/gui/celestialbodies/yellow.png");
 		StarType star_class = StarType.values()[first_star.getStarClass()];
-		StarClass star_color = null;
+		StarColor star_color = null;
 
 		if (first_star.getStarColor() >= 0)
-			star_color = StarClass.values()[first_star.getStarColor() % 6];
+			star_color = StarColor.values()[first_star.getStarColor() % 6];
 
 		if (star_color != null)
 			icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
@@ -192,7 +192,7 @@ public class ParseFiles {
 				BodiesRegistry.getGalaxy(galaxy), new Vector3(posX, posY, 0.0F), first_star.getName(),
 				first_star.getStarSize(), icon);
 		GalaxyRegistry.registerSolarSystem(system);
-		BodiesData data = new BodiesData(Body.STAR).setStarType(star_class).setStarClass(star_color);
+		BodiesData data = new BodiesData(TypeBody.STAR).setStarType(star_class).setStarColor(star_color);
 		if (impl.getHabitableZone() != null && impl.getHabitableZone().size() == 2) {
 			data.setStarHabitableZone(impl.getHabitableZone().get(0), impl.getHabitableZone().get(1));
 		} else {
@@ -231,7 +231,7 @@ public class ParseFiles {
 
 			star_class = StarType.values()[star_data.getStarClass()];
 			if (star_data.getStarColor() >= 0)
-				star_color = StarClass.values()[star_data.getStarColor() % 6];
+				star_color = StarColor.values()[star_data.getStarColor() % 6];
 
 			if (star_color != null)
 				icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
@@ -246,134 +246,12 @@ public class ParseFiles {
 			BodiesRegistry.setOrbitData(star, star_data.getStarPhase(), star_data.getStarSize(), 1000F);
 			GalaxyRegistry.registerPlanet(star);
 
-			data = new BodiesData(Body.STAR).setStarType(star_class).setStarClass(star_color);
+			data = new BodiesData(TypeBody.STAR).setStarType(star_class).setStarColor(star_color);
 			BodiesRegistry.registerBodyData(star, data);
 		}
 
 	}
 
-	/*
-	 * public void parseSystems(InputStream file) {
-	 * 
-	 * Reader reader = new InputStreamReader(file); SolarSystemObjects
-	 * solarSystemObjects = MakerUtils.gson.fromJson(reader,
-	 * SolarSystemObjects.class); for (SystemImpl systemImpl :
-	 * solarSystemObjects.getSystems()) { if (count_systems++ > LIMIT_SYSTEMS) {
-	 * StarMaker.info("Limit systems = " + LIMIT_SYSTEMS); break; }
-	 * 
-	 * if (systemImpl == null) continue;
-	 * 
-	 * String name = systemImpl.getName(); String galaxy = systemImpl.getGalaxy();
-	 * float posX = systemImpl.getPosX(); float posY = systemImpl.getPosY();
-	 * 
-	 * if (BodiesRegistry.getGalaxy(galaxy) == null) {
-	 * 
-	 * if (count_galaxies++ > LIMIT_GALAXIES) { StarMaker.info("Limit galaxies = " +
-	 * LIMIT_GALAXIES); break; }
-	 * 
-	 * ResourceLocation icon = new ResourceLocation(CoreConfig.resourceDomain,
-	 * "textures/gui/celestialbodies/galaxy/" + galaxy + ".png");
-	 * BodiesRegistry.registerGalaxy(galaxy, icon);
-	 * 
-	 * }
-	 * 
-	 * if (systemImpl.getStars() == null) { // Solar System Data String star_name =
-	 * systemImpl.getStarName(); float star_size = systemImpl.getStarSize();
-	 * StarClass star_class = StarClass.values()[systemImpl.getStarClass()];
-	 * 
-	 * StarColor star_color = null; if (systemImpl.getStarColor() >= 0) star_color =
-	 * StarColor.values()[systemImpl.getStarColor()];
-	 * 
-	 * ResourceLocation icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
-	 * "textures/gui/celestialbodies/yellow.png");
-	 * 
-	 * if (star_color != null) icon = new
-	 * ResourceLocation(AsmodeusCore.ASSET_PREFIX, "textures/gui/celestialbodies/" +
-	 * star_color.name().toLowerCase() + ".png");
-	 * 
-	 * if (star_class == StarClass.BLACKHOLE) icon = new
-	 * ResourceLocation(StarMaker.ASSET_PREFIX,
-	 * "textures/gui/celestialbodies/blackhole.png");
-	 * 
-	 * SolarSystem system =
-	 * BodiesRegistry.registerSolarSystem(StarMaker.ASSET_PREFIX, name,
-	 * BodiesRegistry.getGalaxy(galaxy), new Vector3(posX, posY, 0.0F), star_name,
-	 * star_size, icon); GalaxyRegistry.registerSolarSystem(system);
-	 * 
-	 * BodiesData data = new
-	 * BodiesData(TypeBody.STAR).setStarClass(star_class).setStarColor(star_color);
-	 * switch (star_color) { case BLUE: data.setStarHabitableZone(1.8F, 0.35F);
-	 * break; case BROWN: data.setStarHabitableZone(0.3F, 0.05F); break; case
-	 * LIGHTBLUE: data.setStarHabitableZone(1.5F, 0.3F); break; case ORANGE:
-	 * data.setStarHabitableZone(0.7F, 0.15F); break; case RED:
-	 * data.setStarHabitableZone(0.5F, 0.1F); break; case WHITE:
-	 * data.setStarHabitableZone(2.2F, 0.35F); break; case YELLOW:
-	 * data.setStarHabitableZone(1.0F, 0.22F); break; default: break;
-	 * 
-	 * } BodiesRegistry.registerBodyData(system.getMainStar(), data);
-	 * StarMaker.LOG.info("Registered New Solar System: %s", system.getName());
-	 * 
-	 * } else {
-	 * 
-	 * StarsDataImpl first_star = systemImpl.getStars().get(0);
-	 * 
-	 * ResourceLocation icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
-	 * "textures/gui/celestialbodies/yellow.png"); StarClass star_class =
-	 * StarClass.values()[first_star.getStarClass()]; StarColor star_color = null;
-	 * if (first_star.getStarColor() >= 0) star_color =
-	 * StarColor.values()[first_star.getStarColor()];
-	 * 
-	 * if (star_color != null) icon = new
-	 * ResourceLocation(AsmodeusCore.ASSET_PREFIX, "textures/gui/celestialbodies/" +
-	 * star_color.name().toLowerCase() + ".png");
-	 * 
-	 * if (star_class == StarClass.BLACKHOLE) icon = new
-	 * ResourceLocation(StarMaker.ASSET_PREFIX,
-	 * "textures/gui/celestialbodies/blackhole.png");
-	 * 
-	 * 
-	 * SolarSystem system =
-	 * BodiesRegistry.registerSolarSystem(StarMaker.ASSET_PREFIX, name,
-	 * BodiesRegistry.getGalaxy(galaxy), new Vector3(posX, posY, 0.0F),
-	 * first_star.getName(), first_star.getStarSize(), icon);
-	 * GalaxyRegistry.registerSolarSystem(system); BodiesData data = new
-	 * BodiesData(TypeBody.STAR).setStarClass(star_class).setStarColor(star_color);
-	 * BodiesRegistry.registerBodyData(system.getMainStar(), data);
-	 * 
-	 * for (int i = 1; i < systemImpl.getStars().size(); i++) { if (i > 4) break;
-	 * StarsDataImpl star_data = systemImpl.getStars().get(i);
-	 * 
-	 * star_class = StarClass.values()[star_data.getStarClass()]; if
-	 * (star_data.getStarColor() >= 0) star_color =
-	 * StarColor.values()[star_data.getStarColor()]; icon = new
-	 * ResourceLocation(AsmodeusCore.ASSET_PREFIX,
-	 * "textures/gui/celestialbodies/yellow.png");
-	 * 
-	 * if (star_color != null) icon = new
-	 * ResourceLocation(AsmodeusCore.ASSET_PREFIX, "textures/gui/celestialbodies/" +
-	 * star_color.name().toLowerCase() + ".png");
-	 * 
-	 * float distance = star_data.getDistanceFromCenter() != null ?
-	 * star_data.getDistanceFromCenter() : 0.3F * i;
-	 * 
-	 * Planet star = BodiesRegistry.registerExPlanet(system, star_data.getName(),
-	 * StarMaker.ASSET_PREFIX, distance); star.setRingColorRGB(0.0F, 0.0F, 0.0F);
-	 * star.setBodyIcon(icon); BodiesRegistry.setOrbitData(star,
-	 * star_data.getStarPhase(), star_data.getStarSize(), 1000F);
-	 * GalaxyRegistry.registerPlanet(star);
-	 * 
-	 * data = new
-	 * BodiesData(TypeBody.STAR).setStarClass(star_class).setStarColor(star_color);
-	 * BodiesRegistry.registerBodyData(star, data); }
-	 * 
-	 * StarMaker.LOG.info("Registered New Solar System: %s", system.getName());
-	 * 
-	 * }
-	 * 
-	 * }
-	 * 
-	 * }
-	 */
 	public void parsePlanets(InputStream file, String name) {
 
 		Reader input = new InputStreamReader(file);
@@ -443,16 +321,18 @@ public class ParseFiles {
 
 			id = getAvailableID();
 			regDim(id, data, planet.getWorldProvider(), new TeleportTypeBody());
-
+			StarMaker.LOG.info("Registered" + " new Planet: %s | %s | %s",
+					planet.getName(), planet.getWorldProvider(), id);
 		} else {
 			DimData data = new DimData(planet);
 			regUnreachDim(data);
+			StarMaker.LOG.info("Registered unreachable new Planet: %s",
+					planet.getName());
 		}
 
-		BodiesData data = new BodiesData(Body.PLANET);
+		BodiesData data = new BodiesData(TypeBody.PLANET);
 		BodiesRegistry.registerBodyData(planet, data);
-		StarMaker.LOG.info("Registered" + (impl.getUnreachable() ? " unreachable" : "") + " new Planet: %s | %s | %s",
-				planet.getName(), planet.getWorldProvider(), id);
+
 	}
 
 	public void parseMoons(InputStream file, String name) {
@@ -566,7 +446,7 @@ public class ParseFiles {
 			regUnreachDim(data);
 		}
 
-		BodiesData data = new BodiesData(Body.MOON);
+		BodiesData data = new BodiesData(TypeBody.MOON);
 		BodiesRegistry.registerBodyData(moon, data);
 		StarMaker.LOG.info(
 				"Registered" + (impl.getUnreachable() ? " unreachable" : "")
@@ -609,7 +489,7 @@ public class ParseFiles {
 	
 			if (!impl.getUnreachable()) {
 	
-				BodiesRegistry.setPlanetData(asteroid, 0F, 0, 0.0058F, impl.getSolarRadiation());
+				BodiesRegistry.setPlanetData(asteroid, 0F, 0, impl.getGravity(), impl.getSolarRadiation());
 				BodiesRegistry.setProviderData(asteroid, WorldProviderAsteroid.class, dimID, impl.getTier(),
 						ACBiome.ACSpace);
 				asteroid.setAtmosphere(new AtmosphereInfo(false, false, false, impl.getTemperature(), 0F, 0F));
@@ -635,7 +515,7 @@ public class ParseFiles {
 				DimData data = new DimData(asteroid);
 				regUnreachDim(data);
 			}
-			BodiesData data = new BodiesData(Body.ASTEROID, ClassBody.ASTEROID);
+			BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
 			BodiesRegistry.registerBodyData(asteroid, data);
 			StarMaker.LOG.info(
 					"Registered" + (impl.getUnreachable() ? " unreachable" : "")
@@ -705,7 +585,7 @@ public class ParseFiles {
 			
 			if (!impl.getUnreachable()) {
 				
-				BodiesRegistry.setPlanetData(asteroid, 0F, 0, 0.0058F, impl.getSolarRadiation());
+				BodiesRegistry.setPlanetData(asteroid, 0F, 0, impl.getGravity(), impl.getSolarRadiation());
 				BodiesRegistry.setProviderData(asteroid, WorldProviderAsteroid.class, dimID, impl.getTier(),
 						ACBiome.ACSpace);
 				asteroid.setAtmosphere(new AtmosphereInfo(false, false, false, impl.getTemperature(), 0F, 0F));
@@ -731,7 +611,7 @@ public class ParseFiles {
 				DimData data = new DimData(asteroid);
 				regUnreachDim(data);
 			}
-			BodiesData data = new BodiesData(Body.ASTEROID, ClassBody.ASTEROID);
+			BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
 			BodiesRegistry.registerBodyData(asteroid, data);
 			StarMaker.LOG.info(
 					"Registered" + (impl.getUnreachable() ? " unreachable" : "")

@@ -16,7 +16,6 @@ import starmaker.utils.json.data.GrassGenImpl;
 import starmaker.utils.json.data.LakesGenImpl;
 import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.OreGenImpl;
-import starmaker.utils.json.data.TreeGenImpl;
 import starmaker.utils.json.data.WorldDataImpl;
 
 public class ExampleFiles
@@ -46,7 +45,6 @@ public class ExampleFiles
 		List<Integer> grass = Arrays.asList(0, 100, 100);
 
 		List<OreGenImpl> oregen = Arrays.asList(new OreGenImpl("minecraft:dirt", "minecraft:cobblestone", 5, 80, 90, 20));
-		TreeGenImpl treegen = new TreeGenImpl("minecraft:log", "minecraft:leaves", "minecraft:sapling", 8, false, 3);
 		List<GrassGenImpl> grassgen = Arrays.asList(new GrassGenImpl("minecraft:tallgrass:1", "minecraft:grass", 5, false));
 		LakesGenImpl lakesgen = new LakesGenImpl("minecraft:lava", 20);
 		
@@ -56,7 +54,7 @@ public class ExampleFiles
 		
 		//systemsObjects = new SolarSystemObjects().addSystemToList(exampleSystemImpl);
 
-		exampleBiomeImpl = new BiomeImpl(2.2, 4, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen, treegen, grassgen, lakesgen);
+		exampleBiomeImpl = new BiomeImpl(2.2, 4, 130, 10, 2.0, water, foliage, grass, "minecraft:grass", "minecraft:dirt", oregen, grassgen, lakesgen);
 		
 		examplePlanetImpl = new PlanetImpl()
 				.withParentSystem("example_system")

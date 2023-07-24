@@ -43,9 +43,7 @@ public class BiomeImpl
 	@SerializedName("oregen")
 	@Expose
 	private List<OreGenImpl> oregen = null;
-	@SerializedName("treegen")
-	@Expose
-	private TreeGenImpl treegen = null;
+
 	@SerializedName("grassgen")
 	@Expose
 	private List<GrassGenImpl> grassgen = null;	
@@ -88,7 +86,7 @@ public class BiomeImpl
 	 */
 	public BiomeImpl(Double persistance, Integer octaves, Integer height, Integer intquility, Double biomeSize,
 			List<Integer> waterColor, List<Integer> foliageColor, List<Integer> grassColor, String surfaceBlock,
-			String subsurfaceBlock, List<OreGenImpl> oregen, TreeGenImpl treegen, List<GrassGenImpl> grassgen, LakesGenImpl lakesgen)
+			String subsurfaceBlock, List<OreGenImpl> oregen, List<GrassGenImpl> grassgen, LakesGenImpl lakesgen)
 	{
 		super();
 		this.persistance = persistance;
@@ -102,7 +100,6 @@ public class BiomeImpl
 		this.surfaceBlock = surfaceBlock;
 		this.subsurfaceBlock = subsurfaceBlock;
 		this.oregen = oregen;
-		this.treegen = treegen;
 		this.grassgen = grassgen;
 		this.lakesgen = lakesgen;
 	}
@@ -303,15 +300,6 @@ public class BiomeImpl
 	{
 		this.oregen = oregen;
 		return this;
-	}
-
-	public TreeGenImpl getTreeGen() {
-		return this.treegen;
-	}
-	
-	public void setTreeOreGen(TreeGenImpl treegen)
-	{
-		this.treegen = treegen;
 	}
 	
 	public List<GrassGenImpl> getGrassGenList()

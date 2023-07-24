@@ -15,7 +15,7 @@ public class BiomeData
 	private String surface_block, subsurface_block;
 	
 	private List<OreGenData> getOreGenData = new ArrayList<OreGenData>();
-	private TreeGenData getTreeGenData;
+
 	private List<GrassGenData> getGrassGenData = new ArrayList<GrassGenData>();
 	private LakesGenData getLakesGenData;
 	
@@ -61,11 +61,7 @@ public class BiomeData
 		return this;
 	}
 	
-	public BiomeData setTreeGenData(TreeGenData data)
-	{
-		this.getTreeGenData = data;
-		return this;
-	}
+
 	
 	public BiomeData setGrassGenData(List<GrassGenData> biome)
 	{
@@ -108,7 +104,7 @@ public class BiomeData
 	public String getSubsurfaceBlock() { return this.subsurface_block; } 
 	
 	public List<OreGenData> getOreGenData() { return this.getOreGenData; }
-	public TreeGenData getTreeGenData() {return this.getTreeGenData; }
+
 	public List<GrassGenData> getGrassGenData() { return this.getGrassGenData; }
 	public LakesGenData getLakesGenData() {return this.getLakesGenData; }
 	public List<EntitySpawnImpl> getCreatureSpawnList(){return this.creatureSpawn;}

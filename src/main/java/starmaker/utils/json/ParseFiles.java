@@ -43,6 +43,8 @@ import micdoodle8.mods.galacticraft.planets.mars.MarsModule;
 import micdoodle8.mods.galacticraft.planets.venus.VenusModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -62,7 +64,6 @@ import starmaker.utils.data.DimData;
 import starmaker.utils.data.GrassGenData;
 import starmaker.utils.data.LakesGenData;
 import starmaker.utils.data.OreGenData;
-import starmaker.utils.data.TreeGenData;
 import starmaker.utils.json.celestialimpl.AsteroidImpl;
 import starmaker.utils.json.celestialimpl.MoonImpl;
 import starmaker.utils.json.celestialimpl.PlanetImpl;
@@ -771,6 +772,7 @@ public class ParseFiles {
 	public static IBlockState getBlock(String par1) {
 		String[] meta = par1.split(":");
 
+
 		Block blocks = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(meta[0] + ":" + 0));
 		if (meta.length > 1)
 			blocks = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(meta[0] + ":" + meta[1]));
@@ -780,6 +782,7 @@ public class ParseFiles {
 
 		return blocks.getDefaultState();
 	}
+
 
 	private static int getAvailableID() {
 		return dimID--;

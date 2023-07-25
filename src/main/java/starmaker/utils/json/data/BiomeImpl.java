@@ -327,9 +327,7 @@ public class BiomeImpl
 		this.lakesgen = lakesgen;
 	}
 	
-	public List<EntitySpawnImpl> getCreatureSpawnList() {
-		return this.creatureSpawn;
-	}
+	public List<EntitySpawnImpl> getCreatureSpawnList() { return this.creatureSpawn; }
 	
 	public List<EntitySpawnImpl> getMonsterSpawnList() {
 		return this.monsterSpawn;

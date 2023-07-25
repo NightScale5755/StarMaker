@@ -24,15 +24,15 @@ import starmaker.utils.zip.ZipUtils;
 @Mod(
 		   modid = StarMaker.MODID,
 		   version = StarMaker.VERSION,
-		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore@[4.0.2.282,); required-after:galacticraftplanets; required-after:asmodeuscore@[0.0.32,)",
+		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore@[4.0.2.282,); required-after:galacticraftplanets; required-after:asmodeuscore@[1.0.0,)",
 		   acceptedMinecraftVersions = "[1.12.2]",
 		   name = StarMaker.NAME
 		)
 public class StarMaker {
 	
-	public static final int major_version = 0;
+	public static final int major_version = 1;
 	public static final int minor_version = 0;
-	public static final int build_version = 6;
+	public static final int build_version = 0;
 	
 	public static final String NAME = "StarMaker";
 	public static final String MODID = "starmaker";
@@ -106,7 +106,12 @@ public class StarMaker {
         info.name = NAME;
         info.version = VERSION;
         info.description = "StarMaker for Galacticraft 4!";
-        info.authorList = Arrays.asList("Vi[Told]");
+        info.authorList = Arrays.asList(
+				"Vi[Told]#vitold",
+				"AstroMaster#astromaster",
+				"ZlayaSeledka#zlayaseledka",
+				"AndRey#andrey5941"
+		);
     }
        
     public static void info(Object message)

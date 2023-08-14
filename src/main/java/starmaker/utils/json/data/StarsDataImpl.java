@@ -14,20 +14,20 @@ public class StarsDataImpl {
 	@SerializedName("star_size")
 	@Expose
 	private float starSize;
-	@SerializedName("star_class")
+	@SerializedName("star_type")
 	@Expose
-	private Integer starClass;
+	private Integer starType;
 	@SerializedName("star_color")
 	@Expose
 	private Integer starColor;
 	@SerializedName("distance_from_center") @Expose
 	private Float distanceFromCenter = -1F;
 	
-	public StarsDataImpl(String name, float star_phase, float star_size, int star_class, int star_color) {
+	public StarsDataImpl(String name, float star_phase, float star_size, int star_type, int star_color) {
 		this.name = name;
 		this.starPhase = star_phase;
 		this.starSize = star_size;
-		this.starClass = star_class;
+		this.starType = star_type;
 		this.starColor = star_color;		
 	}
 	
@@ -48,8 +48,8 @@ public class StarsDataImpl {
 		return this.starSize;
 	}
 	
-	public int getStarClass() {
-		return this.starClass;
+	public int getStarType() {
+		return this.starType;
 	}
 	
 	public int getStarColor() {

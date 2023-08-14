@@ -1,13 +1,5 @@
 package starmaker.utils.json;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import asmodeuscore.AsmodeusCore;
 import asmodeuscore.api.dimension.IAdvancedSpace.ClassBody;
 import asmodeuscore.api.dimension.IAdvancedSpace.StarColor;
@@ -23,13 +15,8 @@ import asmodeuscore.core.utils.Utils;
 import galaxyspace.core.GSItems;
 import galaxyspace.systems.SolarSystem.SolarSystemBodies;
 import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
-import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
+import micdoodle8.mods.galacticraft.api.galaxies.*;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody.ScalableDistance;
-import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
-import micdoodle8.mods.galacticraft.api.galaxies.Moon;
-import micdoodle8.mods.galacticraft.api.galaxies.Planet;
-import micdoodle8.mods.galacticraft.api.galaxies.Satellite;
-import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
 import micdoodle8.mods.galacticraft.api.recipe.SpaceStationRecipe;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
@@ -43,8 +30,6 @@ import micdoodle8.mods.galacticraft.planets.mars.MarsModule;
 import micdoodle8.mods.galacticraft.planets.venus.VenusModule;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -59,23 +44,18 @@ import starmaker.dimension.WorldProviderAsteroid;
 import starmaker.dimension.WorldProviderBody;
 import starmaker.dimension.WorldProviderSatellite;
 import starmaker.utils.MakerUtils;
-import starmaker.utils.data.BiomeData;
-import starmaker.utils.data.DimData;
-import starmaker.utils.data.GrassGenData;
-import starmaker.utils.data.LakesGenData;
-import starmaker.utils.data.OreGenData;
-import starmaker.utils.json.celestialimpl.AsteroidImpl;
-import starmaker.utils.json.celestialimpl.MoonImpl;
-import starmaker.utils.json.celestialimpl.PlanetImpl;
-import starmaker.utils.json.celestialimpl.SatelliteImpl;
-import starmaker.utils.json.celestialimpl.SystemImpl;
-import starmaker.utils.json.data.BiomeImpl;
-import starmaker.utils.json.data.GrassGenImpl;
-import starmaker.utils.json.data.OrbitDataImpl;
-import starmaker.utils.json.data.OreGenImpl;
-import starmaker.utils.json.data.StarsDataImpl;
-import starmaker.utils.json.data.WorldDataImpl;
+import starmaker.utils.data.*;
+import starmaker.utils.json.celestialimpl.*;
+import starmaker.utils.json.data.*;
 import starmaker.world.TeleportTypeBody;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ParseFiles {
 
@@ -83,8 +63,8 @@ public class ParseFiles {
 	private static Map<String, BiomeData> listBiomes = new HashMap<String, BiomeData>();
 	private static int dimID = CoreConfig.startIDs;
 
-	private static final int LIMIT_GALAXIES = 5;
-	private static final int LIMIT_SYSTEMS = 50;
+	private static final int LIMIT_GALAXIES = 10;
+	private static final int LIMIT_SYSTEMS = 65;
 	private static final int LIMIT_PLANETS = 300;
 	private static final int LIMIT_MOONS = 150;
 	private static final int LIMIT_ASTEROIDS = 50;
@@ -176,11 +156,11 @@ public class ParseFiles {
 		StarsDataImpl first_star = impl.getStars().get(0);
 		ResourceLocation icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
 				"textures/gui/celestialbodies/yellow.png");
-		StarType star_class = StarType.values()[first_star.getStarClass()];
+		StarType star_class = StarType.values()[first_star.getStarType()];
 		StarColor star_color = null;
 
 		if (first_star.getStarColor() >= 0)
-			star_color = StarColor.values()[first_star.getStarColor() % 6];
+			star_color = StarColor.values()[first_star.getStarColor() % 7];
 
 		if (star_color != null)
 			icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
@@ -230,9 +210,9 @@ public class ParseFiles {
 				break;
 			StarsDataImpl star_data = impl.getStars().get(i);
 
-			star_class = StarType.values()[star_data.getStarClass()];
+			star_class = StarType.values()[star_data.getStarType()];
 			if (star_data.getStarColor() >= 0)
-				star_color = StarColor.values()[star_data.getStarColor() % 6];
+				star_color = StarColor.values()[star_data.getStarColor() % 7];
 
 			if (star_color != null)
 				icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,

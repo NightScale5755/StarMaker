@@ -98,9 +98,8 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 
 	@Override
 	public double getMeteorFrequency() {
-		if(!getDimData().getThrowMeteors()) return 0;
-		
-		return 4;//(3 - (getSkyColor().x + getSkyColor().y + getSkyColor().z)) * 10;
+
+		return this.getDimData().getMeteorFrequency();//(3 - (getSkyColor().x + getSkyColor().y + getSkyColor().z)) * 10;
 	}
 	 
 	@Override
@@ -443,5 +442,21 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 	@Override
 	protected float getThermalValueMod() {
 		return getDimData().getTemperatureMod();
+	}
+
+	@Override
+	public float calculateCelestialAngle(long par1, float par3) {
+		if(getDimData().getTidallyLocked())
+			return ((float)super.getDayLength() / 24000F);
+
+		return super.calculateCelestialAngle(par1, par3);
+	}
+
+	@Override
+	public long getDayLength() {
+		if(getDimData().getTidallyLocked())
+			return 0L;
+
+		return super.getDayLength();
 	}
 }

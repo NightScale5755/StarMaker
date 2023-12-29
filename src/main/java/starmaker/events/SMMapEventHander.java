@@ -1,11 +1,14 @@
 package starmaker.events;
 
 import micdoodle8.mods.galacticraft.api.event.client.CelestialBodyRenderEvent;
+import micdoodle8.mods.galacticraft.core.client.gui.screen.GuiCelestialSelection;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import starmaker.utils.MakerUtils;
+import starmaker.utils.data.DimData;
 
 public class SMMapEventHander {
 
@@ -22,13 +25,13 @@ public class SMMapEventHander {
     @SubscribeEvent
     public void onRenderPlanetPost(CelestialBodyRenderEvent.Post event)
     {
-		/*for(DimData data : MakerUtils.bodies.values()) {
-			if (event.celestialBody == data.getBody() && data.getRingTexture() != null)
-	    	{
-	            minecraft.renderEngine.bindTexture(data.getRingTexture());
-	            float size = ((GuiCelestialSelection)minecraft.currentScreen).getWidthForCelestialBody(event.celestialBody) / 6.0F;
-	            ((GuiCelestialSelection)minecraft.currentScreen).drawTexturedModalRect(-7.5F * size, -1.75F * size, 16.0F * size, 3.5F * size, 0, 0, 30, 7, false, false, 30, 7);
-	    	}
-		}*/
+		DimData data = MakerUtils.bodies.get(event.celestialBody.getDimensionID());
+
+		if(data != null && data.getRingOnMapTexture() != null) {
+			minecraft.renderEngine.bindTexture(data.getRingOnMapTexture());
+			float size = ((GuiCelestialSelection)minecraft.currentScreen).getWidthForCelestialBody(event.celestialBody) / 6.0F;
+			((GuiCelestialSelection)minecraft.currentScreen).drawTexturedModalRect(-8.0F * size, -8.0F * size, 16.0F * size, 16.0F * size, 0, 0, 32, 32, false, false, 32, 32);
+
+		}
     }
 }

@@ -100,7 +100,7 @@ public class ParseFiles {
 			oregen.add(new OreGenData(data.getOreBlock(), data.getReplacedBlock(), data.getBlockCount(), data.getMinY(),
 					data.getMaxY(), data.getAmountPerChunk()));
 		}
-	
+
 
 		List<GrassGenData> grassgen = new ArrayList<GrassGenData>();
 		if (impl.getGrassGenList() != null)
@@ -178,29 +178,29 @@ public class ParseFiles {
 			data.setStarHabitableZone(impl.getHabitableZone().get(0), impl.getHabitableZone().get(1));
 		} else {
 			switch (star_color) {
-			case BLUE:
-				data.setStarHabitableZone(1.8F, 0.35F);
-				break;
-			case BROWN:
-				data.setStarHabitableZone(0.3F, 0.05F);
-				break;
-			case LIGHTBLUE:
-				data.setStarHabitableZone(1.5F, 0.3F);
-				break;
-			case ORANGE:
-				data.setStarHabitableZone(0.7F, 0.15F);
-				break;
-			case RED:
-				data.setStarHabitableZone(0.5F, 0.1F);
-				break;
-			case WHITE:
-				data.setStarHabitableZone(2.2F, 0.35F);
-				break;
-			case YELLOW:
-				data.setStarHabitableZone(1.0F, 0.22F);
-				break;
-			default:
-				break;
+				case BLUE:
+					data.setStarHabitableZone(1.8F, 0.35F);
+					break;
+				case BROWN:
+					data.setStarHabitableZone(0.3F, 0.05F);
+					break;
+				case LIGHTBLUE:
+					data.setStarHabitableZone(1.5F, 0.3F);
+					break;
+				case ORANGE:
+					data.setStarHabitableZone(0.7F, 0.15F);
+					break;
+				case RED:
+					data.setStarHabitableZone(0.5F, 0.1F);
+					break;
+				case WHITE:
+					data.setStarHabitableZone(2.2F, 0.35F);
+					break;
+				case YELLOW:
+					data.setStarHabitableZone(1.0F, 0.22F);
+					break;
+				default:
+					break;
 			}
 		}
 		BodiesRegistry.registerBodyData(system.getMainStar(), data);
@@ -296,9 +296,11 @@ public class ParseFiles {
 					.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(),
 							dataImpl.getWaterBlock())
 					.setBiomes(biomes).setSunSize(impl.getSunSize()).setWaterY(dataImpl.getWaterY())
-					.setLanderType(dataImpl.getLanderType()).setThrowMeteors(dataImpl.getThrowMeteors())
+					.setLanderType(dataImpl.getLanderType()).setMeteorFrequency(dataImpl.getMeteorFrequency())
 					.setCloudHeight(impl.getCloudHeight()).setTemperatureMod(impl.getTemperatureModificator())
-					.setRingTexture(impl.getRingTextureName()).setSunTexture(impl.getSunTextureName());
+					.setRingTexture(impl.getRingOnMapTextureName(), impl.getRingOnSkyTextureName()).setSunTexture(impl.getSunTextureName())
+					.setFallDamageModifier(dataImpl.getFallDamageModifier())
+					.setTidallyLocked(impl.getTidallyLocked());
 
 			id = getAvailableID();
 			regDim(id, data, planet.getWorldProvider(), new TeleportTypeBody());
@@ -324,24 +326,6 @@ public class ParseFiles {
 		Planet planet = null;
 
 		switch (impl.getParentPlanet()) {
-		case "venus":
-			planet = VenusModule.planetVenus;
-			break;
-		case "overworld":
-			planet = GalacticraftCore.planetOverworld;
-			break;
-		case "mars":
-			planet = MarsModule.planetMars;
-			break;
-		default:
-			planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
-		}
-
-		if (ACCompatibilityManager.isGalaxySpaceLoaded()) {
-			switch (impl.getParentPlanet()) {
-			case "mercury":
-				planet = SolarSystemBodies.planetMercury;
-				break;
 			case "venus":
 				planet = VenusModule.planetVenus;
 				break;
@@ -351,20 +335,38 @@ public class ParseFiles {
 			case "mars":
 				planet = MarsModule.planetMars;
 				break;
-			case "jupiter":
-				planet = SolarSystemBodies.planetJupiter;
-				break;
-			case "saturn":
-				planet = SolarSystemBodies.planetSaturn;
-				break;
-			case "uranus":
-				planet = SolarSystemBodies.planetUranus;
-				break;
-			case "neptune":
-				planet = SolarSystemBodies.planetNeptune;
-				break;
 			default:
 				planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+		}
+
+		if (ACCompatibilityManager.isGalaxySpaceLoaded()) {
+			switch (impl.getParentPlanet()) {
+				case "mercury":
+					planet = SolarSystemBodies.planetMercury;
+					break;
+				case "venus":
+					planet = VenusModule.planetVenus;
+					break;
+				case "overworld":
+					planet = GalacticraftCore.planetOverworld;
+					break;
+				case "mars":
+					planet = MarsModule.planetMars;
+					break;
+				case "jupiter":
+					planet = SolarSystemBodies.planetJupiter;
+					break;
+				case "saturn":
+					planet = SolarSystemBodies.planetSaturn;
+					break;
+				case "uranus":
+					planet = SolarSystemBodies.planetUranus;
+					break;
+				case "neptune":
+					planet = SolarSystemBodies.planetNeptune;
+					break;
+				default:
+					planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
 			}
 		}
 
@@ -415,9 +417,12 @@ public class ParseFiles {
 					.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(),
 							dataImpl.getWaterBlock())
 					.setBiomes(biomes).setSunSize(impl.getSunSize()).setWaterY(dataImpl.getWaterY())
-					.setLanderType(dataImpl.getLanderType()).setThrowMeteors(dataImpl.getThrowMeteors())
+					.setLanderType(dataImpl.getLanderType()).setMeteorFrequency(dataImpl.getMeteorFrequency())
 					.setCloudHeight(impl.getCloudHeight()).setTemperatureMod(impl.getTemperatureModificator())
-					.setSunTexture(impl.getSunTextureName()).setPlanetSize(impl.getPlanetSize());
+					.setSunTexture(impl.getSunTextureName()).setPlanetSize(impl.getPlanetSize())
+					.setFallDamageModifier(dataImpl.getFallDamageModifier())
+					.setTidallyLocked(impl.getTidallyLocked())
+					.setRingTexture(impl.getRingOnMapTextureName(), impl.getRingOnSkyTextureName());
 
 			id = getAvailableID();
 			regDim(id, data, moon.getWorldProvider(), new TeleportTypeBody());
@@ -441,57 +446,57 @@ public class ParseFiles {
 		Reader reader = new InputStreamReader(file);
 		AsteroidImpl impl = MakerUtils.gson.fromJson(reader, AsteroidImpl.class);
 		int id = -1;
-		
+
 		if (count_asteroids++ > LIMIT_ASTEROIDS) {
 			StarMaker.info("Ignore: " + name + ". Limit asteroids = " + LIMIT_ASTEROIDS);
 			return;
 		}
-		
+
 		if(impl.getParentPlanet() == null) {
 			if (!GalaxyRegistry.getRegisteredSolarSystems().containsKey(impl.getParentSystem())
 					&& !impl.getParentSystem().equals("sol"))
 				return;
-	
+
 			SolarSystem system = null;
 			if (impl.getParentSystem().equals("sol")) {
 				system = GalacticraftCore.solarSystemSol;
 			} else
 				system = GalaxyRegistry.getRegisteredSolarSystems().get(impl.getParentSystem());
-	
+
 			OrbitDataImpl orbitData = impl.getOrbitData();
 			ExPlanet asteroid = BodiesRegistry.registerExPlanet(system, name, CoreConfig.resourceDomain,
 					orbitData.getDistanceFromCenter());
-	
+
 			BodiesRegistry.setOrbitData(asteroid, orbitData.getPhase(), 1.0F, orbitData.getRelativeTime(),
-					orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);	
-	
+					orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
+
 			asteroid.setRingColorRGB(1.1F, 0.0F, 0.0F);
-			
-	
+
+
 			if (!impl.getUnreachable()) {
-	
+
 				BodiesRegistry.setPlanetData(asteroid, 0F, 0, impl.getGravity(), impl.getSolarRadiation());
 				BodiesRegistry.setProviderData(asteroid, WorldProviderAsteroid.class, dimID, impl.getTier(),
 						ACBiome.ACSpace);
 				asteroid.setAtmosphere(new AtmosphereInfo(false, false, false, impl.getTemperature(), 0F, 0F));
-	
+
 				asteroid.setRelativeDistanceFromCenter(
 						new ScalableDistance(orbitData.getDistanceFromCenter() + orbitData.getSize(),
 								orbitData.getDistanceFromCenter() - orbitData.getSize()));
-	
+
 				List<String> oregen = new ArrayList<>();
 				for (OreGenImpl data : impl.getOreGenList())
 					oregen.add(data.getOreBlock());
-	
+
 				DimData data = new DimData(asteroid, "", 0).setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
 						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 						.setGenCavesRavines(false, false, 0, "").setBiomes(null).setSunSize(impl.getSunSize()).setWaterY(0)
-						.setLanderType(1).setThrowMeteors(false).setCloudHeight(0).setTemperatureMod(0)
+						.setLanderType(1).setCloudHeight(0).setTemperatureMod(0)
 						.setListAsteroidsOres(oregen).setAsteroidBlocks(impl.getAsteroidBlocks());
-	
+
 				id = getAvailableID();
 				regDim(id, data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
-	
+
 			} else {
 				DimData data = new DimData(asteroid);
 				regUnreachDim(data);
@@ -503,11 +508,113 @@ public class ParseFiles {
 							+ " new Asteroid: %s on Parent System: %s | %s | %s",
 					asteroid.getName(), asteroid.getParentSolarSystem().getName(), asteroid.getWorldProvider(), id);
 		} else {
-			
-				
+
+
 			Planet planet = null;
 
 			switch (impl.getParentPlanet()) {
+				case "venus":
+					planet = VenusModule.planetVenus;
+					break;
+				case "overworld":
+					planet = GalacticraftCore.planetOverworld;
+					break;
+				case "mars":
+					planet = MarsModule.planetMars;
+					break;
+				default:
+					planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+			}
+
+			if (ACCompatibilityManager.isGalaxySpaceLoaded()) {
+				switch (impl.getParentPlanet()) {
+					case "mercury":
+						planet = SolarSystemBodies.planetMercury;
+						break;
+					case "venus":
+						planet = VenusModule.planetVenus;
+						break;
+					case "overworld":
+						planet = GalacticraftCore.planetOverworld;
+						break;
+					case "mars":
+						planet = MarsModule.planetMars;
+						break;
+					case "jupiter":
+						planet = SolarSystemBodies.planetJupiter;
+						break;
+					case "saturn":
+						planet = SolarSystemBodies.planetSaturn;
+						break;
+					case "uranus":
+						planet = SolarSystemBodies.planetUranus;
+						break;
+					case "neptune":
+						planet = SolarSystemBodies.planetNeptune;
+						break;
+					default:
+						planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
+				}
+			}
+
+			if (planet == null)
+				return;
+
+			OrbitDataImpl orbitData = impl.getOrbitData();
+
+			ExMoon asteroid = BodiesRegistry.registerExMoon(planet, name, CoreConfig.resourceDomain,
+					orbitData.getDistanceFromCenter());
+
+			BodiesRegistry.setOrbitData(asteroid, orbitData.getPhase(), 1.0F, orbitData.getRelativeTime(),
+					orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
+			asteroid.setRingColorRGB(1.1F, 0.0F, 0.0F);
+
+			if (!impl.getUnreachable()) {
+
+				BodiesRegistry.setPlanetData(asteroid, 0F, 0, impl.getGravity(), impl.getSolarRadiation());
+				BodiesRegistry.setProviderData(asteroid, WorldProviderAsteroid.class, dimID, impl.getTier(),
+						ACBiome.ACSpace);
+				asteroid.setAtmosphere(new AtmosphereInfo(false, false, false, impl.getTemperature(), 0F, 0F));
+
+				asteroid.setRelativeDistanceFromCenter(
+						new ScalableDistance(orbitData.getDistanceFromCenter() + orbitData.getSize(),
+								orbitData.getDistanceFromCenter() - orbitData.getSize()));
+
+				List<String> oregen = new ArrayList<>();
+				for (OreGenImpl data : impl.getOreGenList())
+					oregen.add(data.getOreBlock());
+
+				DimData data = new DimData(asteroid, "", 0).setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
+						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
+						.setGenCavesRavines(false, false, 0, "").setBiomes(null).setSunSize(impl.getSunSize()).setWaterY(0)
+						.setLanderType(1).setCloudHeight(0).setTemperatureMod(0)
+						.setListAsteroidsOres(oregen).setAsteroidBlocks(impl.getAsteroidBlocks());
+
+				id = getAvailableID();
+				regDim(id, data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
+
+			} else {
+				DimData data = new DimData(asteroid);
+				regUnreachDim(data);
+			}
+			BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
+			BodiesRegistry.registerBodyData(asteroid, data);
+			StarMaker.LOG.info(
+					"Registered" + (impl.getUnreachable() ? " unreachable" : "")
+							+ " new Asteroid Ring: %s on Parent Planet: %s | %s | %s",
+					asteroid.getName(), asteroid.getParentPlanet().getName(), asteroid.getWorldProvider(), id);
+		}
+
+	}
+
+	public void parseSatellites(InputStream file, String name) {
+
+		Reader reader = new InputStreamReader(file);
+		SatelliteImpl impl = MakerUtils.gson.fromJson(reader, SatelliteImpl.class);
+
+		Planet planet = null;
+
+		switch (impl.getParentPlanet()) {
 			case "venus":
 				planet = VenusModule.planetVenus;
 				break;
@@ -519,10 +626,10 @@ public class ParseFiles {
 				break;
 			default:
 				planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
-			}
+		}
 
-			if (ACCompatibilityManager.isGalaxySpaceLoaded()) {
-				switch (impl.getParentPlanet()) {
+		if (ACCompatibilityManager.isGalaxySpaceLoaded()) {
+			switch (impl.getParentPlanet()) {
 				case "mercury":
 					planet = SolarSystemBodies.planetMercury;
 					break;
@@ -549,108 +656,6 @@ public class ParseFiles {
 					break;
 				default:
 					planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
-				}
-			}
-
-			if (planet == null)
-				return;
-			
-			OrbitDataImpl orbitData = impl.getOrbitData();
-			
-			ExMoon asteroid = BodiesRegistry.registerExMoon(planet, name, CoreConfig.resourceDomain,
-					orbitData.getDistanceFromCenter());
-			
-			BodiesRegistry.setOrbitData(asteroid, orbitData.getPhase(), 1.0F, orbitData.getRelativeTime(),
-					orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
-			asteroid.setRingColorRGB(1.1F, 0.0F, 0.0F);
-			
-			if (!impl.getUnreachable()) {
-				
-				BodiesRegistry.setPlanetData(asteroid, 0F, 0, impl.getGravity(), impl.getSolarRadiation());
-				BodiesRegistry.setProviderData(asteroid, WorldProviderAsteroid.class, dimID, impl.getTier(),
-						ACBiome.ACSpace);
-				asteroid.setAtmosphere(new AtmosphereInfo(false, false, false, impl.getTemperature(), 0F, 0F));
-	
-				asteroid.setRelativeDistanceFromCenter(
-						new ScalableDistance(orbitData.getDistanceFromCenter() + orbitData.getSize(),
-								orbitData.getDistanceFromCenter() - orbitData.getSize()));
-	
-				List<String> oregen = new ArrayList<>();
-				for (OreGenImpl data : impl.getOreGenList())
-					oregen.add(data.getOreBlock());
-	
-				DimData data = new DimData(asteroid, "", 0).setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
-						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
-						.setGenCavesRavines(false, false, 0, "").setBiomes(null).setSunSize(impl.getSunSize()).setWaterY(0)
-						.setLanderType(1).setThrowMeteors(false).setCloudHeight(0).setTemperatureMod(0)
-						.setListAsteroidsOres(oregen).setAsteroidBlocks(impl.getAsteroidBlocks());
-	
-				id = getAvailableID();
-				regDim(id, data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
-	
-			} else {
-				DimData data = new DimData(asteroid);
-				regUnreachDim(data);
-			}
-			BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
-			BodiesRegistry.registerBodyData(asteroid, data);
-			StarMaker.LOG.info(
-					"Registered" + (impl.getUnreachable() ? " unreachable" : "")
-							+ " new Asteroid Ring: %s on Parent Planet: %s | %s | %s",
-					asteroid.getName(), asteroid.getParentPlanet().getName(), asteroid.getWorldProvider(), id);
-		}
-
-	}
-
-	public void parseSatellites(InputStream file, String name) {
-
-		Reader reader = new InputStreamReader(file);
-		SatelliteImpl impl = MakerUtils.gson.fromJson(reader, SatelliteImpl.class);
-
-		Planet planet = null;
-
-		switch (impl.getParentPlanet()) {
-		case "venus":
-			planet = VenusModule.planetVenus;
-			break;
-		case "overworld":
-			planet = GalacticraftCore.planetOverworld;
-			break;
-		case "mars":
-			planet = MarsModule.planetMars;
-			break;
-		default:
-			planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
-		}
-
-		if (ACCompatibilityManager.isGalaxySpaceLoaded()) {
-			switch (impl.getParentPlanet()) {
-			case "mercury":
-				planet = SolarSystemBodies.planetMercury;
-				break;
-			case "venus":
-				planet = VenusModule.planetVenus;
-				break;
-			case "overworld":
-				planet = GalacticraftCore.planetOverworld;
-				break;
-			case "mars":
-				planet = MarsModule.planetMars;
-				break;
-			case "jupiter":
-				planet = SolarSystemBodies.planetJupiter;
-				break;
-			case "saturn":
-				planet = SolarSystemBodies.planetSaturn;
-				break;
-			case "uranus":
-				planet = SolarSystemBodies.planetUranus;
-				break;
-			case "neptune":
-				planet = SolarSystemBodies.planetNeptune;
-				break;
-			default:
-				planet = GalaxyRegistry.getRegisteredPlanets().get(impl.getParentPlanet());
 			}
 		}
 
@@ -716,7 +721,7 @@ public class ParseFiles {
 	}
 
 	private static void regDim(int dimID, DimData data, Class<? extends WorldProvider> provider,
-			ITeleportType teleport) {
+							   ITeleportType teleport) {
 		MakerUtils.bodies.put(dimID, data);
 		// StarMaker.bodies.forEach((dimID, data) -> {
 

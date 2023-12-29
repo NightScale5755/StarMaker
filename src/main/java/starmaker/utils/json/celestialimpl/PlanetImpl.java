@@ -81,11 +81,16 @@ public class PlanetImpl
 	@Expose
 	private boolean unreachable;
 	
-	@SerializedName("ringTexture") @Expose
-	private String ringTexture;
+	@SerializedName("ringTextureOnMap") @Expose
+	private String ringTextureOnMap;
+	@SerializedName("ringTextureOnSky") @Expose
+	private String ringTextureOnSky;
 	
 	@SerializedName("sunTexture") @Expose
 	private String customSunTexture;
+
+	@SerializedName("tidallyLocked") @Expose
+	private Boolean tidallyLocked;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -145,8 +150,9 @@ public class PlanetImpl
 		this.unreachable = unreachable;
 	}
 	
-	public PlanetImpl setRingPlanet(String texture) {
-		this.ringTexture = texture;
+	public PlanetImpl setRingPlanet(String textureOnMap, String textureOnSky) {
+		this.ringTextureOnMap = textureOnMap;
+		this.ringTextureOnSky = textureOnSky;
 		return this;
 	}
 	
@@ -492,10 +498,18 @@ public class PlanetImpl
 		return this;
 	}
 	
-	public String getRingTextureName() {
-		return this.ringTexture;
+	public String getRingOnMapTextureName() {
+		return this.ringTextureOnMap;
 	}
+	public String getRingOnSkyTextureName() { return this.ringTextureOnSky;	}
 	public String getSunTextureName() {
 		return this.customSunTexture;
+	}
+	public Boolean getTidallyLocked(){
+		if(tidallyLocked == null) return false;
+		return this.tidallyLocked;
+	}
+	public void setTidallyLocked(Boolean locked){
+		this.tidallyLocked = locked;
 	}
 }

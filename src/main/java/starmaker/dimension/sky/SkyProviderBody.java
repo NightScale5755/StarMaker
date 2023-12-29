@@ -39,8 +39,7 @@ public class SkyProviderBody extends SkyProviderBase {
 	
 	@Override
 	protected void rendererSky(Tessellator tessellator, BufferBuilder buffer, float size, float ticks) {
-		
-		
+
 		if(this.data.getBody() instanceof Moon)
 		{
 			Planet parent = ((Moon)this.data.getBody()).getParentPlanet();
@@ -111,7 +110,14 @@ public class SkyProviderBody extends SkyProviderBase {
 
 			//GlStateManager.disableAlpha();	
 		}
-		
+
+		if(this.data.getRingOnSkyTexture() != null) {
+			GlStateManager.pushMatrix();
+			GL11.glScalef(0.8F, 0.6F, 0.8F);
+			renderImage(data.getRingOnSkyTexture(), this.getCelestialAngle(getDayLength()) - 180F, 80, 0, 500);
+			GlStateManager.popMatrix();
+		}
+
 		GL11.glPushMatrix();
 		GL11.glRotatef(this.mc.world.getCelestialAngle(ticks) * 360.0F, 0.0F, 0.0F, 1.0F);  
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -141,7 +147,9 @@ public class SkyProviderBody extends SkyProviderBase {
 			}
 		}
 		GL11.glShadeModel(GL11.GL_FLAT);
-		GL11.glPopMatrix(); 
+		GL11.glPopMatrix();
+
+
 	}
 
 	@Override

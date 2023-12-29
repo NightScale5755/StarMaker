@@ -34,10 +34,12 @@ public class WorldDataImpl
 	@SerializedName("lander_type")
 	@Expose
 	private Integer lander_type;
-	
-	@SerializedName("throwMeteors")
+	@SerializedName("meteorFrequency")
 	@Expose
-	private Boolean throwMeteors;
+	private Float meteorFrequency;
+	@SerializedName("fallDamageModifier")
+	@Expose
+	private Float fallDamageModifier;
 
 	/**
 	 * No args constructor for use in serialization
@@ -56,7 +58,7 @@ public class WorldDataImpl
 	 * @param crateProb
 	 */
 	public WorldDataImpl(Integer tier, Boolean genCave, Boolean genRavine, Integer crateProb, String stoneBlock,
-			double mapSize, String waterBlock, int watery, int lander_type, Boolean throwMeteors)
+			double mapSize, String waterBlock, int watery, int lander_type, Float meteorFrequency, Float fallDamageModifier)
 	{
 		super();
 		this.tier = tier;
@@ -68,7 +70,8 @@ public class WorldDataImpl
 		this.waterBlock = waterBlock;
 		this.waterY = watery;
 		this.lander_type = lander_type;
-		this.throwMeteors = throwMeteors;
+		this.meteorFrequency = meteorFrequency;
+		this.fallDamageModifier = fallDamageModifier;
 	}
 
 	public Integer getTier()
@@ -216,21 +219,29 @@ public class WorldDataImpl
 		return lander_type;
 	}
 	
-	public Boolean getThrowMeteors()
+	public Float getMeteorFrequency()
 	{
-		if(throwMeteors == null) return false;
-		return throwMeteors;
+		if(meteorFrequency == null) return 0F;
+		return meteorFrequency;
 	}
 
-	public void setThrowMeteors(Boolean flag)
+	public void setMeteorFrequency(Float frequency)
 	{
-		this.throwMeteors = flag;
+		this.meteorFrequency = frequency;
 	}
 
-	public WorldDataImpl withThrowMeteors(Boolean flag)
+	public WorldDataImpl withMeteorFrequency(Float frequency)
 	{
-		this.throwMeteors = flag;
+		setMeteorFrequency(frequency);
 		return this;
 	}
 
+	public Float getFallDamageModifier(){
+		if(fallDamageModifier == null) return 1.0F;
+		return fallDamageModifier;
+	}
+
+	public void setFallDamageModifier(Float modifier){
+		this.fallDamageModifier = modifier;
+	}
 }

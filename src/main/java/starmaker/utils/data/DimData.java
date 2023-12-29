@@ -12,7 +12,7 @@ public class DimData
 {
 	private final CelestialBody body;
 	private Vec3d skyColor, fogColor, cloudColor;
-	private boolean genCaves, genRavines, throwMeteors;
+	private boolean genCaves, genRavines;
 	private int crateprob = 0;
 	private String stone_block, water_block;
 	private List<BiomeData> getBiomes = new ArrayList<BiomeData>();
@@ -24,11 +24,14 @@ public class DimData
 	private float temp_mod = 0.5F;
 	private List<String> asteroid_blocks = new ArrayList<>();
 	private List<String> ores = new ArrayList<>();
-	private String ringTexture;
+	private String ringTextureOnMap, ringTextureOnSky;
 	private String sunTexture;
 	private float gravity;
 	private long dayLenght;
-		
+	private float fallDamage;
+	private float meteorFrequency;
+	private boolean tidallyLocked;
+
 	public DimData(CelestialBody body) {
 		this.body = body;
 	}
@@ -96,8 +99,8 @@ public class DimData
 		return this;
 	}
 	
-	public DimData setThrowMeteors(boolean flag) {
-		this.throwMeteors = flag;
+	public DimData setMeteorFrequency(float frequency) {
+		this.meteorFrequency = frequency;
 		return this;
 	}
 	
@@ -116,9 +119,9 @@ public class DimData
 		return this;
 	}
 	
-	public DimData setRingTexture(String texture) {
-		
-		this.ringTexture = texture;
+	public DimData setRingTexture(String textureOnMap, String textureOnSky) {
+		this.ringTextureOnMap = textureOnMap;
+		this.ringTextureOnSky = textureOnSky;
 		return this;
 	}
 	
@@ -143,6 +146,19 @@ public class DimData
 		return this;
 	}
 
+	public DimData setFallDamageModifier(float modifier)
+	{
+		this.fallDamage = modifier;
+		return this;
+	}
+
+	public DimData setTidallyLocked(boolean locked)
+	{
+		this.tidallyLocked = locked;
+		return this;
+
+	}
+
 	public CelestialBody getBody() 	{ return this.body;	}
 	public Vec3d getSkyColor() { return this.skyColor; }    	
 	public Vec3d getFogColor() { return this.fogColor; }    	
@@ -159,14 +175,18 @@ public class DimData
 	public double getMapSize() { return this.mapsize; }
 	public float getSunSize() { return this.sun_size; }
 	public int getLanderType() { return this.lander_type; }
-	public boolean getThrowMeteors() { return this.throwMeteors; }
+	public float getMeteorFrequency() { return this.meteorFrequency; }
 	public int getCloudHeight() { return this.cloudHeight; }
 	public float getTemperatureMod() { return this.temp_mod; }
 	public List<String> getAsteroidBlocks() { return this.asteroid_blocks; }
 	public List<String> getAsteroidsOres() { return this.ores; }	
-	public ResourceLocation getRingTexture() { 
-		if(this.ringTexture == null) return null;
-		return new ResourceLocation(CoreConfig.resourceDomain, "textures/" + this.ringTexture + ".png"); 
+	public ResourceLocation getRingOnMapTexture() {
+		if(this.ringTextureOnMap == null) return null;
+		return new ResourceLocation(CoreConfig.resourceDomain, "textures/" + this.ringTextureOnMap + ".png");
+	}
+	public ResourceLocation getRingOnSkyTexture() {
+		if(this.ringTextureOnMap == null) return null;
+		return new ResourceLocation(CoreConfig.resourceDomain, "textures/" + this.ringTextureOnSky + ".png");
 	}
 	
 	public ResourceLocation getSunTexture() { 
@@ -174,6 +194,9 @@ public class DimData
 		return new ResourceLocation(CoreConfig.resourceDomain, "textures/" + this.sunTexture + ".png"); 
 	}
 	public float getGravity() {	return this.gravity; }
+	@Deprecated
 	public long getDayLenght() { return this.dayLenght; }
 	public float getPlanetSize() { return this.planet_size; }
+	public float getFallDamageModifier() { return  this.fallDamage; }
+	public boolean getTidallyLocked() { return this.tidallyLocked; }
 }

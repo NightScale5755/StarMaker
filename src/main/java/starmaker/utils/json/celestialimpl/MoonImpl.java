@@ -83,7 +83,15 @@ public class MoonImpl
 	private String customSunTexture;
 	
 	@SerializedName("planet_size") @Expose
-	private float planet_size;	
+	private float planet_size;
+
+	@SerializedName("tidallyLocked") @Expose
+	private Boolean tidallyLocked;
+
+	@SerializedName("ringTextureOnMap") @Expose
+	private String ringTextureOnMap;
+	@SerializedName("ringTextureOnSky") @Expose
+	private String ringTextureOnSky;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -496,4 +504,16 @@ public class MoonImpl
 		this.planet_size = size;
 		return this;
 	}
+	public Boolean getTidallyLocked(){
+		if(tidallyLocked == null) return false;
+		return this.tidallyLocked;
+	}
+	public void setTidallyLocked(Boolean locked){
+		this.tidallyLocked = locked;
+	}
+
+	public String getRingOnMapTextureName() {
+		return this.ringTextureOnMap;
+	}
+	public String getRingOnSkyTextureName() { return this.ringTextureOnSky;	}
 }

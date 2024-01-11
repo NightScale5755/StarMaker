@@ -42,13 +42,14 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
 	Set<Entity> freefallingEntities = new HashSet<Entity>();
 
 	protected DimData getDimData() {
-		int id = -1;
-		for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
+		int id = GalaxyRegistry.getCelestialBodyFromDimensionID(this.getDimension()).getDimensionID();
+		/*for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
 			if(map.getValue() == this.getDimension()) {
 				Satellite s = GalaxyRegistry.getRegisteredSatellites().get(map.getKey());
 				id = s.getDimensionID();
 			}
-		}
+		}*/
+
 		System.out.println(id + " | " + MakerUtils.bodies + " | " + MakerUtils.bodies.get(id));
 		return MakerUtils.bodies.get(id);
 	}
@@ -77,15 +78,16 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
     
 	@Override
 	public DimensionType getDimensionType() {
-		int id = -1;
-		for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
-			if(map.getValue() == this.getDimension()) {
-				Satellite s = GalaxyRegistry.getRegisteredSatellites().get(map.getKey());
-				id = s.getDimensionID();
-			}
-		}
+//		int id = -1;
+//		for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
+//			if(map.getValue() == this.getDimension()) {
+//				Satellite s = GalaxyRegistry.getRegisteredSatellites().get(map.getKey());
+//				id = s.getDimensionID();
+//			}
+//		}
+		int id = GalaxyRegistry.getCelestialBodyFromDimensionID(this.getDimension()).getDimensionID();
 
-		
+
 		return WorldUtil.getDimensionTypeById(id);
 	}
 

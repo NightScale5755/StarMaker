@@ -264,6 +264,8 @@ public class ParseFiles {
 			return;
 		}
 
+		DimData data = new DimData(planet).setRingOnMapTexture(impl.getRingOnMapTextureName());
+
 		if (!impl.getUnreachable()) {
 			BodiesRegistry.setPlanetData(planet, impl.getAtmospherePressure(), impl.getDayLenght(), impl.getGravity(),
 					impl.getSolarRadiation());
@@ -290,7 +292,8 @@ public class ParseFiles {
 
 			WorldDataImpl dataImpl = impl.getWorldData();
 
-			DimData data = new DimData(planet, dataImpl.getStoneBlock(), dataImpl.getMapSize())
+					data.setStone(dataImpl.getStoneBlock())
+					.setMapSize(dataImpl.getMapSize())
 					.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
 					.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 					.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(),
@@ -298,23 +301,22 @@ public class ParseFiles {
 					.setBiomes(biomes).setSunSize(impl.getSunSize()).setWaterY(dataImpl.getWaterY())
 					.setLanderType(dataImpl.getLanderType()).setMeteorFrequency(dataImpl.getMeteorFrequency())
 					.setCloudHeight(impl.getCloudHeight()).setTemperatureMod(impl.getTemperatureModificator())
-					.setRingTexture(impl.getRingOnMapTextureName(), impl.getRingOnSkyTextureName()).setSunTexture(impl.getSunTextureName())
 					.setFallDamageModifier(dataImpl.getFallDamageModifier())
-					.setTidallyLocked(impl.getTidallyLocked());
+					.setTidallyLocked(impl.getTidallyLocked())
+					.setRingOnSkyTexture(impl.getRingOnSkyTextureName());
 
 			id = getAvailableID();
 			regDim(id, data, planet.getWorldProvider(), new TeleportTypeBody());
 			StarMaker.LOG.info("Registered" + " new Planet: %s | %s | %s",
 					planet.getName(), planet.getWorldProvider(), id);
 		} else {
-			DimData data = new DimData(planet);
 			regUnreachDim(data);
 			StarMaker.LOG.info("Registered unreachable new Planet: %s",
 					planet.getName());
 		}
 
-		BodiesData data = new BodiesData(TypeBody.PLANET);
-		BodiesRegistry.registerBodyData(planet, data);
+		BodiesData bodies_data = new BodiesData(TypeBody.PLANET);
+		BodiesRegistry.registerBodyData(planet, bodies_data);
 
 	}
 
@@ -384,6 +386,7 @@ public class ParseFiles {
 			StarMaker.info("Ignore: " + name + ". Limit moons = " + LIMIT_MOONS);
 			return;
 		}
+		DimData data = new DimData(moon).setRingOnMapTexture(impl.getRingOnMapTextureName());
 
 		if (!impl.getUnreachable()) {
 
@@ -411,7 +414,8 @@ public class ParseFiles {
 
 			WorldDataImpl dataImpl = impl.getWorldData();
 
-			DimData data = new DimData(moon, dataImpl.getStoneBlock(), dataImpl.getMapSize())
+					data.setStone(dataImpl.getStoneBlock())
+					.setMapSize(dataImpl.getMapSize())
 					.setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
 					.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 					.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(),
@@ -422,18 +426,17 @@ public class ParseFiles {
 					.setSunTexture(impl.getSunTextureName()).setPlanetSize(impl.getPlanetSize())
 					.setFallDamageModifier(dataImpl.getFallDamageModifier())
 					.setTidallyLocked(impl.getTidallyLocked())
-					.setRingTexture(impl.getRingOnMapTextureName(), impl.getRingOnSkyTextureName());
+					.setRingOnSkyTexture(impl.getRingOnSkyTextureName());
 
 			id = getAvailableID();
 			regDim(id, data, moon.getWorldProvider(), new TeleportTypeBody());
 
 		} else {
-			DimData data = new DimData(moon);
 			regUnreachDim(data);
 		}
 
-		BodiesData data = new BodiesData(TypeBody.MOON);
-		BodiesRegistry.registerBodyData(moon, data);
+		BodiesData bodies_data = new BodiesData(TypeBody.MOON);
+		BodiesRegistry.registerBodyData(moon, bodies_data);
 		StarMaker.LOG.info(
 				"Registered" + (impl.getUnreachable() ? " unreachable" : "")
 						+ " new Moon: %s on Parent Planet: %s | %s | %s",
@@ -472,6 +475,7 @@ public class ParseFiles {
 
 			asteroid.setRingColorRGB(1.1F, 0.0F, 0.0F);
 
+			DimData data = new DimData(asteroid);
 
 			if (!impl.getUnreachable()) {
 
@@ -485,10 +489,10 @@ public class ParseFiles {
 								orbitData.getDistanceFromCenter() - orbitData.getSize()));
 
 				List<String> oregen = new ArrayList<>();
-				for (OreGenImpl data : impl.getOreGenList())
-					oregen.add(data.getOreBlock());
+				for (OreGenImpl ore_gen : impl.getOreGenList())
+					oregen.add(ore_gen.getOreBlock());
 
-				DimData data = new DimData(asteroid, "", 0).setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
+				data.setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
 						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 						.setGenCavesRavines(false, false, 0, "").setBiomes(null).setSunSize(impl.getSunSize()).setWaterY(0)
 						.setLanderType(1).setCloudHeight(0).setTemperatureMod(0)
@@ -498,11 +502,10 @@ public class ParseFiles {
 				regDim(id, data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
 
 			} else {
-				DimData data = new DimData(asteroid);
 				regUnreachDim(data);
 			}
-			BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
-			BodiesRegistry.registerBodyData(asteroid, data);
+			BodiesData bodies_data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
+			BodiesRegistry.registerBodyData(asteroid, bodies_data);
 			StarMaker.LOG.info(
 					"Registered" + (impl.getUnreachable() ? " unreachable" : "")
 							+ " new Asteroid: %s on Parent System: %s | %s | %s",
@@ -568,7 +571,7 @@ public class ParseFiles {
 			BodiesRegistry.setOrbitData(asteroid, orbitData.getPhase(), 1.0F, orbitData.getRelativeTime(),
 					orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
 			asteroid.setRingColorRGB(1.1F, 0.0F, 0.0F);
-
+			DimData data = new DimData(asteroid);
 			if (!impl.getUnreachable()) {
 
 				BodiesRegistry.setPlanetData(asteroid, 0F, 0, impl.getGravity(), impl.getSolarRadiation());
@@ -581,10 +584,10 @@ public class ParseFiles {
 								orbitData.getDistanceFromCenter() - orbitData.getSize()));
 
 				List<String> oregen = new ArrayList<>();
-				for (OreGenImpl data : impl.getOreGenList())
-					oregen.add(data.getOreBlock());
+				for (OreGenImpl ore_gen : impl.getOreGenList())
+					oregen.add(ore_gen.getOreBlock());
 
-				DimData data = new DimData(asteroid, "", 0).setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
+				data.setSkyFogColor(Vec3d.ZERO, Vec3d.ZERO)
 						.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 						.setGenCavesRavines(false, false, 0, "").setBiomes(null).setSunSize(impl.getSunSize()).setWaterY(0)
 						.setLanderType(1).setCloudHeight(0).setTemperatureMod(0)
@@ -594,11 +597,10 @@ public class ParseFiles {
 				regDim(id, data, asteroid.getWorldProvider(), new TeleportTypeAsteroid());
 
 			} else {
-				DimData data = new DimData(asteroid);
 				regUnreachDim(data);
 			}
-			BodiesData data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
-			BodiesRegistry.registerBodyData(asteroid, data);
+			BodiesData bodies_data = new BodiesData(TypeBody.ASTEROID, ClassBody.ASTEROID);
+			BodiesRegistry.registerBodyData(asteroid, bodies_data);
 			StarMaker.LOG.info(
 					"Registered" + (impl.getUnreachable() ? " unreachable" : "")
 							+ " new Asteroid Ring: %s on Parent Planet: %s | %s | %s",
@@ -748,6 +750,8 @@ public class ParseFiles {
 	}
 
 	private static void regUnreachDim(DimData data) {
+		MakerUtils.unreachable_bodies.put(data.getBody(), data);
+
 		if (data.getBody() instanceof Moon)
 			GalaxyRegistry.registerMoon((Moon) data.getBody());
 		else

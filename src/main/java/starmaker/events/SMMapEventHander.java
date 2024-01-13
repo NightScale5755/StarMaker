@@ -25,7 +25,14 @@ public class SMMapEventHander {
     @SubscribeEvent
     public void onRenderPlanetPost(CelestialBodyRenderEvent.Post event)
     {
-		DimData data = MakerUtils.bodies.get(event.celestialBody.getDimensionID());
+		DimData data = null;
+
+		if(event.celestialBody.getReachable()) {
+			data = MakerUtils.bodies.get(event.celestialBody.getDimensionID());
+		}
+		else {
+			data = MakerUtils.unreachable_bodies.get(event.celestialBody);
+		}
 
 		if(data != null && data.getRingOnMapTexture() != null) {
 			minecraft.renderEngine.bindTexture(data.getRingOnMapTexture());

@@ -31,18 +31,23 @@ public class DimData
 	private float fallDamage;
 	private float meteorFrequency;
 	private boolean tidallyLocked;
+	private float fuelUsageModificator;
 
 	public DimData(CelestialBody body) {
 		this.body = body;
 	}
-	
-	public DimData(CelestialBody body, String stone, double size)
-	{
-		this(body);
+
+
+	public DimData setStone(String stone){
 		this.stone_block = stone;
-		this.mapsize = size;
+		return this;
 	}
-	
+
+	public DimData setMapSize(double size){
+		this.mapsize = size;
+		return this;
+	}
+
 	public DimData setSkyFogColor(Vec3d sky, Vec3d fog)
 	{
 		this.skyColor = sky;
@@ -119,8 +124,11 @@ public class DimData
 		return this;
 	}
 	
-	public DimData setRingTexture(String textureOnMap, String textureOnSky) {
+	public DimData setRingOnMapTexture(String textureOnMap) {
 		this.ringTextureOnMap = textureOnMap;
+		return this;
+	}
+	public DimData setRingOnSkyTexture(String textureOnSky) {
 		this.ringTextureOnSky = textureOnSky;
 		return this;
 	}

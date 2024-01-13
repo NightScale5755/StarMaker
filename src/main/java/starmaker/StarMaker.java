@@ -32,7 +32,7 @@ public class StarMaker {
 	
 	public static final int major_version = 1;
 	public static final int minor_version = 0;
-	public static final int build_version = 0;
+	public static final int build_version = 2;
 	
 	public static final String NAME = "StarMaker";
 	public static final String MODID = "starmaker";

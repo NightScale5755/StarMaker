@@ -88,7 +88,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 
 	@Override
 	public float getFallDamageModifier() {
-		return 1.0F;
+		return getDimData().getFallDamageModifier();
 	}
 
 	@Override

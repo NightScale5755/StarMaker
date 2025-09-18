@@ -6,6 +6,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import micdoodle8.mods.galacticraft.api.galaxies.Planet;
 import net.minecraft.util.math.Vec3i;
 import starmaker.utils.json.data.OrbitDataImpl;
 import starmaker.utils.json.data.WorldDataImpl;
@@ -60,6 +61,9 @@ public class PlanetImpl
 	@SerializedName("cloud")
 	@Expose
 	private List<Integer> cloud = null;
+	@SerializedName("light")
+	@Expose
+	private List<Integer> light = null;
 	@SerializedName("world_data")
 	@Expose
 	private WorldDataImpl worldData;
@@ -91,6 +95,9 @@ public class PlanetImpl
 
 	@SerializedName("tidallyLocked") @Expose
 	private Boolean tidallyLocked;
+
+	@SerializedName("cloudTexture") @Expose
+	private String cloudTexture;
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -99,32 +106,11 @@ public class PlanetImpl
 	{
 	}
 
-	/**
-	 * 
-	 * @param phase
-	 * @param sky
-	 * @param biomes
-	 * @param solarRadiation
-	 * @param dayLenght
-	 * @param parentSystem
-	 * @param relativeTime
-	 * @param atmospherePressure
-	 * @param size
-	 * @param gravity
-	 * @param corrosiveAtmo
-	 * @param temperature
-	 * @param sunBrightness
-	 * @param starBrightness
-	 * @param breathable
-	 * @param worldData
-	 * @param distanceFromCenter
-	 * @param wind
-	 * @param fog
-	 */
+
 	public PlanetImpl(String parentSystem, OrbitDataImpl orbitData,
 			double gravity, Integer atmospherePressure, List<Float> temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
-			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, WorldDataImpl worldData,
+			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, List<Integer> light, WorldDataImpl worldData,
 			/*List<BiomeImpl> biomes*/ List<String> biomes, float sun_size, boolean precipitation, boolean unreachable)
 	{
 		super();
@@ -143,6 +129,7 @@ public class PlanetImpl
 		this.sky = sky;
 		this.fog = fog;
 		this.cloud = cloud;
+		this.light = light;
 		this.worldData = worldData;
 		this.biomes = biomes;
 		this.sun_size = sun_size;
@@ -160,8 +147,12 @@ public class PlanetImpl
 		this.customSunTexture = texture;
 		return this;
 	}
-	
-	
+
+	public PlanetImpl setCloudTexture(String texture) {
+		this.cloudTexture = texture;
+		return this;
+	}
+
 	public String getParentSystem()
 	{
 		return parentSystem;
@@ -400,6 +391,7 @@ public class PlanetImpl
 		return new Vec3i(cloud.get(0), cloud.get(1), cloud.get(2));
 	}
 
+
 	public int getCloudHeight() {
 		if(cloud == null) return 180;
 		if(cloud.size() < 4) return 180;
@@ -417,6 +409,13 @@ public class PlanetImpl
 		this.cloud = cloud;
 		return this;
 	}
+
+	public Vec3i getLight() {
+		if(light == null) return null;
+		return new Vec3i(light.get(0), light.get(1), light.get(2));
+	}
+
+	public void setLight(List<Integer> light) { this.light = light; }
 
 	public WorldDataImpl getWorldData()
 	{
@@ -505,6 +504,8 @@ public class PlanetImpl
 	public String getSunTextureName() {
 		return this.customSunTexture;
 	}
+
+	public String getCloudTexture() {return this.cloudTexture; }
 	public Boolean getTidallyLocked(){
 		if(tidallyLocked == null) return false;
 		return this.tidallyLocked;

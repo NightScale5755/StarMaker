@@ -11,7 +11,7 @@ import starmaker.CoreConfig;
 public class DimData
 {
 	private final CelestialBody body;
-	private Vec3d skyColor, fogColor, cloudColor;
+	private Vec3d skyColor, fogColor, cloudColor, lightColor;
 	private boolean genCaves, genRavines;
 	private int crateprob = 0;
 	private String stone_block, water_block;
@@ -31,7 +31,8 @@ public class DimData
 	private float fallDamage;
 	private float meteorFrequency;
 	private boolean tidallyLocked;
-	private float fuelUsageModificator;
+	private float fuelUsageModificator = 1.0F;
+	private String cloudTexture;
 
 	public DimData(CelestialBody body) {
 		this.body = body;
@@ -167,10 +168,26 @@ public class DimData
 
 	}
 
+	public DimData setCloudTexture(String texturePath) {
+		this.cloudTexture = texturePath;
+		return this;
+	}
+
+	public DimData setFuelUsageModificator(float mod) {
+		this.fuelUsageModificator = mod;
+		return this;
+	}
+
+	public DimData setLightColor(Vec3d color) {
+		this.lightColor = color;
+		return this;
+	}
+
 	public CelestialBody getBody() 	{ return this.body;	}
 	public Vec3d getSkyColor() { return this.skyColor; }    	
 	public Vec3d getFogColor() { return this.fogColor; }    	
-	public Vec3d getCloudColor() { return this.cloudColor; }    	
+	public Vec3d getCloudColor() { return this.cloudColor; }
+	public Vec3d getLightColor() {return this.lightColor; }
 	public String getStoneBlock() { return this.stone_block; }
 	public boolean getGenCaves() { return this.genCaves; }
 	public boolean getGenRavines() { return this.genRavines; }
@@ -207,4 +224,11 @@ public class DimData
 	public float getPlanetSize() { return this.planet_size; }
 	public float getFallDamageModifier() { return  this.fallDamage; }
 	public boolean getTidallyLocked() { return this.tidallyLocked; }
+
+	public ResourceLocation getCloudTexture() {
+		if(this.cloudTexture == null) return null;
+		return new ResourceLocation(CoreConfig.resourceDomain, "textures/" + this.cloudTexture + ".png");
+	}
+
+	public float getFuelUsageModificator() { return this.fuelUsageModificator; }
 }

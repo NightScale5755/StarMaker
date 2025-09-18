@@ -70,7 +70,7 @@ public class TemplateHandler {
 	public boolean readTemplate(ResourceLocation server) {
 		String s = server.getPath();
 		File file1 = new File(this.baseFolder, s + ".nbt");
-		System.out.println(file1.getAbsolutePath() + " | " + file1.exists());
+		//System.out.println(file1.getAbsolutePath() + " | " + file1.exists());
 		if (!file1.exists()) {
 			 return false;//this.readTemplateFromJar(server);
 		} else {

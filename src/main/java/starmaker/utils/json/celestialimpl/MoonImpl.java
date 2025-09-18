@@ -60,6 +60,9 @@ public class MoonImpl
 	@SerializedName("cloud")
 	@Expose
 	private List<Integer> cloud = null;
+	@SerializedName("light")
+	@Expose
+	private List<Integer> light = null;
 	@SerializedName("world_data")
 	@Expose
 	private WorldDataImpl worldData;
@@ -100,28 +103,6 @@ public class MoonImpl
 	{
 	}
 
-	/**
-	 * 
-	 * @param phase
-	 * @param sky
-	 * @param biomes
-	 * @param solarRadiation
-	 * @param dayLenght
-	 * @param parentSystem
-	 * @param relativeTime
-	 * @param atmospherePressure
-	 * @param size
-	 * @param gravity
-	 * @param corrosiveAtmo
-	 * @param temperature
-	 * @param sunBrightness
-	 * @param starBrightness
-	 * @param breathable
-	 * @param worldData
-	 * @param distanceFromCenter
-	 * @param wind
-	 * @param fog
-	 */
 	public MoonImpl(String parentPlanet, OrbitDataImpl orbitData,
 			double gravity, Integer atmospherePressure, List<Float> temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
@@ -411,7 +392,14 @@ public class MoonImpl
 		this.cloud = cloud;
 		return this;
 	}
-	
+
+	public Vec3i getLight() {
+		if(light == null) return null;
+		return new Vec3i(light.get(0), light.get(1), light.get(2));
+	}
+
+	public void setLight(List<Integer> light) { this.light = light; }
+
 	public WorldDataImpl getWorldData()
 	{
 		return worldData;

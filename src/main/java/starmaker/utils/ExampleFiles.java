@@ -38,7 +38,7 @@ public class ExampleFiles
 
 		
 		OrbitDataImpl exampleOrbitData = new OrbitDataImpl(3.14F, 1.2F, 2.5F, 3.9F, 0.0F, 0.0F);
-		WorldDataImpl exampleDataImpl = new WorldDataImpl(6, true, false, 0, "minecraft:concrete:11", 1000.0, "", 64, -1, 0F, 1F);
+		WorldDataImpl exampleDataImpl = new WorldDataImpl(6, true, false, 0, "minecraft:concrete:11", 1000.0, "", 64, -1, 0F, 1F, 1F);
 
 		List<Integer> water = Arrays.asList(255, 255, 0);
 		List<Integer> foliage = Arrays.asList(0, 100, 0);

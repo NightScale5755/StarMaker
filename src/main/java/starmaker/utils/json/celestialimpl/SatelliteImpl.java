@@ -7,13 +7,18 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import net.minecraft.util.math.Vec3i;
+import starmaker.utils.json.data.OrbitDataImpl;
 
 public class SatelliteImpl
 {
 
 	@SerializedName("parent_planet") @Expose
 	private String parentPlanet;
-		
+
+	@SerializedName("orbit_data")
+	@Expose
+	private OrbitDataImpl orbitData;
+
 	@SerializedName("gravity") @Expose
 	private double gravity;
 	
@@ -72,7 +77,7 @@ public class SatelliteImpl
 	{
 	}
 
-	public SatelliteImpl(String parentPlanet,
+	public SatelliteImpl(String parentPlanet, OrbitDataImpl orbitData,
 			double gravity, Integer atmospherePressure, List<Float> temperature, double wind, Integer dayLenght,
 			Boolean breathable, Boolean solarRadiation, Boolean corrosiveAtmo, double sunBrightness,
 			double starBrightness, List<Integer> sky, List<Integer> fog, List<Integer> cloud, List<Integer> parachest_pos,
@@ -80,6 +85,7 @@ public class SatelliteImpl
 	{
 		super();
 		this.parentPlanet = parentPlanet;
+		this.orbitData = orbitData;
 		this.gravity = gravity;
 		this.atmospherePressure = atmospherePressure;
 		this.temperature = temperature;
@@ -117,6 +123,16 @@ public class SatelliteImpl
 	{
 		this.parentPlanet = parentPlanet;
 		return this;
+	}
+
+	public OrbitDataImpl getOrbitData()
+	{
+		return orbitData;
+	}
+
+	public void setOrbitData(OrbitDataImpl orbitData)
+	{
+		this.orbitData = orbitData;
 	}
 	
 	public Float getGravity()

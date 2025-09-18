@@ -1,5 +1,6 @@
 package starmaker.dimension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -30,6 +31,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumParticleTypes;
@@ -45,6 +47,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
@@ -83,7 +86,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 	
 	@Override
 	public double getFuelUsageMultiplier() {
-		return 1.0D;
+		return getDimData().getFuelUsageModificator();
 	}
 
 	@Override
@@ -182,6 +185,9 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 				
 				@Override
 				public ResourceLocation getCloudTexture() {
+					if(getDimData().getCloudTexture() != null)
+						return getCloudTexture();
+
 					return default_clouds;
 				}
 				
@@ -416,19 +422,34 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 	@SideOnly(Side.CLIENT)
 	public void getLightmapColors(float partialTicks, float sunBrightness, float skyLight, float blockLight, float[] colors) 
 	{
-		/*EntityPlayer player = FMLClientHandler.instance().getClientPlayerEntity();
+		EntityPlayer player = FMLClientHandler.instance().getClientPlayerEntity();
 		
 		if (player != null)
 		{
 			int phase = this.getMoonPhase(this.getWorldTime());
 			
-			if(sunBrightness > 0.2f && !this.world.isRaining()) {
-								
-				//colors[0] = colors[0] + skyLight + 0.8F;				
-				colors[1] = colors[1] - skyLight / 1.3F;	
-				colors[2] = colors[2] - skyLight / 1.0F;	
+			if(sunBrightness > 0.2f && !this.world.isRaining() && skyLight > 0)
+			{
+				float skyRed = colors[0];
+				float skyGreen = colors[1];
+				float skyBlue = colors[2];
+
+				float modR = (float) getDimData().getLightColor().x / 255F;
+				float modG = (float) getDimData().getLightColor().y / 255F;
+				float modB = (float) getDimData().getLightColor().z / 255F;
+
+
+				skyRed = skyRed * (1.0f - sunBrightness) + (skyRed * modR) * sunBrightness;
+
+				skyGreen = skyGreen * (1.0f - sunBrightness) + (skyGreen * modG) * sunBrightness;
+
+				skyBlue = skyBlue * (1.0f - sunBrightness) + (skyBlue * modB) * sunBrightness;
+
+				colors[0] = skyRed;
+				colors[1] = skyGreen;
+				colors[2] = skyBlue;
 			}				
-		}*/
+		}
 	}
 
 	@Override

@@ -40,6 +40,10 @@ public class WorldDataImpl
 	@SerializedName("fallDamageModifier")
 	@Expose
 	private Float fallDamageModifier;
+	@SerializedName("fuelUsageModifier")
+	@Expose
+	private Float fuelUsageModifier;
+
 
 	/**
 	 * No args constructor for use in serialization
@@ -58,7 +62,7 @@ public class WorldDataImpl
 	 * @param crateProb
 	 */
 	public WorldDataImpl(Integer tier, Boolean genCave, Boolean genRavine, Integer crateProb, String stoneBlock,
-			double mapSize, String waterBlock, int watery, int lander_type, Float meteorFrequency, Float fallDamageModifier)
+			double mapSize, String waterBlock, int watery, int lander_type, Float meteorFrequency, Float fallDamageModifier, Float fuelUsageModifier)
 	{
 		super();
 		this.tier = tier;
@@ -72,6 +76,7 @@ public class WorldDataImpl
 		this.lander_type = lander_type;
 		this.meteorFrequency = meteorFrequency;
 		this.fallDamageModifier = fallDamageModifier;
+		this.fuelUsageModifier = fuelUsageModifier;
 	}
 
 	public Integer getTier()
@@ -244,4 +249,11 @@ public class WorldDataImpl
 	public void setFallDamageModifier(Float modifier){
 		this.fallDamageModifier = modifier;
 	}
+
+	public Float getFuelUsageModifier() {
+		if(fuelUsageModifier == null) return 1.0F;
+		return fuelUsageModifier;
+	}
+
+	public void setFuelUsageModifier(Float modifier) { this.fuelUsageModifier = modifier; }
 }

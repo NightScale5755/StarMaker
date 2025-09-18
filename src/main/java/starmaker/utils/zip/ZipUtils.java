@@ -84,14 +84,32 @@ public class ZipUtils {
 						if (entry.getName().contains("bodies/planets/"))
 							ParseFiles.instance.parsePlanets(stream, s[s.length - 1].replace(".json", ""));
 
+						if (entry.getName().contains("bodies/asteroids/"))
+							ParseFiles.instance.parseAsteroids(stream, s[s.length - 1].replace(".json", ""));
+
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		ZipUtils.celestial_packs.forEach((K, V) -> {
+
+			Enumeration<? extends ZipEntry> entries = V.entries();
+
+			while (entries.hasMoreElements()) {
+				ZipEntry entry = entries.nextElement();
+				try {
+					if (entry.getName().contains(".json") && !entry.isDirectory()) {
+						InputStream stream = V.getInputStream(entry);
+						String[] s = entry.getName().split("/");
+
 						if (entry.getName().contains("bodies/moons/"))
 							ParseFiles.instance.parseMoons(stream, s[s.length - 1].replace(".json", ""));
 
-						if (entry.getName().contains("bodies/asteroids/"))
-							ParseFiles.instance.parseAsteroids(stream, s[s.length - 1].replace(".json", ""));
-						
-						//if (entry.getName().contains("bodies/satellites/"))
-							//ParseFiles.instance.parseSatellites(stream, s[s.length - 1].replace(".json", ""));
+						if (entry.getName().contains("bodies/satellites/"))
+							ParseFiles.instance.parseSatellites(stream, s[s.length - 1].replace(".json", ""));
 
 					}
 				} catch (IOException e) {

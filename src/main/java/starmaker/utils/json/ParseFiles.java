@@ -69,7 +69,7 @@ public class ParseFiles {
 	private static final int LIMIT_MOONS = 150;
 	private static final int LIMIT_ASTEROIDS = 50;
 	private static final int LIMIT_SATELLITES = 20;
-	private static final int LIMIT_BIOMES = 15;
+	private static final int LIMIT_BIOMES = 50;
 
 	private static int count_galaxies = 0;
 	private static int count_systems = 0;
@@ -277,6 +277,7 @@ public class ParseFiles {
 			Vec3d skyColor = new Vec3d(impl.getSky());
 			Vec3d fogColor = new Vec3d(impl.getFog());
 			Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
+			Vec3d lightColor = impl.getLight() == null ? null : new Vec3d(impl.getLight());
 
 			List<BiomeData> biomes = new ArrayList<BiomeData>();
 			for (int i = 0; i < impl.getBiomes().size(); i++) {
@@ -292,9 +293,9 @@ public class ParseFiles {
 
 			WorldDataImpl dataImpl = impl.getWorldData();
 
-					data.setStone(dataImpl.getStoneBlock())
+			data.setStone(dataImpl.getStoneBlock())
 					.setMapSize(dataImpl.getMapSize())
-					.setSkyFogColor(skyColor, fogColor).setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
+					.setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor).setLightColor(lightColor)
 					.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 					.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(),
 							dataImpl.getWaterBlock())
@@ -303,14 +304,21 @@ public class ParseFiles {
 					.setCloudHeight(impl.getCloudHeight()).setTemperatureMod(impl.getTemperatureModificator())
 					.setFallDamageModifier(dataImpl.getFallDamageModifier())
 					.setTidallyLocked(impl.getTidallyLocked())
-					.setRingOnSkyTexture(impl.getRingOnSkyTextureName());
+					.setRingOnSkyTexture(impl.getRingOnSkyTextureName())
+					.setFuelUsageModificator(dataImpl.getFuelUsageModifier())
+					.setCloudTexture(impl.getCloudTexture());
 
 			id = getAvailableID();
 			regDim(id, data, planet.getWorldProvider(), new TeleportTypeBody());
 			StarMaker.LOG.info("Registered" + " new Planet: %s | %s | %s",
 					planet.getName(), planet.getWorldProvider(), id);
 		} else {
+			Vec3d skyColor = new Vec3d(impl.getSky());
+			Vec3d fogColor = new Vec3d(impl.getFog());
+			data.setSkyFogColor(skyColor, fogColor);
+
 			regUnreachDim(data);
+
 			StarMaker.LOG.info("Registered unreachable new Planet: %s",
 					planet.getName());
 		}
@@ -400,6 +408,7 @@ public class ParseFiles {
 			Vec3d skyColor = new Vec3d(impl.getSky());
 			Vec3d fogColor = new Vec3d(impl.getFog());
 			Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
+			Vec3d lightColor = impl.getLight() == null ? null : new Vec3d(impl.getLight());
 
 			List<BiomeData> biomes = new ArrayList<BiomeData>();
 			for (int i = 0; i < impl.getBiomes().size(); i++) {
@@ -414,9 +423,9 @@ public class ParseFiles {
 
 			WorldDataImpl dataImpl = impl.getWorldData();
 
-					data.setStone(dataImpl.getStoneBlock())
+			data.setStone(dataImpl.getStoneBlock())
 					.setMapSize(dataImpl.getMapSize())
-					.setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor)
+					.setSkyFogColor(skyColor, fogColor).setCloudColor(cloudColor).setLightColor(lightColor)
 					.setBrightness(impl.getSunBrightness(), impl.getStarBrightness())
 					.setGenCavesRavines(dataImpl.getGenCave(), dataImpl.getGenRavine(), dataImpl.getCrateProb(),
 							dataImpl.getWaterBlock())
@@ -675,14 +684,14 @@ public class ParseFiles {
 		int id = getAvailableID();
 		int id_static = getAvailableID();
 
-		// Satellite satellite = BodiesRegistry.registerSatellite(planet,
-		// WorldProviderSatellite.class, id, id_static);
+		OrbitDataImpl orbitData = impl.getOrbitData();
 
 		Satellite satellite = new Satellite("spacestation." + planet.getTranslationKey().replace("planet.", ""));
 		satellite.setParentBody(planet);
 		satellite.setRelativeSize(0.2667F);
-		satellite.setRelativeDistanceFromCenter(new CelestialBody.ScalableDistance(5.5F, 5.5F));
-		satellite.setRelativeOrbitTime(20.0F);
+		satellite.setRelativeDistanceFromCenter(new CelestialBody.ScalableDistance(orbitData.getDistanceFromCenter(), orbitData.getDistanceFromCenter()));
+		satellite.setRelativeOrbitTime(orbitData.getRelativeTime());
+
 		satellite.setRingColorRGB(0.0F, 0.4F, 0.9F);
 		satellite.setTierRequired(planet.getTierRequirement());
 		satellite.setDimensionInfo(id, id_static, WorldProviderSatellite.class);
@@ -699,7 +708,6 @@ public class ParseFiles {
 				.setSunTexture(impl.getSunTextureName()).setGravity(impl.getGravity())
 				.setDayLenght(impl.getDayLenght());
 
-		System.out.println(id + " | " + impl.getDayLenght());
 		GalacticraftRegistry.registerDimension(planet.getTranslationKey().replace("planet.", "") + " Space Station",
 				"_" + planet.getTranslationKey().replace("planet.", "") + "_orbit", id, WorldProviderSatellite.class,
 				false);
@@ -707,6 +715,7 @@ public class ParseFiles {
 				"_" + planet.getTranslationKey().replace("planet.", "") + "_orbit", id_static,
 				WorldProviderSatellite.class, true);
 		regDim(id, data, satellite.getWorldProvider(), new TeleportTypeBody(data));
+
 		final HashMap<Object, Integer> spaceStationRequirements = new HashMap<Object, Integer>(6, 1.0F);
 		spaceStationRequirements.put("ingotTin", 32);
 		spaceStationRequirements.put("ingotCopper", 64);

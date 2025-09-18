@@ -1,11 +1,13 @@
 package starmaker.dimension;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import asmodeuscore.core.astronomy.sky.CustomCloudRender;
+import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.Satellite;
@@ -16,6 +18,7 @@ import micdoodle8.mods.galacticraft.api.world.ISolarLevel;
 import micdoodle8.mods.galacticraft.api.world.IZeroGDimension;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
+import micdoodle8.mods.galacticraft.core.dimension.SpaceStationWorldData;
 import micdoodle8.mods.galacticraft.core.dimension.WorldProviderSpaceStation;
 import micdoodle8.mods.galacticraft.core.util.WorldUtil;
 import net.minecraft.block.Block;
@@ -25,9 +28,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.DimensionType;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.client.IRenderHandler;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import starmaker.dimension.sky.SkyProviderBody;
@@ -42,15 +47,17 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
 	Set<Entity> freefallingEntities = new HashSet<Entity>();
 
 	protected DimData getDimData() {
-		int id = GalaxyRegistry.getCelestialBodyFromDimensionID(this.getDimension()).getDimensionID();
-		/*for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
-			if(map.getValue() == this.getDimension()) {
-				Satellite s = GalaxyRegistry.getRegisteredSatellites().get(map.getKey());
-				id = s.getDimensionID();
-			}
-		}*/
+		int id = -1;
 
-		System.out.println(id + " | " + MakerUtils.bodies + " | " + MakerUtils.bodies.get(id));
+		DimensionType type = DimensionManager.getProviderType(this.getDimension());
+
+		for(Entry<String, Satellite> map : GalaxyRegistry.getRegisteredSatellites().entrySet()) {
+			if(map.getValue().getDimensionIdStatic() == type.getId()) {
+				id = map.getValue().getDimensionID();
+				break;
+			}
+		}
+
 		return MakerUtils.bodies.get(id);
 	}
 
@@ -73,22 +80,12 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
     @Override
     public Class<? extends BiomeProvider> getBiomeProviderClass()
     {
-    	return BiomeProviderBody.class;
+		return BiomeProviderBody.class;
     }
-    
+
 	@Override
 	public DimensionType getDimensionType() {
-//		int id = -1;
-//		for(Entry<String, Integer> map : GalaxyRegistry.getRegisteredSatelliteIDs().entrySet()) {
-//			if(map.getValue() == this.getDimension()) {
-//				Satellite s = GalaxyRegistry.getRegisteredSatellites().get(map.getKey());
-//				id = s.getDimensionID();
-//			}
-//		}
-		int id = GalaxyRegistry.getCelestialBodyFromDimensionID(this.getDimension()).getDimensionID();
-
-
-		return WorldUtil.getDimensionTypeById(id);
+		return DimensionManager.getProviderType(this.getDimension());
 	}
 
 	@Override
@@ -203,7 +200,7 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
 
 	@Override
 	public boolean canSpaceshipTierPass(int tier) {
-		return tier > 2;
+		return tier > ((Satellite)getCelestialBody()).getParentPlanet().getTierRequirement();
 	}
 
 	@Override
@@ -218,12 +215,12 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
 
 	@Override
 	public float getFallDamageModifier() {
-		return 1F;
+		return getDimData().getFallDamageModifier();
 	}
 
 	@Override
 	public double getFuelUsageMultiplier() {
-		return 1F;
+		return getDimData().getFuelUsageModificator();
 	}
 
 	@Override
@@ -264,9 +261,12 @@ public class WorldProviderSatellite extends WorldProviderSpaceStation
 
 	@Override
 	public String getPlanetToOrbit() {
-		Satellite body = (Satellite)getCelestialBody();
-		
-		return body.getParentPlanet().getUnlocalizedName();
+		return "";
+	}
+
+	@Override
+	public int getPlanetIdToOrbit() {
+		return ((Satellite)getCelestialBody()).getParentPlanet().getDimensionID();
 	}
 
 	@Override

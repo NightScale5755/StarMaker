@@ -24,7 +24,7 @@ import starmaker.utils.zip.ZipUtils;
 @Mod(
 		   modid = StarMaker.MODID,
 		   version = StarMaker.VERSION,
-		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore@[4.0.2.282,); required-after:galacticraftplanets; required-after:asmodeuscore@[1.0.0,)",
+		   dependencies = Constants.DEPENDENCIES_FORGE + "required-after:galacticraftcore@[4.0.2.282,); required-after:galacticraftplanets; required-after:asmodeuscore@[1.0.4,)",
 		   acceptedMinecraftVersions = "[1.12.2]",
 		   name = StarMaker.NAME
 		)

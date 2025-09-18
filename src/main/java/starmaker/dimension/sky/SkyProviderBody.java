@@ -1,5 +1,6 @@
 package starmaker.dimension.sky;
 
+import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import org.lwjgl.opengl.GL11;
 
 import asmodeuscore.api.dimension.IAdvancedSpace.StarColor;
@@ -53,6 +54,11 @@ public class SkyProviderBody extends SkyProviderBase {
 			DimData parentData = MakerUtils.bodies.get(parent.getDimensionID());
 			GL11.glPushMatrix(); 
 			float f = 0.9F;
+
+			if(parentData == null)
+				parentData = MakerUtils.unreachable_bodies.get(parent);
+
+
 			if(parentData != null && parentData.getSkyColor() != null)
 				this.renderAtmo(tessellator, x, y, s - 0.4F, new Vec3d(parentData.getSkyColor().x / 255.0F * f, parentData.getSkyColor().y / 255.0F * f, parentData.getSkyColor().z / 255.0F * f));
 			GL11.glPopMatrix(); 
@@ -224,7 +230,7 @@ public class SkyProviderBody extends SkyProviderBase {
 	}
 
 	@Override
-	protected Vec3d getAtmosphereColor() {
+	protected Vector3 getAtmosphereColor() {
 		return null;
 	}
 	

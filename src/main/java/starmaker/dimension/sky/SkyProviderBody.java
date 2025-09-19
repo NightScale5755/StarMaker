@@ -1,5 +1,6 @@
 package starmaker.dimension.sky;
 
+import micdoodle8.mods.galacticraft.api.galaxies.*;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import org.lwjgl.opengl.GL11;
 
@@ -10,12 +11,6 @@ import asmodeuscore.core.astronomy.BodiesData;
 import asmodeuscore.core.astronomy.BodiesRegistry;
 import asmodeuscore.core.astronomy.gui.screen.NewGuiCelestialSelection;
 import asmodeuscore.core.astronomy.sky.SkyProviderBase;
-import micdoodle8.mods.galacticraft.api.galaxies.GalaxyRegistry;
-import micdoodle8.mods.galacticraft.api.galaxies.IChildBody;
-import micdoodle8.mods.galacticraft.api.galaxies.Moon;
-import micdoodle8.mods.galacticraft.api.galaxies.Planet;
-import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
-import micdoodle8.mods.galacticraft.api.galaxies.Star;
 import micdoodle8.mods.galacticraft.core.GalacticraftCore;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
@@ -36,10 +31,16 @@ public class SkyProviderBody extends SkyProviderBase {
 	{
 		this.data = data;
 		this.body_data = BodiesRegistry.getData(data.getBody());
+
 	}
 	
 	@Override
 	protected void rendererSky(Tessellator tessellator, BufferBuilder buffer, float size, float ticks) {
+
+		if(this.data.getBody() instanceof Satellite) {
+			Satellite sat = (Satellite) this.data.getBody();
+			this.renderImage(sat.getParentPlanet().getBodyIcon(), 0F, 0F, 0F, 180F, 1.0F, .4F);
+		}
 
 		if(this.data.getBody() instanceof Moon)
 		{

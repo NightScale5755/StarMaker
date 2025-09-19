@@ -74,7 +74,7 @@ public class PlanetImpl
 	*/
 	@SerializedName("biomes")
 	@Expose
-	private List<String> biomes = null;
+	private List<String> biomes;
 	@SerializedName("sun_size")
 	@Expose
 	private float sun_size;	
@@ -84,20 +84,19 @@ public class PlanetImpl
 	@SerializedName("unreachable")
 	@Expose
 	private boolean unreachable;
-	
 	@SerializedName("ringTextureOnMap") @Expose
 	private String ringTextureOnMap;
 	@SerializedName("ringTextureOnSky") @Expose
 	private String ringTextureOnSky;
-	
 	@SerializedName("sunTexture") @Expose
 	private String customSunTexture;
-
 	@SerializedName("tidallyLocked") @Expose
 	private Boolean tidallyLocked;
-
 	@SerializedName("cloudTexture") @Expose
 	private String cloudTexture;
+	@SerializedName("atmosphereComponents") @Expose
+	private List<String> atmosphereComponents;
+
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -513,4 +512,8 @@ public class PlanetImpl
 	public void setTidallyLocked(Boolean locked){
 		this.tidallyLocked = locked;
 	}
+
+	public void setAtmosphereComponents(List<String> components) { this.atmosphereComponents = components; }
+	public List<String> getAtmosphereComponents() { return this.atmosphereComponents; }
+
 }

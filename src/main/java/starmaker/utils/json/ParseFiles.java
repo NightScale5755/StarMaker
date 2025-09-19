@@ -12,6 +12,7 @@ import asmodeuscore.core.prefab.celestialbody.ExMoon;
 import asmodeuscore.core.prefab.celestialbody.ExPlanet;
 import asmodeuscore.core.utils.ACCompatibilityManager;
 import asmodeuscore.core.utils.Utils;
+import com.google.common.collect.Lists;
 import galaxyspace.core.GSItems;
 import galaxyspace.systems.SolarSystem.SolarSystemBodies;
 import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
@@ -20,6 +21,7 @@ import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody.ScalableDistance;
 import micdoodle8.mods.galacticraft.api.recipe.SpaceStationRecipe;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
+import micdoodle8.mods.galacticraft.api.world.EnumAtmosphericGas;
 import micdoodle8.mods.galacticraft.api.world.ITeleportType;
 import micdoodle8.mods.galacticraft.api.world.SpaceStationType;
 import micdoodle8.mods.galacticraft.core.GCItems;
@@ -257,6 +259,7 @@ public class ParseFiles {
 		BodiesRegistry.setOrbitData(planet, orbitData.getPhase(), orbitData.getSize(), orbitData.getRelativeTime(),
 				orbitData.getEccentricityX(), orbitData.getEccentricityY(), 0.0F, 0.0F);
 
+
 		int id = -1;
 
 		if (count_planets++ > LIMIT_PLANETS) {
@@ -273,6 +276,17 @@ public class ParseFiles {
 					ACBiome.ACSpace);
 			planet.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(),
 					impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
+
+			if(impl.getAtmosphereComponents() != null) {
+				List<String> atmosphereComponents = impl.getAtmosphereComponents();
+				List<EnumAtmosphericGas> gases = Lists.newArrayList();
+
+				for(String component : atmosphereComponents) {
+					gases.add(EnumAtmosphericGas.valueOf(component));
+				}
+
+				planet.atmosphereComponents(gases);
+			}
 
 			Vec3d skyColor = new Vec3d(impl.getSky());
 			Vec3d fogColor = new Vec3d(impl.getFog());
@@ -304,6 +318,7 @@ public class ParseFiles {
 					.setCloudHeight(impl.getCloudHeight()).setTemperatureMod(impl.getTemperatureModificator())
 					.setFallDamageModifier(dataImpl.getFallDamageModifier())
 					.setTidallyLocked(impl.getTidallyLocked())
+					.setSunTexture(impl.getSunTextureName())
 					.setRingOnSkyTexture(impl.getRingOnSkyTextureName())
 					.setFuelUsageModificator(dataImpl.getFuelUsageModifier())
 					.setCloudTexture(impl.getCloudTexture());
@@ -405,6 +420,17 @@ public class ParseFiles {
 			moon.setAtmosphere(new AtmosphereInfo(impl.getBreathable(), impl.getPrecipitation(),
 					impl.getCorrosiveAtmo(), impl.getTemperature(), impl.getWind(), 0.0F));
 
+			if(impl.getAtmosphereComponents() != null) {
+				List<String> atmosphereComponents = impl.getAtmosphereComponents();
+				List<EnumAtmosphericGas> gases = Lists.newArrayList();
+
+				for(String component : atmosphereComponents) {
+					gases.add(EnumAtmosphericGas.valueOf(component));
+				}
+
+				moon.atmosphereComponents(gases);
+			}
+
 			Vec3d skyColor = new Vec3d(impl.getSky());
 			Vec3d fogColor = new Vec3d(impl.getFog());
 			Vec3d cloudColor = impl.getCloud() == null ? null : new Vec3d(impl.getCloud());
@@ -435,7 +461,9 @@ public class ParseFiles {
 					.setSunTexture(impl.getSunTextureName()).setPlanetSize(impl.getPlanetSize())
 					.setFallDamageModifier(dataImpl.getFallDamageModifier())
 					.setTidallyLocked(impl.getTidallyLocked())
-					.setRingOnSkyTexture(impl.getRingOnSkyTextureName());
+					.setRingOnSkyTexture(impl.getRingOnSkyTextureName())
+					.setFuelUsageModificator(dataImpl.getFuelUsageModifier())
+					.setCloudTexture(impl.getCloudTexture());
 
 			id = getAvailableID();
 			regDim(id, data, moon.getWorldProvider(), new TeleportTypeBody());

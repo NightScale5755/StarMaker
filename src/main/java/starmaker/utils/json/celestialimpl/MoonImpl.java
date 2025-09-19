@@ -95,6 +95,12 @@ public class MoonImpl
 	private String ringTextureOnMap;
 	@SerializedName("ringTextureOnSky") @Expose
 	private String ringTextureOnSky;
+
+	@SerializedName("cloudTexture") @Expose
+	private String cloudTexture;
+	@SerializedName("atmosphereComponents") @Expose
+	private List<String> atmosphereComponents;
+
 	/**
 	 * No args constructor for use in serialization
 	 * 
@@ -504,4 +510,9 @@ public class MoonImpl
 		return this.ringTextureOnMap;
 	}
 	public String getRingOnSkyTextureName() { return this.ringTextureOnSky;	}
+
+	public String getCloudTexture() {return this.cloudTexture; }
+	public void setAtmosphereComponents(List<String> components) { this.atmosphereComponents = components; }
+	public List<String> getAtmosphereComponents() { return this.atmosphereComponents; }
+
 }

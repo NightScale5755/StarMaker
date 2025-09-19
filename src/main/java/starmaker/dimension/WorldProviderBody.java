@@ -314,7 +314,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 	
 				WE_BiomeLayer layer = new WE_BiomeLayer();		
 				layer.add(ParseFiles.getBlock(biome.getSubsurfaceBlock()), terrainGenerator.worldStoneBlock, -256, 0, -4, -2, true);
-				layer.add(ParseFiles.getBlock(biome.getSurfaceBlock()), ParseFiles.getBlock(biome.getSubsurfaceBlock()), -256, 0, -1, 0, false);
+				layer.add(ParseFiles.getBlock(biome.getSurfaceBlock()), ParseFiles.getBlock(biome.getSubsurfaceBlock()), -256, 0, -256, 0, false);
 				//layer.add(Blocks.BEDROCK.getDefaultState(), 0, 0, 1, 2, true);
 			
 				WE_Biome b = new WE_BaseBiome(biome.getBiomeSize(), biome.getPersistance(), biome.getOctaves(), biome.getHeight(), biome.getIntquility(), layer) {
@@ -428,7 +428,7 @@ public class WorldProviderBody extends WE_WorldProviderSpace implements IWeather
 		{
 			int phase = this.getMoonPhase(this.getWorldTime());
 			
-			if(sunBrightness > 0.2f && !this.world.isRaining() && skyLight > 0)
+			if(getDimData().getLightColor() != null && sunBrightness > 0.2f && !this.world.isRaining() && skyLight > 0)
 			{
 				float skyRed = colors[0];
 				float skyGreen = colors[1];

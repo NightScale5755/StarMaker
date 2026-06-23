@@ -23,6 +23,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.common.Loader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
@@ -46,7 +47,7 @@ public class SkyProviderBody extends SkyProviderBase {
     if (this.data.getBody() instanceof Satellite) {
       Satellite sat = (Satellite)this.data.getBody();
       renderImage(sat.getParentPlanet().getBodyIcon(), 0.0F, 0.0F, 0.0F, 180.0F, 1.0F, 0.4F);
-    } 
+    }
     if (this.data.getBody() instanceof Moon) {
       Planet parent = ((Moon)this.data.getBody()).getParentPlanet();
       float s = (((Moon)this.data.getBody()).getRelativeDistanceFromCenter()).scaledDistance;
@@ -72,17 +73,19 @@ public class SkyProviderBody extends SkyProviderBase {
             ringAlt = true;
           }
         }
-        if (parent.getName().equals("saturn")) {
-          RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/saturn_rings.png");
-          ringAlt = true;
-        }
-        if (parent.getName().equals("uranus")) {
-          RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/uranus_rings.png");
-          ringAlt = true;
-        }
-        if (parent.getName().equals("haumea")) {
-          RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/haumea_rings.png");
-          ringHaumea = true;
+        if (Loader.isModLoaded("galaxyspace")) {
+          if (parent.getName().equals("saturn")) {
+            RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/saturn_rings.png");
+            ringAlt = true;
+          }
+          if (parent.getName().equals("uranus")) {
+            RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/uranus_rings.png");
+            ringAlt = true;
+          }
+          if (parent.getName().equals("haumea")) {
+            RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/haumea_rings.png");
+            ringHaumea = true;
+          }
         }
         if (RingTexture != null) {
           float[] ringTextureSize = getTextureSizeAsFloat(RingTexture);
@@ -103,7 +106,7 @@ public class SkyProviderBody extends SkyProviderBase {
         renderAtmo(tessellator, x, y, s - 0.4F, new Vec3d((parentData.getSkyColor()).x / 255.0D * f, (parentData.getSkyColor()).y / 255.0D * f, (parentData.getSkyColor()).z / 255.0D * f));
 
       GL11.glPopMatrix();
-    } 
+    }
     if (getStarData().getStarType() == IAdvancedSpace.StarType.BLACKHOLE) {
       GlStateManager.depthMask(false);
       GlStateManager.pushMatrix();
@@ -184,7 +187,7 @@ public class SkyProviderBody extends SkyProviderBase {
         }
         if (moonData != null && data != null && data.getType() == IAdvancedSpace.TypeBody.PLANET) {
           if (this.data.getBody() instanceof Planet) {
-            if (planetMoon.getParentPlanet().equals(this.data.getBody())) {
+            if (planetMoon.getParentPlanet().equals(this.data.getBody()) && moonData.getType() == IAdvancedSpace.TypeBody.MOON) {
               float distance = (planetMoon.getRelativeDistanceFromCenter()).scaledDistance;
               distance *= 40.0F;
               if (planetMoon.getPhaseShift() < 0.0F && planetMoon.getPhaseShift() > Math.PI)
@@ -198,6 +201,28 @@ public class SkyProviderBody extends SkyProviderBase {
               GL11.glPopMatrix();
               renderImage(planetMoon.getBodyIcon(), -90.0F, 185.0F - (8 * i), (-20 + 12 * i) - distance, 1.0F + planetMoon.getRelativeSize() / distance);
               i += 2;
+            }
+          }
+        }
+        for (Satellite planetSatellite : GalaxyRegistry.getSatellites()) {
+          BodiesData satelliteData = BodiesRegistry.getData((CelestialBody) planetSatellite);
+          if (moonData != null && satelliteData != null && satelliteData.getType() == IAdvancedSpace.TypeBody.SATELLITE) {
+            if (this.data.getBody() instanceof Satellite) {
+              if (planetMoon.getParentPlanet().equals(((Satellite) this.data.getBody()).getParentPlanet()) && moonData.getType() == IAdvancedSpace.TypeBody.MOON) {
+                float distance = (planetMoon.getRelativeDistanceFromCenter()).scaledDistance;
+                distance *= 40.0F;
+                if (planetMoon.getPhaseShift() < 0.0F && planetMoon.getPhaseShift() > Math.PI)
+                  distance *= -1.0F;
+                GL11.glPushMatrix();
+                GL11.glEnable(3042);
+                GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+                GL11.glRotatef((5 - 8 * i), 1.0F, 0.0F, 0.0F);
+                GL11.glRotatef((20 - 12 * i) + distance, 0.0F, 0.0F, 1.0F);
+                GL11.glDisable(3042);
+                GL11.glPopMatrix();
+                renderImage(planetMoon.getBodyIcon(), -90.0F, 185.0F - (8 * i), (-20 + 12 * i) - distance, 1.0F + planetMoon.getRelativeSize() / distance);
+                i += 2;
+              }
             }
           }
         }
@@ -261,7 +286,7 @@ public class SkyProviderBody extends SkyProviderBase {
       */
       // End
 
-    } 
+    }
     GL11.glShadeModel(7424);
     GL11.glPopMatrix();
   }

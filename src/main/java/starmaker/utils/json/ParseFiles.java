@@ -171,6 +171,10 @@ public class ParseFiles {
 		if (star_class == StarType.BLACKHOLE)
 			icon = new ResourceLocation(StarMaker.ASSET_PREFIX, "textures/gui/celestialbodies/blackhole.png");
 
+		if (first_star.getSunTextureName() != null)
+			icon = new ResourceLocation(CoreConfig.resourceDomain,
+					"textures/" + first_star.getSunTextureName() + ".png");
+
 		SolarSystem system = BodiesRegistry.registerSolarSystem(StarMaker.ASSET_PREFIX, name,
 				BodiesRegistry.getGalaxy(galaxy), new Vector3(posX, posY, 0.0F), first_star.getName(),
 				first_star.getStarSize(), icon);
@@ -219,6 +223,10 @@ public class ParseFiles {
 			if (star_color != null)
 				icon = new ResourceLocation(AsmodeusCore.ASSET_PREFIX,
 						"textures/gui/celestialbodies/" + star_color.name().toLowerCase() + ".png");
+
+			if (star_data.getSunTextureName() != null)
+				icon = new ResourceLocation(CoreConfig.resourceDomain,
+						"textures/" + star_data.getSunTextureName() + ".png");
 
 			float distance = star_data.getDistanceFromCenter() != null ? star_data.getDistanceFromCenter() : 0.3F * i;
 

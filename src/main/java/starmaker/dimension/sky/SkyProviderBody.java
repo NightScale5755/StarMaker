@@ -151,7 +151,7 @@ public class SkyProviderBody extends SkyProviderBase {
     for (Planet planet : GalaxyRegistry.getPlanetsForSolarSystem(getSolarSystem())) {
       for (Moon planetMoon : GalaxyRegistry.getMoonsForPlanet(planet)) {
         BodiesData data = BodiesRegistry.getData((CelestialBody) planet);
-        if (data != null && data.getType() == IAdvancedSpace.TypeBody.STAR && !planetMoon.getParentPlanet().equals(((Moon) this.data.getBody()).getParentPlanet())) {
+        if (data != null && data.getType() == IAdvancedSpace.TypeBody.STAR && !planetMoon.getParentPlanet().equals((planet))) {
           float distance = (planet.getRelativeDistanceFromCenter()).scaledDistance;
           distance *= 40.0F;
           if (planet.getPhaseShift() < 0.0F && planet.getPhaseShift() > Math.PI)

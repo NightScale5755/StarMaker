@@ -50,64 +50,68 @@ public class SkyProviderBody extends SkyProviderBase {
     }
     if (this.data.getBody() instanceof Moon) {
       Planet parent = ((Moon) this.data.getBody()).getParentPlanet();
-      float s = (((Moon) this.data.getBody()).getRelativeDistanceFromCenter()).scaledDistance;
-      s = getMaxDistance() - s * 0.5F * this.data.getPlanetSize();
-      float speed = ((Moon) this.data.getBody()).getRelativeOrbitTime();
-      float x = this.mc.world.getCelestialAngle(ticks) * -360.0F / 10.0F;
-      float y = this.mc.world.getCelestialAngle(ticks) * 360.0F + 120.0F;
-      if(this.data.getTidallyLocked()) {
-        x = (float)this.getDayLength() * -360.0F / 10.0F;
-        y = (float)this.getDayLength() * 360.0F + 120.0F;
-      }
-      renderImage(parent.getBodyIcon(), x, y, 0.0F, s, 1.0F);
       DimData parentData = (DimData) MakerUtils.bodies.get(Integer.valueOf(parent.getDimensionID()));
-      GL11.glPushMatrix();
-      float f = 0.9F;
       if (parentData == null)
         parentData = (DimData) MakerUtils.unreachable_bodies.get(parent);
 
-      if (enableRenderPlanet()) {
-        ResourceLocation RingTexture = null;
-        boolean ringAlt = false;
-        boolean ringHaumea = false;
-        if (parentData != null && parentData.getRingOnMapTexture() != null) {
-          RingTexture = parentData.getRingOnMapTexture();
-          if (RingTexture.getResourcePath().contains("_alternative")) {
-            ringAlt = true;
+      if (parentData != null && (parentData.getBody() instanceof Star)) {}
+      else {
+        float s = (((Moon) this.data.getBody()).getRelativeDistanceFromCenter()).scaledDistance;
+        s = getMaxDistance() - s * 0.5F * this.data.getPlanetSize();
+        float speed = ((Moon) this.data.getBody()).getRelativeOrbitTime();
+        float x = this.mc.world.getCelestialAngle(ticks) * -360.0F / 10.0F;
+        float y = this.mc.world.getCelestialAngle(ticks) * 360.0F + 120.0F;
+        if(this.data.getTidallyLocked()) {
+          x = (float)this.getDayLength() * -360.0F / 10.0F;
+          y = (float)this.getDayLength() * 360.0F + 120.0F;
+        }
+        renderImage(parent.getBodyIcon(), x, y, 0.0F, s, 1.0F);
+        GL11.glPushMatrix();
+        float f = 0.9F;
+
+        if (enableRenderPlanet()) {
+          ResourceLocation RingTexture = null;
+          boolean ringAlt = false;
+          boolean ringHaumea = false;
+          if (parentData != null && parentData.getRingOnMapTexture() != null) {
+            RingTexture = parentData.getRingOnMapTexture();
+            if (RingTexture.getPath().contains("_alternative")) {
+              ringAlt = true;
+            }
+          }
+          if (Loader.isModLoaded("galaxyspace")) {
+            if (parent.getName().equals("saturn")) {
+              RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/saturn_rings.png");
+              ringAlt = true;
+            }
+            if (parent.getName().equals("uranus")) {
+              RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/uranus_rings.png");
+              ringAlt = true;
+            }
+            if (parent.getName().equals("haumea")) {
+              RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/haumea_rings.png");
+              ringHaumea = true;
+            }
+          }
+          if (RingTexture != null) {
+            float[] ringTextureSize = getTextureSizeAsFloat(RingTexture);
+            float[] planetTextureSize = getTextureSizeAsFloat(parent.getBodyIcon());
+            float tempSize = 2.669F;
+            if (ringAlt) {
+              tempSize = ringTextureSize[0] / planetTextureSize[0];
+            }
+            if (ringHaumea) {
+              tempSize = (ringTextureSize[0] / planetTextureSize[0]) / 10.0F;
+            }
+            renderImage(RingTexture, x, y, 0.0F, tempSize * s, 1.0F);
           }
         }
-        if (Loader.isModLoaded("galaxyspace")) {
-          if (parent.getName().equals("saturn")) {
-            RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/saturn_rings.png");
-            ringAlt = true;
-          }
-          if (parent.getName().equals("uranus")) {
-            RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/uranus_rings.png");
-            ringAlt = true;
-          }
-          if (parent.getName().equals("haumea")) {
-            RingTexture = new ResourceLocation("galaxyspace", "textures/gui/celestialbodies/sol/haumea_rings.png");
-            ringHaumea = true;
-          }
-        }
-        if (RingTexture != null) {
-          float[] ringTextureSize = getTextureSizeAsFloat(RingTexture);
-          float[] planetTextureSize = getTextureSizeAsFloat(parent.getBodyIcon());
-          float tempSize = 2.669F;
-          if (ringAlt) {
-            tempSize = ringTextureSize[0] / planetTextureSize[0];
-          }
-          if (ringHaumea) {
-            tempSize = (ringTextureSize[0] / planetTextureSize[0]) / 10.0F;
-          }
-          renderImage(RingTexture, x, y, 0.0F, tempSize * s, 1.0F);
-        }
+
+        if (parentData != null && parentData.getSkyColor() != null)
+          renderAtmo(tessellator, x, y, s - 0.4F, new Vec3d((parentData.getSkyColor()).x / 255.0D * f, (parentData.getSkyColor()).y / 255.0D * f, (parentData.getSkyColor()).z / 255.0D * f));
+
+        GL11.glPopMatrix();
       }
-
-      if (parentData != null && parentData.getSkyColor() != null)
-        renderAtmo(tessellator, x, y, s - 0.4F, new Vec3d((parentData.getSkyColor()).x / 255.0D * f, (parentData.getSkyColor()).y / 255.0D * f, (parentData.getSkyColor()).z / 255.0D * f));
-
-      GL11.glPopMatrix();
     }
     if (getStarData().getStarType() == IAdvancedSpace.StarType.BLACKHOLE) {
       GlStateManager.depthMask(false);
@@ -149,26 +153,25 @@ public class SkyProviderBody extends SkyProviderBase {
     //}
     int i = 0;
     for (Planet planet : GalaxyRegistry.getPlanetsForSolarSystem(getSolarSystem())) {
-      BodiesData data = BodiesRegistry.getData((CelestialBody) planet);
-      if (data != null && data.getType() == IAdvancedSpace.TypeBody.STAR) {
-        float distance = (planet.getRelativeDistanceFromCenter()).scaledDistance;
-        distance *= 40.0F;
-        if (planet.getPhaseShift() < 0.0F && planet.getPhaseShift() > Math.PI)
-          distance *= -1.0F;
-        GL11.glPushMatrix();
-        GL11.glEnable(3042);
-        GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
-        GL11.glRotatef((5 - 8 * i), 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef((20 - 12 * i) + distance, 0.0F, 0.0F, 1.0F);
-        renderSunAura(tessellator, 3.0F + planet.getRelativeSize(), 0.7F, data.getStarColor());
-        GL11.glDisable(3042);
-        GL11.glPopMatrix();
-        renderImage(planet.getBodyIcon(), -90.0F, 185.0F - (8 * i), (-20 + 12 * i) - distance, 1.0F + planet.getRelativeSize());
-        i += 2;
-      }
-
       for (Moon planetMoon : GalaxyRegistry.getMoonsForPlanet(planet)) {
+        BodiesData data = BodiesRegistry.getData((CelestialBody) planet);
         BodiesData moonData = BodiesRegistry.getData((CelestialBody) planetMoon);
+        if (data != null && data.getType() == IAdvancedSpace.TypeBody.STAR && !planetMoon.getParentPlanet().equals(this.data.getBody())) {
+          float distance = (planet.getRelativeDistanceFromCenter()).scaledDistance;
+          distance *= 40.0F;
+          if (planet.getPhaseShift() < 0.0F && planet.getPhaseShift() > Math.PI)
+            distance *= -1.0F;
+          GL11.glPushMatrix();
+          GL11.glEnable(3042);
+          GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+          GL11.glRotatef((5 - 8 * i), 1.0F, 0.0F, 0.0F);
+          GL11.glRotatef((20 - 12 * i) + distance, 0.0F, 0.0F, 1.0F);
+          //renderSunAura(tessellator, 3.0F + planet.getRelativeSize(), 0.7F, data.getStarColor());
+          GL11.glDisable(3042);
+          GL11.glPopMatrix();
+          renderImage(planet.getBodyIcon(), -90.0F, 185.0F - (8 * i), (-20 + 12 * i) - distance, planet.getRelativeSize() / distance * this.data.getSunSize());
+          i += 2;
+        }
         if (moonData != null && moonData.getType() == IAdvancedSpace.TypeBody.MOON) {
           if (this.data.getBody() instanceof Moon) {
             if (planetMoon.getParentPlanet().equals(((Moon) this.data.getBody()).getParentPlanet()) && planetMoon != this.data.getBody()) {
@@ -207,7 +210,7 @@ public class SkyProviderBody extends SkyProviderBase {
             }
           }
         }
-        for (Satellite planetSatellite : GalaxyRegistry.getSatellites()) {
+        for (Satellite planetSatellite : GalaxyRegistry.getSatellitesForCelestialBody(planet)) {
           BodiesData satelliteData = BodiesRegistry.getData((CelestialBody) planetSatellite);
           if (satelliteData != null && satelliteData.getType() == IAdvancedSpace.TypeBody.SATELLITE) {
             if (this.data.getBody() instanceof Satellite) {

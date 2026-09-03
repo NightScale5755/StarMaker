@@ -13,7 +13,6 @@ import asmodeuscore.core.prefab.celestialbody.ExPlanet;
 import asmodeuscore.core.utils.ACCompatibilityManager;
 import asmodeuscore.core.utils.Utils;
 import com.google.common.collect.Lists;
-import galaxyspace.core.GSItems;
 import galaxyspace.systems.SolarSystem.SolarSystemBodies;
 import micdoodle8.mods.galacticraft.api.GalacticraftRegistry;
 import micdoodle8.mods.galacticraft.api.galaxies.*;
@@ -760,8 +759,6 @@ public class ParseFiles {
 		spaceStationRequirements.put("ingotCopper", 64);
 		spaceStationRequirements.put(new ItemStack(GCItems.basicItem, 1, ItemBasic.WAFER_ADVANCED), 1);
 		spaceStationRequirements.put(Items.IRON_INGOT, 24);
-		spaceStationRequirements.put(new ItemStack(GSItems.HDP, 1, 0), 10);
-		spaceStationRequirements.put(new ItemStack(GSItems.BASIC, 1, 6), 10);
 		GalacticraftRegistry.registerSpaceStation(
 				new SpaceStationType(id, planet.getDimensionID(), new SpaceStationRecipe(spaceStationRequirements)));
 

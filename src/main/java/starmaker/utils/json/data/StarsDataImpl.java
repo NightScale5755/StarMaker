@@ -2,6 +2,7 @@ package starmaker.utils.json.data;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import starmaker.utils.json.celestialimpl.SystemImpl;
 
 public class StarsDataImpl {
 
@@ -22,6 +23,8 @@ public class StarsDataImpl {
 	private Integer starColor;
 	@SerializedName("distance_from_center") @Expose
 	private Float distanceFromCenter = -1F;
+	@SerializedName("sunTexture") @Expose
+	private String customSunTexture;
 	
 	public StarsDataImpl(String name, float star_phase, float star_size, int star_type, int star_color) {
 		this.name = name;
@@ -58,5 +61,14 @@ public class StarsDataImpl {
 	
 	public Float getDistanceFromCenter() {
 		return this.distanceFromCenter;
+	}
+
+	public String getSunTextureName() {
+		return this.customSunTexture;
+	}
+
+	public StarsDataImpl setSunTexture(String texture) {
+		this.customSunTexture = texture;
+		return this;
 	}
 }
